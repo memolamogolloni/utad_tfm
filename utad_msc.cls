@@ -2,62 +2,61 @@
 
 \LoadClass{article}
 
-% PDF Stuff
+% Packages
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage[export]{adjustbox}
+\usepackage{titling}
+\usepackage{helvet}
+\usepackage{multicol}
 \usepackage[pdfborder={0 0 0}]{hyperref}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
-\usepackage{amsmath, amsthm, amssymb, siunitx, url}
-
-% spacing
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
 \usepackage{setspace}
-\onehalfspacing
 
-% paragraphs
+% Styling
+\onehalfspacing
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+\renewcommand{\familydefault}{\sfdefault}
 
-% margins
-\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
-
-
+% Set variables
 \newcommand{\student}[1]{\def \@student {#1}}
-\newcommand{\email}[1]{\def \@email {#1}}
-\newcommand{\identifier}[1]{\def \@identifier {#1}}
+\newcommand{\utadstudent}{
+    \@student
+}
+\newcommand{\tutor}[1]{\def \@tutor {#1}}
+\newcommand{\utadtutor}{
+    \@tutor
+}
 \newcommand{\course}[1]{\def \@course {#1}}
-\newcommand{\tma}[1]{\def \@tma {#1}}
-\newcommand{\tmapart}[1]{\def \@tmapart {#1}}
-
-% Student info
-\newcommand{\studentinfo}{
-    \ifdefined \@email
-        \href{mailto:\@email}{\@student, \space \@identifier}
-    \else
-        \@student, \space \@identifier
-    \fi
+\newcommand{\utadcourse}{
+    \@course
+}
+\newcommand{\project}[1]{\def \@project {#1}}
+\newcommand{\utadtitle}{
+    \@project
 }
 
-% Student title
-\newcommand{\tmatitle}{
-    \@course \space - \textbf{TMA \two@digits{\@tma}}
-    \ifdefined \@tmapart
-        \space - Part \@tmapart
-    \fi
-}
-
-% Title Page
-\renewcommand{\titlepage}{
-    \author{\studentinfo}
-    \title{\tmatitle}
-    \maketitle
-    \thispagestyle{empty}
-}
+% % Title Page
+% \renewcommand{\titlepage}{
+%     \title{%
+%         \large \uppercase{\utadcourse} \\
+%         \vspace{1cm}
+%         \Huge \utadtitle
+%     }
+%     \author{\utadstudent}
+%     \date{} % clear date
+%     \maketitle
+% }
 
 % Headers
 \pagestyle{fancyplain}
 \fancyhf{}
 \headheight 20pt
-\lhead{\fancyplain{}{\tmatitle}}
-\rhead{\fancyplain{}{\studentinfo}}
+\lhead{\fancyplain{}{\utadtitle}}
+\rhead{\fancyplain{}{\utadstudent}}
 \cfoot{\fancyplain{}{\thepage}}
 
 % Question (section) headers
