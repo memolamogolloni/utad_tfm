@@ -2,6 +2,9 @@
 
 \LoadClassWithOptions{book}
 
+\usepackage[backend=bibtex,style=verbose-trad2]{biblatex}
+\bibliography{references} 
+
 % Packages
 \RequirePackage{lmodern} % Support latin modern fonts
 \RequirePackage[T1]{fontenc} % Support for T1 enconding
