@@ -2,93 +2,119 @@
 
 \LoadClassWithOptions{book}
 
-\usepackage[backend=bibtex,style=verbose-trad2]{biblatex}
+\RequirePackage[backend=bibtex,style=verbose-trad2]{biblatex}
 \bibliography{references} 
 
 % Packages
-\RequirePackage{lmodern} % Support latin modern fonts
-\RequirePackage[T1]{fontenc} % Support for T1 enconding
-\RequirePackage[spanish,activeacute]{babel} % Set spanish language
-\RequirePackage{mathtools} % Add additional tools for math writing 
+\usepackage[autostyle=true]{csquotes}
+\usepackage{lmodern} % Support latin modern fonts
+\usepackage[T1]{fontenc} % Support for T1 enconding
+\usepackage[spanish,activeacute]{babel} % Set spanish language
+\usepackage[autostyle=true]{csquotes}
+\usepackage{mathtools} % Add additional tools for math writing 
+\RequirePackage{caption}
 \RequirePackage{graphicx} % Support embed images
 \RequirePackage{helvet} % Load helvetica font
-\RequirePackage[pdfborder={0 0 0}]{hyperref} % Allows clickable links
+\RequirePackage{hyperref} % Allows clickable links
 \RequirePackage{fancyhdr} % Edit headers and footers
 \RequirePackage[
     top=3.5cm,
     bottom=2.5cm,
-    left=3.5cm,
-    right=3.5cm
+    marginparwidth=3.5cm,
 ]{geometry} % Edit page layout
 \RequirePackage{setspace} % Set spaces between lines
 \RequirePackage{float} % Better tables and figures handling
 \RequirePackage{listings}
-\RequirePackage{color}
+\RequirePackage{xargs} % Use more than one optional parameter in a new commands
+\RequirePackage[
+    colorinlistoftodos,
+    prependcaption,
+    textsize=scriptsize,
+    color=yellow,
+    bordercolor=yellow,
+]{todonotes}
+\RequirePackage{xcolor}
 
-% Set colors variables
-\definecolor{lightgray}{rgb}{.9,.9,.9}
-\definecolor{darkgray}{rgb}{.4,.4,.4}
-\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+% \RequirePackage{color}
 
-% JS syntax highlighting
-\lstdefinelanguage{JavaScript}{
-  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
-  keywordstyle=\color{blue}\bfseries,
-  ndkeywords={class, export, boolean, throw, implements, import, this},
-  ndkeywordstyle=\color{darkgray}\bfseries,
-  identifierstyle=\color{black},
-  sensitive=false,
-  comment=[l]{//},
-  morecomment=[s]{/*}{*/},
-  commentstyle=\color{purple}\ttfamily,
-  stringstyle=\color{red}\ttfamily,
-  morestring=[b]',
-  morestring=[b]"
+% % Set colors variables
+% \definecolor{lightgray}{rgb}{.9,.9,.9}
+% \definecolor{darkgray}{rgb}{.4,.4,.4}
+% \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+% % JS syntax highlighting
+% \lstdefinelanguage{JavaScript}{
+%   keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+%   keywordstyle=\color{blue}\bfseries,
+%   ndkeywords={class, export, boolean, throw, implements, import, this},
+%   ndkeywordstyle=\color{darkgray}\bfseries,
+%   identifierstyle=\color{black},
+%   sensitive=false,
+%   comment=[l]{//},
+%   morecomment=[s]{/*}{*/},
+%   commentstyle=\color{purple}\ttfamily,
+%   stringstyle=\color{red}\ttfamily,
+%   morestring=[b]',
+%   morestring=[b]"
+% }
+% \lstset{
+%    language=JavaScript,
+%    backgroundcolor=\color{lightgray},
+%    extendedchars=true,
+%    basicstyle=\footnotesize\ttfamily,
+%    showstringspaces=false,
+%    showspaces=false,
+%    numbers=left,
+%    numberstyle=\footnotesize,
+%    numbersep=9pt,
+%    tabsize=2,
+%    breaklines=true,
+%    showtabs=false,
+%    captionpos=b
+% }
+% % C syntax highlighting
+% \lstdefinelanguage{C}{
+%   keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+%   keywordstyle=\color{blue}\bfseries,
+%   ndkeywords={class, export, boolean, throw, implements, import, this},
+%   ndkeywordstyle=\color{darkgray}\bfseries,
+%   identifierstyle=\color{black},
+%   sensitive=false,
+%   comment=[l]{//},
+%   morecomment=[s]{/*}{*/},
+%   commentstyle=\color{purple}\ttfamily,
+%   stringstyle=\color{red}\ttfamily,
+%   morestring=[b]',
+%   morestring=[b]"
+% }
+% \lstset{
+%    language=C,
+%    backgroundcolor=\color{lightgray},
+%    extendedchars=true,
+%    basicstyle=\footnotesize\ttfamily,
+%    showstringspaces=false,
+%    showspaces=false,
+%    numbers=left,
+%    numberstyle=\footnotesize,
+%    numbersep=9pt,
+%    tabsize=2,
+%    breaklines=true,
+%    showtabs=false,
+%    captionpos=b
+% }
+
+\hypersetup{
+    colorlinks=true,
+    citecolor=black,
+    linkcolor=black,
+    urlcolor=blue,
+    linktocpage=true,
 }
-\lstset{
-   language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=left,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b
-}
-% C syntax highlighting
-\lstdefinelanguage{C}{
-  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
-  keywordstyle=\color{blue}\bfseries,
-  ndkeywords={class, export, boolean, throw, implements, import, this},
-  ndkeywordstyle=\color{darkgray}\bfseries,
-  identifierstyle=\color{black},
-  sensitive=false,
-  comment=[l]{//},
-  morecomment=[s]{/*}{*/},
-  commentstyle=\color{purple}\ttfamily,
-  stringstyle=\color{red}\ttfamily,
-  morestring=[b]',
-  morestring=[b]"
-}
-\lstset{
-   language=C,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=left,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b
+\urlstyle{same}
+
+\captionsetup{%
+  format=plain,
+  font=footnotesize,
 }
 
 % Set variables
@@ -107,6 +133,11 @@
 \newcommand{\project}[1]{\def \@project {#1}}
 \newcommand{\utadtitle}{
     \@project
+}
+
+% Configure sidenotes styling
+\newcommandx{\sidenote}[2][1=]{
+    \todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}
 }
 
 % Set default font family to sans serif
