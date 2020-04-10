@@ -1,28 +1,19 @@
-\documentclass{utad_msc}
+\documentclass[
+    oneside,
+    11pt,
+    a4paper
+]{utad_msc}
 
 \graphicspath{ {./images/} }
-
 
 \student{Anxo Babío Rodríguez}
 \tutor{Iván Alduán Íñiguez}
 \course{Máster en computación gráfica realidad virtual y la simulación}
-\project{Materiales PBR en WebGL}
-
+\project{Materiales PBR en WebGL 2.0}
 
 \begin{document}
-\include{titlepage}
-
-\tableofcontents
-\newpage
-
-\question
-
-This is a auto incrementing numbered question section e.g. "Question 1" 
-
-\subquestion{Answer heading 1}
-This is a auto incrementing numbered sub-question section e.g. "(a)" 
-
-\subsubquestion{Answer heading 2}
-This is a auto incrementing numbered sub-sub-question section e.g. "(i)" 
-
+    \include{titlepage}
+    \tableofcontents
+    \mainmatter % Begin pagination
+    \include{chapters/chapterTemplate}
 \end{document}

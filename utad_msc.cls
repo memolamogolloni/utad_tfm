@@ -1,25 +1,92 @@
 \ProvidesClass{utad_msc}
 
-\LoadClass{article}
+\LoadClassWithOptions{book}
 
 % Packages
-\usepackage{graphicx}
-\usepackage{subcaption}
-\usepackage[export]{adjustbox}
-\usepackage{titling}
-\usepackage{helvet}
-\usepackage{multicol}
-\usepackage[pdfborder={0 0 0}]{hyperref}
-\usepackage{fancyhdr}
-\usepackage{graphicx}
-\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
-\usepackage{setspace}
+\RequirePackage{lmodern} % Support latin modern fonts
+\RequirePackage[T1]{fontenc} % Support for T1 enconding
+\RequirePackage[spanish,activeacute]{babel} % Set spanish language
+\RequirePackage{mathtools} % Add additional tools for math writing 
+\RequirePackage{graphicx} % Support embed images
+\RequirePackage{helvet} % Load helvetica font
+\RequirePackage[pdfborder={0 0 0}]{hyperref} % Allows clickable links
+\RequirePackage{fancyhdr} % Edit headers and footers
+\RequirePackage[
+    top=3.5cm,
+    bottom=2.5cm,
+    left=3.5cm,
+    right=3.5cm
+]{geometry} % Edit page layout
+\RequirePackage{setspace} % Set spaces between lines
+\RequirePackage{float} % Better tables and figures handling
+\RequirePackage{listings}
+\RequirePackage{color}
 
-% Styling
-\onehalfspacing
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
-\renewcommand{\familydefault}{\sfdefault}
+% Set colors variables
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+% JS syntax highlighting
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+% C syntax highlighting
+\lstdefinelanguage{C}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstset{
+   language=C,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
 
 % Set variables
 \newcommand{\student}[1]{\def \@student {#1}}
@@ -39,52 +106,69 @@
     \@project
 }
 
-% % Title Page
-% \renewcommand{\titlepage}{
-%     \title{%
-%         \large \uppercase{\utadcourse} \\
-%         \vspace{1cm}
-%         \Huge \utadtitle
-%     }
-%     \author{\utadstudent}
-%     \date{} % clear date
-%     \maketitle
-% }
+% Set default font family to sans serif
+\renewcommand{\familydefault}{\sfdefault}
 
-% Headers
-\pagestyle{fancyplain}
+% Headers and footers style
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\headrulewidth}{0.4pt}% Line at the header visible
+\renewcommand{\footrulewidth}{0.4pt}% Line at the footer visible
 \fancyhf{}
 \headheight 20pt
-\lhead{\fancyplain{}{\utadtitle}}
-\rhead{\fancyplain{}{\utadstudent}}
-\cfoot{\fancyplain{}{\thepage}}
+\fancyhead[R]{\utadtitle}
+\fancyhead[L]{\leftmark}
+\fancyfoot[R]{\thepage}
+% Set header and footer also for the first page of each chapter
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[R]{\utadtitle}
+  \fancyhead[L]{\leftmark}
+  \fancyfoot[R]{\thepage}
+}
 
-% Question (section) headers
-\newcounter{questioncounter}
-\newcounter{subquestioncounter}[questioncounter]
-\newcounter{subsubquestioncounter}[subquestioncounter]
+% \newcommand{\bjscode}[1]{\begin{lstlisting}[#1]}
+% \newcommand{\ejscode}{\end{lstlisting}}
 
-\newenvironment{question}{
-    \ifnum\value{questioncounter}>0
-      \newpage
-    \else
-      \vspace{40pt}
-    \fi
-    \refstepcounter{questioncounter}
-    \addcontentsline{toc}{section}{Question {\arabic{questioncounter}}}
-    \noindent{\Large \textbf{Question \arabic{questioncounter}}}
-}{\par\addvspace{\baselineskip}}
+% \pagestyle{fancyplain}
+% \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+% \renewcommand{\headrulewidth}{0.4pt}% Line at the header visible
+% \renewcommand{\footrulewidth}{0.4pt}% Line at the footer visible
+% \fancyhf{}
+% \headheight 20pt
+% \fancyhead[R]{\utadtitle}
+% \fancyhead[L]{\thechapter ~ \leftmark}
+% \fancyfoot[R]{\thepage}
+% \renewcommand{\headrulewidth}{2pt}
+% \renewcommand{\footrulewidth}{1pt}
 
-\newenvironment{subquestion}[1]{
-    \par\addvspace{\baselineskip}\refstepcounter{subquestioncounter}
-    \addcontentsline{toc}{subsection}{(\alph{subquestioncounter}) {#1}}
-    \noindent{\large \textbf{(\alph{subquestioncounter}) {#1}}}
-    \newline
-}{\par\addvspace{\baselineskip}}
 
-\newenvironment{subsubquestion}[1]{
-    \par\addvspace{\baselineskip}\refstepcounter{subsubquestioncounter}
-    \addcontentsline{toc}{subsubsection}{(\roman{subsubquestioncounter}) {#1}}
-    \noindent{\textbf{(\roman{subsubquestioncounter}) {#1}}}
-    \newline
-}{\par\addvspace{\baselineskip}}
+% % Question (section) headers
+% \newcounter{questioncounter}
+% \newcounter{subquestioncounter}[questioncounter]
+% \newcounter{subsubquestioncounter}[subquestioncounter]
+
+% \newenvironment{question}{
+%     \ifnum\value{questioncounter}>0
+%       \newpage
+%     \else
+%       \vspace{40pt}
+%     \fi
+%     \refstepcounter{questioncounter}
+%     \addcontentsline{toc}{section}{Question {\arabic{questioncounter}}}
+%     \noindent{\Large \textbf{Question \arabic{questioncounter}}}
+% }{\par\addvspace{\baselineskip}}
+
+% \newenvironment{subquestion}[1]{
+%     \par\addvspace{\baselineskip}\refstepcounter{subquestioncounter}
+%     \addcontentsline{toc}{subsection}{(\alph{subquestioncounter}) {#1}}
+%     \noindent{\large \textbf{(\alph{subquestioncounter}) {#1}}}
+%     \newline
+% }{\par\addvspace{\baselineskip}}
+
+% \newenvironment{subsubquestion}[1]{
+%     \par\addvspace{\baselineskip}\refstepcounter{subsubquestioncounter}
+%     \addcontentsline{toc}{subsubsection}{(\roman{subsubquestioncounter}) {#1}}
+%     \noindent{\textbf{(\roman{subsubquestioncounter}) {#1}}}
+%     \newline
+% }{\par\addvspace{\baselineskip}}
