@@ -1,1 +1,305 @@
 \chapter{An\'alisis}
+
+\section{Motores de render: online y offline}
+    \subsection{Online}
+    \subsection{Offline}
+
+\section[Plataformas de render: OpenGL y WebGL]{Plataformas de render: OpenGL \\y WebGL}
+    \subsection{OpenGL 4.0}
+    \subsection{WebGL 2.0}
+
+\section{C\'alculo de la radiancia}
+    \subsection{Iluminaci\'on directa}
+    \subsection{Iluminaci\'on indirecta}
+    \subsection{T\'erminos del BRDF}
+
+\section{Comparaci\'on ThreeJS - Disney 2012}
+    \subsection{Esquema BRDF ThreeJS}
+        En el modelo de Disney 2012, se utilizan dos BRDFs distintos, uno objetos metálicos y
+        otro para dieléctricos y se hace blending entre ellos:
+    \singlespacing
+    \begin{lstlisting}[caption=My Javascript Example]
+// main() {
+// ...
+
+float metalnessFactor = metalness;
+#ifdef USE_METALNESSMAP
+    vec4 texelMetalness = texture2D( metalnessMap, vUv );
+    metalnessFactor *= texelMetalness.b;
+#endif
+
+// ...
+
+material.diffuseColor = diffuseColor.rgb * (1.0 - metalnessFactor);
+material.specularRoughness = clamp(roughnessFactor, 0.04, 1.0);
+
+#ifdef REFLECTIVITY
+    // MAXIMUM_SPECULAR_COEFFICIENT = 0.16
+    material.specularColor = mix(vec3(MAXIMUM_SPECULAR_COEFFICIENT * pow2(reflectivity), diffuseColor.rgb, metalnessFactor);
+#else
+    // DEFAULT_SPECULAR_COEFFICIENT = 0.04
+    material.specularColor = mix(vec3(DEFAULT_SPECULAR_COEFFICIENT), diffuseColor.rgb, metalnessFactor);
+
+// ...
+// calculate direct illumination...
+// calculate indirect illumination...
+// ...
+                                 
+// }
+    \end{lstlisting}
+
+    \subsection{Iluminaci\'on directa}
+        El valor del difuso se calcula directamente con el BRDF de Lambert.
+
+        Para calcular el especular, se acumulan las contribuciones de los tres
+        lóbulos. Si se utiliza clearcoat, se estima el *clearcoatDHR*
+        (clearcoat directional hemispherical reflectivity) y se calcula la
+        contribución al especular del clearcoat. Al siguiente lóbulo, *sheen* en
+        caso de existir, o si no directamente al BRDF del material base, se le
+        aplica un factor de 1.0 - clearcoatDHR y se acumula su valor.
+        \singlespacing
+        \begin{lstlisting}[caption=My Javascript Example]
+// main() {
+// ...
+
+float metalnessFactor = metalness;
+#ifdef USE_METALNESSMAP
+    vec4 texelMetalness = texture2D( metalnessMap, vUv );
+    metalnessFactor *= texelMetalness.b;
+#endif
+
+// ...
+
+material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
+material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
+
+#ifdef REFLECTIVITY
+    // MAXIMUM_SPECULAR_COEFFICIENT = 0.16
+    material.specularColor = mix(vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2(reflectivity),                              diffuseColor.rgb, metalnessFactor );
+#else
+    // DEFAULT_SPECULAR_COEFFICIENT = 0.04
+    material.specularColor = mix(vec3(DEFAULT_SPECULAR_COEFFICIENT), diffuseColor.rgb,                                metalnessFactor );
+
+// ...
+// calculate direct illumination...
+// calculate indirect illumination...
+// ...
+                                    
+// }
+        \end{lstlisting}
+
+        \subsubsection{Difuso}
+            El difuso de Disney hace un blending entre el modelo de difuso de base y el BRDF para
+            subsurfaces de HanrahanKrueger.
+            $$
+            f_d = \frac{baseColor}{\pi}(1 + (F_{D90} - 1) (1 - cos{\theta}_t)^5)(1 + F_{D90} - 1)
+            (1 - cos\theta_v)^5)
+            $$
+            La implementación de ThreeJS utiliza el BRDF para el difuso de Lambert:
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+vec3 BRDF_Diffuse_Lambert( const in vec3 diffuseColor ) {
+    return RECIPROCAL_PI * diffuseColor;
+}
+            \end{lstlisting}
+
+        \subsubsection{L\'obulo primario (material base)}
+            Representa el material base y puede ser anisotr\'opico y/o  met\'alico.
+
+            Implementaci\'on en ThreeJS:
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+vec3 BRDF_Specular_GGX(
+    const in IncidentLight incidentLight,
+    const in vec3 viewDir,
+    const in vec3 normal,
+    const in vec3 specularColor,
+    const in float,
+    roughness
+) {
+    float alpha = pow2(roughness);
+    vec3 halfDir = normalize(incidentLight.direction + viewDir);
+    float dotNL = saturate(dot(normal, incidentLight.direction));
+    float dotNV = saturate(dot(normal, viewDir));
+    float dotNH = saturate(dot(normal, halfDir));
+    float dotLH = saturate(dot(incidentLight.direction, halfDir));
+    vec3 F = F_Schlick(specularColor, dotLH);
+    float G = G_GGX_SmithCorrelated(alpha, dotNL, dotNV);
+    float D = D_GGX(alpha, dotNH);
+    return F * (G * D);
+}
+            \end{lstlisting}
+            \singlespacing
+            El BRDF de ThreeJS es isotrópico y no metálico.
+            \singlespacing
+            T\'ERMINOS DEL BRDF:
+            \singlespacing
+            \begin{enumerate}
+            \item D
+                El mismo que Disney 2012 \autocite{disney12}
+            $$D_{GGX}(m) = \frac{\alpha^2}{\pi((n\cdotp{m^2})(\alpha^2 - 1 ) + 1)^2}$$
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+float D_GGX( const in float alpha, const in float dotNH ) {
+    float a2 = pow2( alpha );
+    float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;
+    return RECIPROCAL_PI * a2 / pow2( denom );
+}
+            \end{lstlisting}
+            \singlespacing
+            \item F
+                Versi\'on optimizada de Fresnel-Schlick, la misma que la presentadapor Epic en
+                el SIGGRAPH de 2013\autocite{unreal}
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
+    float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );
+    return ( 1.0 - specularColor ) * fresnel + specularColor;
+}
+            \end{lstlisting}
+            \singlespacing
+            \item G
+                Utiliza que la misma presentada para Frostbite en el SIGGRAPH de 2014\autocite{frostbite}
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+float G_GGX_SmithCorrelated( const in float alpha, const in float dotNL, const in float dotNV ) {
+    float a2 = pow2( alpha );
+    float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );
+    float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );
+    return 0.5 / max( gv + gl, EPSILON );
+}
+            \end{lstlisting}
+            \singlespacing
+            \end{enumerate}
+
+        \subsubsection{L\'obulo secundario (clearcoat)}
+            El l\'obulo secundario representa una capa de clearcoat sobre el material y siempre es isotr\'opica
+            y no met\'alica. Se utiliza un IOR fijo de 1.5, que representa la refracci\'on del poliuretano (F0 = 0.04)
+            ThreeJS utiliza el mismo BRDF que para el material base, con un F0 = 0.04
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+float clearcoatDHR = material.clearcoat * clearcoatDHRApprox(material.clearcoatRoughness, ccDotNL);
+// IOR = 1.5 -> F0 = DEFAULT_SPECULAR_COEFFICIENT = 0.04
+reflectedLight.directSpecular += ccIrradiance * material.clearcoat * BRDF_Specular_GGX(
+    directLight,
+    geometry.viewDir,
+    geometry.clearcoatNormal,
+    vec3(DEFAULT_SPECULAR_COEFFICIENT),
+    material.clearcoatRoughness
+);
+            \end{lstlisting}
+            \singlespacing
+            Mismo BRDF que el l\'obulo primario:
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in vec3 viewDir,                              const in vec3 normal, const in vec3 specularColor, const in float                        roughness ) {
+    float alpha = pow2( roughness );
+    vec3 halfDir = normalize( incidentLight.direction + viewDir );
+    float dotNL = saturate( dot( normal, incidentLight.direction ) );
+    float dotNV = saturate( dot( normal, viewDir ) );
+    float dotNH = saturate( dot( normal, halfDir ) );
+    float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
+    vec3 F = F_Schlick( specularColor, dotLH );
+    float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
+    float D = D_GGX( alpha, dotNH );
+    return F * ( G * D );
+}
+            \end{lstlisting}
+            \singlespacing
+            Calcula el factor de reflectividad del clearcoat para aplicarle
+            1 - clearcoatDHR al siguiente l\'obulo
+
+        \subsubsection{L\'obulo secundario (clearcoat)}
+            El l\'obulo secundario representa una capa de clearcoat sobre el material y
+            siempre es isotr\'opica y no met\'alica.
+            Se utiliza un IOR fijo de 1.5, que representa la refracci\'on del poliuretano (F0 = 0.04)
+        
+            ThreeJS utiliza el mismo BRDF que para el material base, con un F0 = 0.04
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+float clearcoatDHR = material.clearcoat * clearcoatDHRApprox(material.clearcoatRoughness,                      ccDotNL );
+// IOR = 1.5 -> F0 = DEFAULT_SPECULAR_COEFFICIENT = 0.04
+reflectedLight.directSpecular += ccIrradiance * material.clearcoat * BRDF_Specular_GGX(
+        directLight,
+        geometry.viewDir,
+        geometry.clearcoatNormal,
+        vec3(DEFAULT_SPECULAR_COEFFICIENT
+    ),
+    material.clearcoatRoughness
+);
+            \end{lstlisting}
+            \singlespacing
+            Mismo BRDF que el lóbulo primario
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+vec3 BRDF_Specular_GGX(
+    const in IncidentLight incidentLight,
+    const in vec3 viewDir,
+    const in vec3 normal,
+    const in vec3 specularColor,
+    const in float roughness
+) {
+    float alpha = pow2( roughness );
+    vec3 halfDir = normalize( incidentLight.direction + viewDir );
+    float dotNL = saturate( dot( normal, incidentLight.direction ) );
+    float dotNV = saturate( dot( normal, viewDir ) );
+    float dotNH = saturate( dot( normal, halfDir ) );
+    float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
+    vec3 F = F_Schlick( specularColor, dotLH );
+    float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
+    float D = D_GGX( alpha, dotNH );
+    return F * ( G * D );
+}
+            \end{lstlisting}
+            \singlespacing
+            Calcula el factor de reflectividad del clearcoat para aplicarle *1 - clearcoatDHR* al
+            siguiente lóbulo
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+// Clearcoat directional hemispherical reflectivity
+float clearcoatDHRApprox( const in float roughness, const in float dotNL ) {
+    // DEFAULT_SPECULAR_COEFFICIENT = 0.04
+    return DEFAULT_SPECULAR_COEFFICIENT + ( 1.0 - DEFAULT_SPECULAR_COEFFICIENT ) *
+            (pow( 1.0 - dotNL, 5.0 ) * pow( 1.0 - roughness, 2.0 ) );
+}
+            \end{lstlisting}
+            \singlespacing
+
+        \subsubsection{L\'obulo terciario (sheen)}
+            El l\'obulo terciario se utiliza para representar el sheen, que aporta un extra de
+            reflectancia en los \'angulos muy agudos.
+
+            Este componente se parece mucho al factor de Fresnel y para modelar su BRDF se
+            utiliza Schlick-Fresnel: \(sheen * (1 − cos{\zeta}d\exp{5})\),  se puede te\~nir su
+            color con uno diferente al del material base con el par\'ametro sheenTint.
+            
+            ThreeJS implementation
+            \singlespacing
+            \begin{lstlisting}[caption=My Javascript Example]
+// Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
+float D_Charlie(float roughness, float NoH) {
+    float invAlpha = 1.0 / roughness;
+    float cos2h = NoH * NoH;
+    float sin2h = max(1.0 - cos2h, 0.0078125);
+    return (2.0 + invAlpha) * pow(sin2h, invAlpha * 0.5) / (2.0 * PI);
+}
+
+// Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
+float V_Neubelt(float NoV, float NoL) {
+    return saturate(1.0 / (4.0 * (NoL + NoV - NoL * NoV)));
+}
+
+vec3 BRDF_Specular_Sheen( const in float roughness, const in vec3 L, const in GeometricContext geometry, vec3 specularColor ) {
+    vec3 N = geometry.normal;
+    vec3 V = geometry.viewDir;
+    vec3 H = normalize( V + L );
+    float dotNH = saturate( dot( N, H ) );
+    return specularColor * D_Charlie(roughness, dotNH) * V_Neubelt(dot(N, V), dot(N, L));
+}
+            \end{lstlisting}
+            \singlespacing
+
+
+    \subsection{Iluminaci\'on indirecta}
+
+\newpage

@@ -11,12 +11,11 @@ position de la camara, dar una estimacion de la cantidad de luz emitida por una
 superficie.
 \singlespacing
 
-
 \begin{figure}[H]
-    \setlength{\fboxsep}{0pt}
-    \fbox{\includegraphics[width=0.99\linewidth]{images/gouroud-phong-flat.jpg}}
-    \caption{A boat.}
-    \singlespacing
+\setlength{\fboxsep}{0pt}
+\fbox{\includegraphics[width=0.99\linewidth]{images/gouroud-phong-flat.jpg}}
+\caption{A boat.}
+\singlespacing
 \end{figure}
 
 \todo[inline]{
@@ -52,3 +51,29 @@ superficie.
     TODO: Esquema evolucion en el tiempo del shading: phong, blinn-phong
 }
 
+\todo[inline]{
+    PBR, PBM, PBS
+
+    Physically Based Rendering PBR is a method of shading and rendering that provides a more
+    accurate representation of how light interacts with surfaces. It is referred to as Physically
+    Based Rendering PBR or Physically Based Shading PBS. Depending on what aspect of the pipeline
+    is being discussed, PBS is usually specific to shading concepts and PBR is specific to rendering
+    and lighting. However, both terms describe the process of representing assets from a physically
+    accurate standpoint.
+
+    Physically based rendering PBR is an approach in computer graphics that seeks to render graphics
+    in a way that more accurately models the flow of light in the real world. Many PBR pipelines have
+    the accurate simulation of photorealism as their goal. Feasible and quick approximations of the
+    bidirectional reflectance distribution function and rendering equation are of mathematical
+    importance in this field. Photogrammetry may be used to help discover and encode accurate optical
+    properties of materials. Shaders may be used to implement PBR principles.\\
+    What are the benefits?
+
+    As artists, we can view the benefits of PBR from an artistic and production efficiency mindset:
+
+    1. PBR removes the guesswork of authoring surface attributes, such as specularity, since its methodology and algorithms are based on physically accurate formulas. It is therefore easier to create realistic-looking assets.
+    2. Assets will look accurate in all lighting conditions.
+    3. PBR provides a workflow for creating consistent artwork, even between different artists.
+    
+    Por primera vez en un paper de 1999 en la universidad de Cornell
+}

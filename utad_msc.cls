@@ -35,73 +35,113 @@
 ]{todonotes}
 \RequirePackage{xcolor}
 
-% \RequirePackage{color}
+\DeclareUnicodeCharacter{2212}{-}
 
 % % Set colors variables
-% \definecolor{lightgray}{rgb}{.9,.9,.9}
-% \definecolor{darkgray}{rgb}{.4,.4,.4}
-% \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\definecolor{lightgray}{rgb}{0.95, 0.95, 0.95}
+\definecolor{darkgray}{rgb}{0.4, 0.4, 0.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
 
-% % JS syntax highlighting
-% \lstdefinelanguage{JavaScript}{
-%   keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
-%   keywordstyle=\color{blue}\bfseries,
-%   ndkeywords={class, export, boolean, throw, implements, import, this},
-%   ndkeywordstyle=\color{darkgray}\bfseries,
-%   identifierstyle=\color{black},
-%   sensitive=false,
-%   comment=[l]{//},
-%   morecomment=[s]{/*}{*/},
-%   commentstyle=\color{purple}\ttfamily,
-%   stringstyle=\color{red}\ttfamily,
-%   morestring=[b]',
-%   morestring=[b]"
-% }
-% \lstset{
-%    language=JavaScript,
-%    backgroundcolor=\color{lightgray},
-%    extendedchars=true,
-%    basicstyle=\footnotesize\ttfamily,
-%    showstringspaces=false,
-%    showspaces=false,
-%    numbers=left,
-%    numberstyle=\footnotesize,
-%    numbersep=9pt,
-%    tabsize=2,
-%    breaklines=true,
-%    showtabs=false,
-%    captionpos=b
-% }
-% % C syntax highlighting
-% \lstdefinelanguage{C}{
-%   keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
-%   keywordstyle=\color{blue}\bfseries,
-%   ndkeywords={class, export, boolean, throw, implements, import, this},
-%   ndkeywordstyle=\color{darkgray}\bfseries,
-%   identifierstyle=\color{black},
-%   sensitive=false,
-%   comment=[l]{//},
-%   morecomment=[s]{/*}{*/},
-%   commentstyle=\color{purple}\ttfamily,
-%   stringstyle=\color{red}\ttfamily,
-%   morestring=[b]',
-%   morestring=[b]"
-% }
-% \lstset{
-%    language=C,
-%    backgroundcolor=\color{lightgray},
-%    extendedchars=true,
-%    basicstyle=\footnotesize\ttfamily,
-%    showstringspaces=false,
-%    showspaces=false,
-%    numbers=left,
-%    numberstyle=\footnotesize,
-%    numbersep=9pt,
-%    tabsize=2,
-%    breaklines=true,
-%    showtabs=false,
-%    captionpos=b
-% }
+% JS syntax highlighting
+\lstdefinelanguage{JavaScript}{
+  keywords={
+      typeof,
+      new,
+      true,
+      false,
+      catch,
+      function,
+      return,
+      null,
+      catch,
+      switch,
+      var,
+      if,
+      in,
+      while,
+      do,
+      else,
+      case,
+      break,
+      const,
+      let,
+  },
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+% C syntax highlighting
+\lstdefinelanguage{C}{
+  keywords={
+      typeof,
+      new,
+      true,
+      false,
+      catch,
+      function,
+      return,
+      null,
+      catch,
+      switch,
+      var,
+      if,
+      in,
+      while,
+      do,
+      else,
+      case,
+      break
+  },
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstset{
+   language=C,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
 
 \hypersetup{
     colorlinks=true,
@@ -160,49 +200,3 @@
   \fancyhead[L]{\leftmark}
   \fancyfoot[R]{\thepage}
 }
-
-% \newcommand{\bjscode}[1]{\begin{lstlisting}[#1]}
-% \newcommand{\ejscode}{\end{lstlisting}}
-
-% \pagestyle{fancyplain}
-% \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
-% \renewcommand{\headrulewidth}{0.4pt}% Line at the header visible
-% \renewcommand{\footrulewidth}{0.4pt}% Line at the footer visible
-% \fancyhf{}
-% \headheight 20pt
-% \fancyhead[R]{\utadtitle}
-% \fancyhead[L]{\thechapter ~ \leftmark}
-% \fancyfoot[R]{\thepage}
-% \renewcommand{\headrulewidth}{2pt}
-% \renewcommand{\footrulewidth}{1pt}
-
-
-% % Question (section) headers
-% \newcounter{questioncounter}
-% \newcounter{subquestioncounter}[questioncounter]
-% \newcounter{subsubquestioncounter}[subquestioncounter]
-
-% \newenvironment{question}{
-%     \ifnum\value{questioncounter}>0
-%       \newpage
-%     \else
-%       \vspace{40pt}
-%     \fi
-%     \refstepcounter{questioncounter}
-%     \addcontentsline{toc}{section}{Question {\arabic{questioncounter}}}
-%     \noindent{\Large \textbf{Question \arabic{questioncounter}}}
-% }{\par\addvspace{\baselineskip}}
-
-% \newenvironment{subquestion}[1]{
-%     \par\addvspace{\baselineskip}\refstepcounter{subquestioncounter}
-%     \addcontentsline{toc}{subsection}{(\alph{subquestioncounter}) {#1}}
-%     \noindent{\large \textbf{(\alph{subquestioncounter}) {#1}}}
-%     \newline
-% }{\par\addvspace{\baselineskip}}
-
-% \newenvironment{subsubquestion}[1]{
-%     \par\addvspace{\baselineskip}\refstepcounter{subsubquestioncounter}
-%     \addcontentsline{toc}{subsubsection}{(\roman{subsubquestioncounter}) {#1}}
-%     \noindent{\textbf{(\roman{subsubquestioncounter}) {#1}}}
-%     \newline
-% }{\par\addvspace{\baselineskip}}

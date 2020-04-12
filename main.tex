@@ -13,6 +13,8 @@
 \usepackage{mathtools} % Add additional tools for math writing 
 
 \graphicspath{ {./images/} }
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
 
 \student{Anxo Babío Rodríguez}
 \tutor{Iván Alduán Íñiguez}
@@ -20,16 +22,24 @@
 \project{Materiales PBR en WebGL 2.0}
 
 
+\AtBeginDocument{%
+  \addtocontents{toc}{\protect\thispagestyle{empty}}
+}
+
 \begin{document}
     \include{titlepage}
+    \include{tmp}
+    \pagestyle{empty}
     \tableofcontents
+    \clearpage
+    \pagestyle{fancy}
     \mainmatter % Begin pagination
-    \include{chapters/01-introduccion}
-    \include{chapters/02-objetivo}
-    \include{chapters/03-estadodelarte}
-    \include{chapters/04-contexto}
-    \include{chapters/05-analisis}
-    \include{chapters/06-resultados}
-    \include{chapters/07-conclusion}
-    \printbibliography
+      \include{chapters/01-introduccion}
+      \include{chapters/02-objetivo}
+      \include{chapters/03-contexto}
+      \include{chapters/04-estadodelarte}
+      \include{chapters/05-analisis}
+      \include{chapters/06-resultados}
+      \include{chapters/07-conclusion}
+      \printbibliography
 \end{document}
