@@ -191,23 +191,26 @@
         \newpage
 
     \subsection{BxDF}
-        \subsubsection{Ecuaci\'on de render}
-            BDF (Bidirectional distribution function) is collectively defined by BRDF and BTDF.
-            BSSRDF (Bidirectional scattering-surface reflectance distribution function or Bidirectional surface scattering RDF)
-            describes the relation between outgoing radiance and the incident flux, including the phenomena like subsurface scattering (SSS).
-            The BSSRDF describes how light is transported between any two rays that hit a surface.
-            BRDF Bidirectional reflectance distribution function is a simplified BSSRDF, assuming that light enters and leaves at the same
-            point (see the image on the right).
-            BTDF (Bidirectional transmittance distribution function is similar to BRDF but for the opposite side of the surface. (see the top
-            image).
-            BSSTDF (Bidirectional scattering-surface transmittance distribution function) is like BTDF but with subsurface scattering.
-            BSSDF (Bidirectional scattering-surface distribution function) is collectively defined by BSSTDF and BSSRDF. Also known as BSDF
-            (Bidirectional scattering distribution function).
-        
-        \subsubsection{Ecuaci\'on de reflectancia}
+        BDF (Bidirectional distribution function) is collectively defined by BRDF and BTDF.
+        BSSRDF (Bidirectional scattering-surface reflectance distribution function or Bidirectional surface scattering RDF)
+        describes the relation between outgoing radiance and the incident flux, including the phenomena like subsurface scattering (SSS).
+        The BSSRDF describes how light is transported between any two rays that hit a surface.
+        BRDF Bidirectional reflectance distribution function is a simplified BSSRDF, assuming that light enters and leaves at the same
+        point (see the image on the right).
+        BTDF (Bidirectional transmittance distribution function is similar to BRDF but for the opposite side of the surface. (see the top
+        image).
+        BSSTDF (Bidirectional scattering-surface transmittance distribution function) is like BTDF but with subsurface scattering.
+        BSSDF (Bidirectional scattering-surface distribution function) is collectively defined by BSSTDF and BSSRDF. Also known as BSDF
+        (Bidirectional scattering distribution function).
+
         \subsubsection{Modelos de BRDF}
         \subsubsection{Iluminaci\'on directa}
         \subsubsection{Iluminaci\'on indirecta}
 
         \subsubsection{T\'erminos del BRDF}
         \newpage
+
+\section{Principales engines de render sobre WebGL 2.0}
+    \subsection{Filament}
+    \subsection{Babylon}
+    \subsection{ThreeJS}
