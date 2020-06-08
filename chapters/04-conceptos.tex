@@ -1,1 +1,282 @@
-\chapter{Conceptos te\'oricos}
+\chapter{Conceptos previos}
+
+\section{Render}
+    El render es un area de la computacion gr\'afica que se encarga de traducir estructuras de datos y funciones a p\'ixeles en la pantalla
+    con el objetivo de formar una imagen bidimensional.
+    
+    La representaci\'on digital de una imagen consiste en un grafo que contiene los elementos de la escena: c\'amara, luces y objetos visibles en
+    la escena. Sobre esta escena virtual, se simulan las interacciones de la luz con las superficies para acabar estimando un color para cada
+    superficie visible desde el punto de vista de la c\'amara.
+
+    Sus principales aplicaciones se encuentran en industrias como el cine de animaci\'on, los efectos especiales,
+    videojuegos, arquitectura, simuladores del \'ambito industrial, visualizaciones de producto o la im\'agen m\'edica.
+    Debido a las diferentes necesidades y caracteristicas de cada industria, podemos categorizar a los motores de render
+    principalemente en base a dos criterios: su intenci\'on de imitar o no la realidad (motores fotorrealistas y no
+    fotorrealistas) y la necesidad o no de interaccion de usuario (motores online y offline).
+
+    En este trabajo, la intencion es el renderizado de telas con el mayor grado de fidelidad posible a la realidad en una
+    aplicaci\'on con interaccion de usuario, por lo que nos centraremos en el renderizado online fotorrealista.
+
+    \todo[inline] {
+        A\~nadir informaci\~on elementos y grafo de escena. 
+        A scene file contains objects in a strictly defined language or data structure; it would contain geometry, viewpoint, texture, lighting, and shading information as a description of the virtual scene.
+        The data contained in the scene file is then passed to a rendering program to be processed and output to a digital image or raster graphics image file. 
+        If a scene is to look relatively realistic and predictable under virtual lighting, the rendering software should solve the rendering equation
+    }
+
+\section{Modelo f\'isico de la luz}
+    Para conseguir im\'agenes parecidas a la realidad, el render utiliza algoritmos que simulan el comportamiento f\'isico de la luz.
+    El comportamiento de los fotones se describe con el fenomeno cuantico conocido como dualidad onda-part\'icula. El comportamiento
+    como particula establece que se mueve en linea recta, rebotando con los objetos del entorno a una velocidad de 300.000 km/s,
+    la mas alta conocida y que en el modelo de simulaci\'on se considera infinita. Por otra parte, el comportamiento de de la luz como
+    onda, permite trabajar sobre propiedades como frecuencia, amplitud y longitud de onda, que se utilizan para modelar la representaci\'on
+    digital del color .
+    \todo[inline] {
+        Inverse square law. Ley de Lambert. Ley de reflexion. Ley de Snell
+    }
+
+\section{Color}
+    La interpretaci\'on del color depende de dos cosas, por una parte, las longitudes de onda que inciden sobre una superficie, y como
+    esta superficie absorve o refleja esas longitudes de onda y por otra parte, como nuestros receptores reaccionan al espectro visible.
+    
+    La fotometr\'ia estudia la percepci\'on de la luz por el ojo humano, mientras que la radiometr\'ia se encarga del estudio del fen\'omeno
+    f\'isico y es en la que se centra el render para la simulacion f\'isica de la escena tridimensional.
+    Para medir la luz se utiliza el espectro, una gr\'afica cartesiana en la que se mide sobre el eje x la longitud de onda y en el eje y,
+    su amplitud. El rango de longitudes de onda que se utiliza en render esta limitado a las longitudes de onda visibles por el ojo humano,
+    que se conoce como espectro visible. Las ondas de luz pueden sumarse, como se suman las senhales y dar como resultado un nuevo color.
+    
+    En las aplicaciones de software, la representacion del espectro completo es muy costoso, por lo que se suele trabajar con una
+    simplificacion del modelo, la combinacion de espectros base o la descomposicion en funciones base.
+    Una de los representaciones mas populares es el modelo RGB, que se corresponde con los tres tipos de conos del ojo humano, los mas
+    sensibles al verde, al rojo y al azul.  Es un modelo aditivo, por lo que cada color se obtiene a partir de la suma de estos tres. Aunque
+    existen otras representaciones digitales del color, dependiendo de su aplicaci\'on, CMYK, XYZ, etc. el RGB es el mas comun en el mundo de
+    la computacion gr\'afica.
+
+\section{Unidades de medida de la luz}
+    Cuando hablamos de la cantidad de luz, no es la medicion sobre un foton de luz independiente, si no que se tratan de medidas en relacion
+    al tiempo, la direccion o el \'area.
+
+    \subsection{\'Angulo s\'olido}
+
+    \subsection{Flujo}
+        La unidad que representa la energia sobre la unidad de tiempo es el flujo, representado por Phi. Es la energía que transportan las ondas
+        por unidad de tiempo, se mide en vatios. En los motores de render se utiliza para expresar la cantidad total de energia emitida por un a fuente de luz.
+        \begin{equation}
+            \Phi_e = \dfrac{d{Q_e}}{dt}
+        \end{equation}
+        \singlespacing
+
+    \subsection{Intensidad}
+        \begin{equation}
+            I = \dfrac{d\Phi}{d\omega}
+        \end{equation}
+        \singlespacing
+
+    \subsection{Irradiancia}
+        La irradiancia, es la cantidad de energ\'ia por unidad de tiempo por unidad de superficie, o flujo por superficie. Se representa como
+        E, su unidad son los vatios/m2 y se utiliza para medir la cantidad de luz que incide sobre una superficie.
+        \begin{equation}
+            E = \dfrac{d\Phi}{dA}
+        \end{equation}
+        Cuando este flujo de radiancia se mide en direcci\'on contraria, de salida, se llama emitancia (M)
+        \singlespacing
+
+    \subsection{Radiancia}
+        \begin{equation}
+            L = \dfrac{d^2\Phi}{dA_{proj}d\omega}
+        \end{equation}
+
+
+\section{Ecuaci\'on de render}
+    El prop\'osito de la ecuacion de render es conocer el valor de radiancia que llega a la camara en una direcci\'on
+    por cada pixel  de la camara.
+
+    Para saber la radiancia sobre un punto en una direcci\'on, utilizamos la ecuacion de reflectancia, que depende
+    de la luz que llega al puntos, el coseno del angulo con el que incide la luz y el BRDF (bidirectional reflectance
+    distribution function), que modela el comportamiento de la luz al rebotar sobre la superficie.
+    \begin{equation}
+        L(x\xrightarrow{}{\vec{v}{\,}})
+        = L_i(x\xleftarrow{}{\vec{l}{\,}})
+        f(x, \vec{v}{\,}, \vec{l}{\,})
+        (\vec{l}{\,}\cdotp{\vec{n}{\,}})
+    \end{equation}
+    \singlespacing
+
+    Ademas de recibir la luz directamente de una fuente de luz, el punto tambi\'en puede recibir luz rebotada por otras
+    partes del entorno:
+    \begin{equation}
+        L(x\xrightarrow{}{\vec{v}{\,}})
+        = L_e(x, \vec{v}{\,}) +
+        L_i(x\xleftarrow{}{\vec{l}{\,}})
+        f(x, \vec{v}{\,}, \vec{l}{\,})
+        (\vec{l}{\,}\cdotp{\vec{n}{\,}})
+    \end{equation}
+    \singlespacing
+
+    Podr\'iamos sumar todas las fuentes de luz para calcular la radiancia total debido a las fuentes de luz:
+    \begin{equation}
+        L(x\xrightarrow{}{\vec{v}{\,}})
+        = L_e(x, \vec{v}{\,}) +
+        \sum{}L_i(x\xleftarrow{}{\vec{l_i}{\,}})
+        f(x, \vec{v}{\,}, \vec{l_i}{\,})
+        (\vec{l_i}{\,}\cdotp{\vec{n}{\,}})
+    \end{equation}
+    \singlespacing
+
+    Sin embargo, para tener en cuenta el total de luz incidente, ademas de las fuentes de luz (luz directa), debemos
+    de tener en cuenta toda la luz proviniente del entorno en todas direcciones (luz indirecta):
+    \begin{equation}
+        L(x\xrightarrow{}{\vec{v}{\,}})
+        = L_e(x, \vec{v}{\,}) +
+        \int_{\Omega}L_i(x'\xrightarrow{}{\vec{l_i}{\,}})
+        f(x, \vec{v}{\,}, \omega_i)
+        \cos\theta_id\omega_i
+    \end{equation}
+    \singlespacing
+
+    Como podemos ver, la radiancia aparece a los dos lados de la ecuaci\'on, lo que quiere decir que para calcular la radiancia
+    en un punto, necesitamos la radiancia en otros puntos por lo que se trata de un calculo recursivo.
+
+    Esta ecuaci\'on cumple dos propiedades: linearidad y descomposicion por partes, gracias a ellas, podemos transformar el problema
+    en una serie de Neumann.
+
+    Agrupando los terminos conseguimos:
+    \begin{equation}
+        L_{out} = \Upsilon L_{in}\\
+        L_{in} = \Lambda L_{out}
+    \end{equation}
+    \singlespacing
+
+    Y juntandolos:
+    \begin{equation}
+        L_{out} = \Upsilon\Lambda L_{out} + L_e
+    \end{equation}
+    \singlespacing
+
+    Al agruparlos:
+    \begin{equation}
+        L_{out} = K L_{out} + L_e
+    \end{equation}
+    \singlespacing
+
+    Reordenarlos:
+    \begin{equation}
+        (I-K)L_{out} = L_e\\
+        L_{out} = (I - K)^{-1}L_e
+    \end{equation}
+    \singlespacing
+
+    Se puede separar la emisi\'on en partes:
+    \begin{equation}
+        L_{out} = (I - K)^{-1}E_1 + (I-K)^{-1}E_2
+    \end{equation}
+    \singlespacing
+
+    Y sustituyendo:
+    \begin{equation}
+        (I - K)^{-1} = \sum_{i=0}^{\infty}K^i = I + K + KK + KKK + K + \dotsi
+    \end{equation}
+    \singlespacing
+
+    Obtenemos la serie de Neumann:
+    \begin{equation}
+        L_{out} = L_e + KL_e + KKL_e + KKKL_e + \dotsi
+    \end{equation}
+    \singlespacing
+
+    Demostrando que la radiancia total puede ser calculada como la suma de luz emitida, mas la suma de la reflejada una vez,
+    mas la suma de la reflejada dos veces, etc.
+
+
+\section{Iluminaci\'on}
+    Como hemos visto en la ecuaci\'on de render, para calcular el total de radiancia proviniente de una superficie, en funci\'on de
+    su origen, podemos descomponer la suma de su iluminaci\'on en la suma de iluminaci\'on directa e iluminaci\'on indirecta.
+    \subsection{Iluminaci\'on local o directa}
+        Es la que proviene directamente de una fuente de luz y que contribuye en gran parte al aspecto final de una escena. Tendremos
+        en cuenta la luz que viaja de una fuente de luz a una superficie y de la superficie al ojo.
+    \subsection{Iluminaci\'on global o indirecta}
+    \subsection{Componentes de la luz: difuso, especular y ambiente}
+
+\section{PBR}
+    PBR o \textit{physically based rendering} es el termino que se utiliza para nombrar los algoritmos de render basados en un modelo f\'isico.
+    La intenci\'on es conseguir aproximaciones r\'apidas y plausibles de la interacci\'on de un flujo de luz con una superficie. Las
+    principales ventajas de este tipo de algoritmos son la consistencia bajo diferentes condiciones de luz y su manejo intuitivo por
+    parte de los artistas.
+
+    Un motor PBR ha de tener en cuenta las leyes de las f\'isica para el tratamiento de todos los elementos de la escena: luces, camaras
+    y superficies de los objetos visibles.
+
+    \subsection{C\'amara}
+    La camara se utiliza para determinar la parte de la escena visible en la imagen 2D final.
+
+    Una camara de un motor de render PBR utiliza la matriz de proyeccion perspectiva para simular la
+    vista del ojo humano y su modelo b\'asico consiste en la simulaci\'on de una camara estenopeica, un modelo basico de c\'amara fotogr\'afica que
+    consiste en un compartimento oscuro, con un fondo sobre el que se coloca el negativo fotogr\'afico, mientras que en la parte delantera cuenta
+    con una perforaci\'on, por la que entra la luz antes de golpear con el material fotosensible.
+
+    La c\'amara permite manipular aspectos esenciales de la imagen final como el campo de visi\'on, la distancia m\'inima y m\'axima de la escena
+    con respecto al ojo. Adem\'as, en funci\'on de los objetivos del motor de render, puede simular efectos de las camaras fotogr\'aficas, como la
+    profunidad de campo, la velocidad de obturaci\'on o el tiempo de apertura, asi como su posici\'on y orientaci\'on, que son, junto a la posici\'on
+    de la luz, factores clave para obtener la radiancia de una superficie.
+
+    \subsection{Luces}
+        Gran parte de la radiancia total que se ve sobre un punto suele venir dado por las fuentes de iluminaci\'on directa. En una escena digital,
+        las luces son aprominaciones a las fuentes de luz que tenemos en la naturaleza.
+        
+        Podemos distinguir como los tipos de luz prinpicales:
+
+        \subsubsection{Luz de ambiente}
+            Luz que simula la componente de iluminaci\'on global en caso de que esta no se calcule. Suma un valor fijo a la iluminacion de cada punto.
+        \subsubsection{Luz puntual}
+            Luz emitida desde un punto en todas direcciones.
+        \subsubsection{Luz de foco}
+            Emite desde un punto en un cono orientado.
+        \subsubsection{Luz direccional}
+            Simula luz tan lejana que sus rayos son paralelos entre si, como por ejemplo el sol.
+        \subsubsection{Luz de area}
+            Luz emitida desde una superficie, normalmente un plano o un disco
+        \subsubsection{Luz de entorno}
+            Usa un mapa sobre una esfera para simular las condiciones de iluminacion de la imagen
+
+    \subsection{Objetos}
+        Los objetos de la escena est\'an compuestos por su geometr\'ia y su material.
+
+        La geometr\'ia es una secuencia de v\'ertices en el espacio que conforman pol\'igonos que describen la forma de un objeto. La informaci\'on de la
+        geometr\'ia se almacenan en estructuras de datos que ademas de la informaci\'on de v\'ertices, puede contener informaci\'on sobre las caras de los
+        pol\'igonos, las normales, tangentes, etc.
+
+        El material, por otra parte, describe las caracter\'isticas visuales de la superficie del objeto. En la naturaleza, adem\'as del color de un objeto,
+        podemos percibir propiedades de la textura, su conductividad, dielectrico o metalico, su rugosidad o su reflectividad a trav\'es de la interacci\'on
+        de la luz con la superficie de un objeto. Esta interacci\'on a nivel microscopico entre la luz y la superficie de un material, se describe con una
+        ecuacion conocida como BSDF.
+
+
+\section{BxDF}
+    Son funciones que permiten describir el comportamiento de la luz al golpear una superficie. Para ello toma en cuenta el \'angulo de incidencia del
+    rayo de luz sobre la superficie y el rayo de salida, reflejado o refractado y su resultado es el ratio entre el \'angulo del rayo y la superficie y
+    la intesidad de salida de la luz.
+
+    A continuaci\'on se detallan los nombres de las funciones en funcion del fen\'omeno f\'isico que modelan.
+
+    \subsection{BRDF}
+        Es la funci\'on que modela el comportamiento de la luz al golpear una superficie opaca, la reflexi\'on. Fue definido por primera vez en 1965 por
+        Fred Nicodemus y su definici\'on es el ratio entre radiancia reflectada e irraciancia incidente.
+        Para determinar el \'angulo de salida del rayo se utiliza la ley de la reflexi\'on y las tres caracter\'isticas que ha de cumplir un BRDF basado en
+        f\'isica es que sea positivo, que cumpla con la reciprocidad de Helmholtz y que cumpla con la ley de conservaci\'on de la energ\'ia.
+
+    \subsection{BTDF}
+        Describe el comportamiento del rayo de luz al atravesar una superficie, la refracci\'on. Para calcular el angulo de salida del rayo se utiliza la
+        ley de Snell, y al contrario que el BRDF, no sumple el principio de reciprocidad de Helmholtz.
+
+    \subsection{BSSRDF y BSSTF}
+        Son ampliaciones del modelo de reflexi\'on y refracci\'on, respectivamente, teniendo en cuenta las reflexiones internas del rayo a traves de la
+        superficie del objeto.
+
+    \subsection{BSDF}
+        Se utiliza comunmente para hablar de cualquier forma de BxDF. En un sentido mas estricto, se refiere al conjunto de un BSSRDF y un BSSTDF.
+
+\section{T\'erminos del BRDF}
+
+\section{Teor\'ia de microfacetas}
+
+\section{Render offline y online}
