@@ -35,57 +35,49 @@
         Inverse square law. Ley de Lambert. Ley de reflexion. Ley de Snell
     }
 
-\section{Color}
-    La interpretaci\'on del color depende de dos cosas, por una parte, las longitudes de onda que inciden sobre una superficie, y como
-    esta superficie absorve o refleja esas longitudes de onda y por otra parte, como nuestros receptores reaccionan al espectro visible.
+% \section{Color}
+%     La interpretaci\'on del color depende de dos cosas, por una parte, las longitudes de onda que inciden sobre una superficie, y como
+%     esta superficie absorve o refleja esas longitudes de onda y por otra parte, como nuestros receptores reaccionan al espectro visible.
     
-    La fotometr\'ia estudia la percepci\'on de la luz por el ojo humano, mientras que la radiometr\'ia se encarga del estudio del fen\'omeno
-    f\'isico y es en la que se centra el render para la simulacion f\'isica de la escena tridimensional.
-    Para medir la luz se utiliza el espectro, una gr\'afica cartesiana en la que se mide sobre el eje x la longitud de onda y en el eje y,
-    su amplitud. El rango de longitudes de onda que se utiliza en render esta limitado a las longitudes de onda visibles por el ojo humano,
-    que se conoce como espectro visible. Las ondas de luz pueden sumarse, como se suman las senhales y dar como resultado un nuevo color.
+%     La fotometr\'ia estudia la percepci\'on de la luz por el ojo humano, mientras que la radiometr\'ia se encarga del estudio del fen\'omeno
+%     f\'isico y es en la que se centra el render para la simulacion f\'isica de la escena tridimensional.
+%     Para medir la luz se utiliza el espectro, una gr\'afica cartesiana en la que se mide sobre el eje x la longitud de onda y en el eje y,
+%     su amplitud. El rango de longitudes de onda que se utiliza en render esta limitado a las longitudes de onda visibles por el ojo humano,
+%     que se conoce como espectro visible. Las ondas de luz pueden sumarse, como se suman las senhales y dar como resultado un nuevo color.
     
-    En las aplicaciones de software, la representacion del espectro completo es muy costoso, por lo que se suele trabajar con una
-    simplificacion del modelo, la combinacion de espectros base o la descomposicion en funciones base.
-    Una de los representaciones mas populares es el modelo RGB, que se corresponde con los tres tipos de conos del ojo humano, los mas
-    sensibles al verde, al rojo y al azul.  Es un modelo aditivo, por lo que cada color se obtiene a partir de la suma de estos tres. Aunque
-    existen otras representaciones digitales del color, dependiendo de su aplicaci\'on, CMYK, XYZ, etc. el RGB es el mas comun en el mundo de
-    la computacion gr\'afica.
+%     En las aplicaciones de software, la representacion del espectro completo es muy costoso, por lo que se suele trabajar con una
+%     simplificacion del modelo, la combinacion de espectros base o la descomposicion en funciones base.
+%     Una de los representaciones mas populares es el modelo RGB, que se corresponde con los tres tipos de conos del ojo humano, los mas
+%     sensibles al verde, al rojo y al azul.  Es un modelo aditivo, por lo que cada color se obtiene a partir de la suma de estos tres. Aunque
+%     existen otras representaciones digitales del color, dependiendo de su aplicaci\'on, CMYK, XYZ, etc. el RGB es el mas comun en el mundo de
+%     la computacion gr\'afica.
 
-\section{Unidades de medida de la luz}
-    Cuando hablamos de la cantidad de luz, no es la medicion sobre un foton de luz independiente, si no que se tratan de medidas en relacion
-    al tiempo, la direccion o el \'area.
+    \subsection{Unidades de medida de la luz}
+        Cuando hablamos de la cantidad de luz, no es la medicion sobre un foton de luz independiente, si no que se tratan de medidas en relacion
+        al tiempo, la direccion o el \'area.
 
-    \subsection{\'Angulo s\'olido}
-
-    \subsection{Flujo}
-        La unidad que representa la energia sobre la unidad de tiempo es el flujo, representado por Phi. Es la energía que transportan las ondas
+        \begin{itemize}
+        \item[] \textbf {{\'Angulo s\'olido}}
+        \item[] \textbf {Flujo} La unidad que representa la energia sobre la unidad de tiempo es el flujo, representado por Phi. Es la energía que transportan las ondas
         por unidad de tiempo, se mide en vatios. En los motores de render se utiliza para expresar la cantidad total de energia emitida por un a fuente de luz.
         \begin{equation}
             \Phi_e = \dfrac{d{Q_e}}{dt}
         \end{equation}
-        \singlespacing
-
-    \subsection{Intensidad}
+        \item[] \textbf {Intensidad}
         \begin{equation}
             I = \dfrac{d\Phi}{d\omega}
-        \end{equation}
-        \singlespacing
-
-    \subsection{Irradiancia}
-        La irradiancia, es la cantidad de energ\'ia por unidad de tiempo por unidad de superficie, o flujo por superficie. Se representa como
+        \end{equation} 
+        \item[] \textbf {Irradiancia} La irradiancia, es la cantidad de energ\'ia por unidad de tiempo por unidad de superficie, o flujo por superficie. Se representa como
         E, su unidad son los vatios/m2 y se utiliza para medir la cantidad de luz que incide sobre una superficie.
         \begin{equation}
             E = \dfrac{d\Phi}{dA}
         \end{equation}
         Cuando este flujo de radiancia se mide en direcci\'on contraria, de salida, se llama emitancia (M)
-        \singlespacing
-
-    \subsection{Radiancia}
+        \item[] \textbf {Radiancia} Simula luz tan lejana que sus rayos son paralelos entre si, como por ejemplo el sol.
         \begin{equation}
             L = \dfrac{d^2\Phi}{dA_{proj}d\omega}
         \end{equation}
-
+        \end{itemize}
 
 \section{Ecuaci\'on de render}
     El prop\'osito de la ecuacion de render es conocer el valor de radiancia que llega a la camara en una direcci\'on
@@ -187,16 +179,6 @@
     Demostrando que la radiancia total puede ser calculada como la suma de luz emitida, mas la suma de la reflejada una vez,
     mas la suma de la reflejada dos veces, etc.
 
-
-\section{Iluminaci\'on}
-    Como hemos visto en la ecuaci\'on de render, para calcular el total de radiancia proviniente de una superficie, en funci\'on de
-    su origen, podemos descomponer la suma de su iluminaci\'on en la suma de iluminaci\'on directa e iluminaci\'on indirecta.
-    \subsection{Iluminaci\'on local o directa}
-        Es la que proviene directamente de una fuente de luz y que contribuye en gran parte al aspecto final de una escena. Tendremos
-        en cuenta la luz que viaja de una fuente de luz a una superficie y de la superficie al ojo.
-    \subsection{Iluminaci\'on global o indirecta}
-    \subsection{Componentes de la luz: difuso, especular y ambiente}
-
 \section{PBR}
     PBR o \textit{physically based rendering} es el termino que se utiliza para nombrar los algoritmos de render basados en un modelo f\'isico.
     La intenci\'on es conseguir aproximaciones r\'apidas y plausibles de la interacci\'on de un flujo de luz con una superficie. Las
@@ -219,64 +201,84 @@
     profunidad de campo, la velocidad de obturaci\'on o el tiempo de apertura, asi como su posici\'on y orientaci\'on, que son, junto a la posici\'on
     de la luz, factores clave para obtener la radiancia de una superficie.
 
-    \subsection{Luces}
+    \subsection{Iluminaci\'on}
+        Como hemos visto en la ecuaci\'on de render, para calcular el total de radiancia proviniente de una superficie, en funci\'on de
+        su origen, podemos descomponer la suma de su iluminaci\'on en la suma de iluminaci\'on directa e iluminaci\'on indirecta.
         Gran parte de la radiancia total que se ve sobre un punto suele venir dado por las fuentes de iluminaci\'on directa. En una escena digital,
-        las luces son aprominaciones a las fuentes de luz que tenemos en la naturaleza.
+        las luces son aproximaciones a las fuentes de luz que tenemos en la naturaleza.
         
+        \subsubsection{Emisores de luz}
         Podemos distinguir como los tipos de luz prinpicales:
+        \begin{itemize}
+            \item[] \textbf {Luz de ambiente} Luz que simula la componente de iluminaci\'on global en caso de que esta no se calcule. Suma un valor fijo a la iluminacion de cada punto.
+            \item[] \textbf {Luz puntual} Luz emitida desde un punto en todas direcciones.
+            \item[] \textbf {Luz de foco} Emite desde un punto en un cono orientado.
+            \item[] \textbf {Luz direccional} Simula luz tan lejana que sus rayos son paralelos entre si, como por ejemplo el sol.
+            \item[] \textbf {Luz de \'area} Luz emitida desde una superficie, normalmente un plano o un disco.
+            \item[] \textbf {Luz de entorno} Usa un mapa sobre una esfera para simular las condiciones de iluminacion de la imagen.
+        \end{itemize}
 
-        \subsubsection{Luz de ambiente}
-            Luz que simula la componente de iluminaci\'on global en caso de que esta no se calcule. Suma un valor fijo a la iluminacion de cada punto.
-        \subsubsection{Luz puntual}
-            Luz emitida desde un punto en todas direcciones.
-        \subsubsection{Luz de foco}
-            Emite desde un punto en un cono orientado.
-        \subsubsection{Luz direccional}
-            Simula luz tan lejana que sus rayos son paralelos entre si, como por ejemplo el sol.
-        \subsubsection{Luz de area}
-            Luz emitida desde una superficie, normalmente un plano o un disco
-        \subsubsection{Luz de entorno}
-            Usa un mapa sobre una esfera para simular las condiciones de iluminacion de la imagen
-
-    \subsection{Objetos}
-        Los objetos de la escena est\'an compuestos por su geometr\'ia y su material.
-
-        La geometr\'ia es una secuencia de v\'ertices en el espacio que conforman pol\'igonos que describen la forma de un objeto. La informaci\'on de la
-        geometr\'ia se almacenan en estructuras de datos que ademas de la informaci\'on de v\'ertices, puede contener informaci\'on sobre las caras de los
-        pol\'igonos, las normales, tangentes, etc.
-
-        El material, por otra parte, describe las caracter\'isticas visuales de la superficie del objeto. En la naturaleza, adem\'as del color de un objeto,
-        podemos percibir propiedades de la textura, su conductividad, dielectrico o metalico, su rugosidad o su reflectividad a trav\'es de la interacci\'on
-        de la luz con la superficie de un objeto. Esta interacci\'on a nivel microscopico entre la luz y la superficie de un material, se describe con una
-        ecuacion conocida como BSDF.
+        \subsubsection{Luz directa}
+        Es la que proviene directamente de una fuente de luz y que contribuye en gran parte al aspecto final de una escena. Tendremos
+        en cuenta la luz que viaja de una fuente de luz a una superficie y de la superficie al ojo.
+        \subsubsection{Luz indirecta}
 
 
-\section{BxDF}
+\section{Materiales}
+    Los objetos de la escena est\'an compuestos por su geometr\'ia y su material.
+
+    La geometr\'ia es una secuencia de v\'ertices en el espacio que conforman pol\'igonos que describen la forma de un objeto. La informaci\'on de la
+    geometr\'ia se almacenan en estructuras de datos que ademas de la informaci\'on de v\'ertices, puede contener informaci\'on sobre las caras de los
+    pol\'igonos, las normales, tangentes, etc.
+
+    El material, por otra parte, describe las caracter\'isticas visuales de la superficie del objeto. En la naturaleza, adem\'as del color de un objeto,
+    podemos percibir propiedades de la textura, su conductividad, dielectrico o metalico, su rugosidad o su reflectividad a trav\'es de la interacci\'on
+    de la luz con la superficie de un objeto. Esta interacci\'on a nivel microscopico entre la luz y la superficie de un material, se describe con una
+    ecuacion conocida como BSDF.
+
+    \subsection{Teor\'ia de microfacetas}
+    A physically-based BRDF is based on the microfacet theory,
+    which supposes that a surface is composed of small-scaled
+    planar detail surfaces of varying orientation called microfacets.
+    Each of these small planes reflects light in a single direction
+    based on its normal (Figure 07).
+    Micro-facets whose surface normal is oriented exactly halfway
+    between the light direction and view direction will reflect visible
+    light. However, in cases where the microsurface normal and
+    the half normal are equal, not all microfacets will contribute as
+    some will be blocked by shadowing (light direction) or masking
+    (view direction) as illustrated in Figure 07.
+    The surface irregularities at a microscopic level cause light
+    diffusion. For example, blurred reflections are caused by
+    scattered light rays. The rays are not reflected in parallel, so we
+    perceive the specular reflection as blurred (Figure 08).
     Son funciones que permiten describir el comportamiento de la luz al golpear una superficie. Para ello toma en cuenta el \'angulo de incidencia del
     rayo de luz sobre la superficie y el rayo de salida, reflejado o refractado y su resultado es el ratio entre el \'angulo del rayo y la superficie y
     la intesidad de salida de la luz.
 
+    \subsection{BxDF}
     A continuaci\'on se detallan los nombres de las funciones en funcion del fen\'omeno f\'isico que modelan.
-
-    \subsection{BRDF}
-        Es la funci\'on que modela el comportamiento de la luz al golpear una superficie opaca, la reflexi\'on. Fue definido por primera vez en 1965 por
+    \begin{itemize}
+        \item[] \textbf {BRDF} Es la funci\'on que modela el comportamiento de la luz al golpear una superficie opaca, la reflexi\'on. Fue definido por primera vez en 1965 por
         Fred Nicodemus y su definici\'on es el ratio entre radiancia reflectada e irraciancia incidente.
         Para determinar el \'angulo de salida del rayo se utiliza la ley de la reflexi\'on y las tres caracter\'isticas que ha de cumplir un BRDF basado en
         f\'isica es que sea positivo, que cumpla con la reciprocidad de Helmholtz y que cumpla con la ley de conservaci\'on de la energ\'ia.
-
-    \subsection{BTDF}
-        Describe el comportamiento del rayo de luz al atravesar una superficie, la refracci\'on. Para calcular el angulo de salida del rayo se utiliza la
+        \item[] \textbf {BTDF} Describe el comportamiento del rayo de luz al atravesar una superficie, la refracci\'on. Para calcular el angulo de salida del rayo se utiliza la
         ley de Snell, y al contrario que el BRDF, no sumple el principio de reciprocidad de Helmholtz.
-
-    \subsection{BSSRDF y BSSTF}
-        Son ampliaciones del modelo de reflexi\'on y refracci\'on, respectivamente, teniendo en cuenta las reflexiones internas del rayo a traves de la
+        \item[] \textbf {BSSRDF y BSSTF} Son ampliaciones del modelo de reflexi\'on y refracci\'on, respectivamente, teniendo en cuenta las reflexiones internas del rayo a traves de la
         superficie del objeto.
+        \item[] \textbf {BSDF} Se utiliza comunmente para hablar de cualquier forma de BxDF. En un sentido mas estricto, se refiere al conjunto de un BSSRDF y un BSSTDF.
+    \end{itemize}
 
-    \subsection{BSDF}
-        Se utiliza comunmente para hablar de cualquier forma de BxDF. En un sentido mas estricto, se refiere al conjunto de un BSSRDF y un BSSTDF.
+    \subsection{T\'erminos del BRDF}
 
-\section{T\'erminos del BRDF}
+\section{Disney Principled}
+The BRDF used by Substance’s PBR shaders are based on
+Disney’s principled reflectance model. This model is based
+on the GGX microfacet distribution. GGX provides one of the
+better solutions in terms of specular distribution: with a shorter
+peak in the highlight and a longer tail in the falloff, it looks more
+realistic (Figure 10). Disney’s physically-based reflectance model was designed to
+be a principled approach. That is, it was geared more towards
+art direction rather than a strictly physical model.
 
-\section{Teor\'ia de microfacetas}
-
-\section{Render offline y online}
