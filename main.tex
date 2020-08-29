@@ -30,7 +30,14 @@
     \include{titlepage}
     \include{tmp}
     \pagestyle{empty}
+
     \tableofcontents
+
+    \begingroup
+      \frontmatter
+        \include{prologue/01-marco_colaborativo}
+    \endgroup
+
     \clearpage
     \pagestyle{fancy}
     \mainmatter % Begin pagination
