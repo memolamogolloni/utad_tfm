@@ -1,0 +1,318 @@
+\chapter{Desarrollo}
+
+La soluci\'on elegida para extender el sistema de materiales de Three ha sido crear un fork, extendiendo la
+librer\'ia para implementar las funcionalidades necesarias que dan soporte a estos nuevos motores de shading.
+Siguiendo la nomenclatura, de ThreeJs (MeshStandardMaterial, MeshPhysicalMaeterial, etc) se ha creado un material
+MeshClothMaterial, basado en los material Cloth de Filament.\\
+ThreeJS utiliza un sistema de chunks (trozos) se componen en tiempo de ejecuci\'on para acabar formando los vertex
+y fragment shaders que se utilizan en los programas de WebGL. Los chunks se componen en la libreria de shaders, la
+clase ShaderLib.
+Para crear nuestro MeshClothMaterial, hemos de extender de la clase base Material, de la que extienden el resto de
+materiales. En este caso, de la misma forma que hace MeshPhysicalMaterial, extenderemos de MeshStandardMaterial,
+que dispone de la mayor parte de uniforms y attributes que necesita nuestro shader.\\
+
+\begin{lstlisting}[caption=Clase MeshClothMaterial]
+  import { Vector2 } from '../math/Vector2.js';
+  import { MeshStandardMaterial } from './MeshStandardMaterial.js';
+  import { Color } from '../math/Color.js';
+  import brdfCloth from './clothBRDF.js';
+  
+  /**
+   * parameters = {
+   *  reflectivity: <float>,
+   *
+   *  sheen: <Color>,
+   *
+   *  transmission: <float>,
+   *  transmissionMap: new THREE.Texture( <Image> ),
+   *
+   *  subsurface: <Vector3>,
+   * }
+   */
+  
+  function MeshClothMaterial( parameters ) {
+  
+    MeshStandardMaterial.call( this );
+  
+    this.defines = {
+  
+      'STANDARD': '',
+      'CLOTH': ''
+  
+    };
+  
+    this.type = 'MeshClothMaterial';
+    this.sheen = null;
+  
+    this.transmission = 0.0;
+    this.transmissionMap = null;
+    this.subsurface = null;
+  
+    this.brdfCloth = brdfCloth;
+  
+    this.setValues( parameters );
+  
+  }
+  
+  MeshClothMaterial.prototype = Object.create( MeshStandardMaterial.prototype );
+  MeshClothMaterial.prototype.constructor = MeshClothMaterial;
+  
+  MeshClothMaterial.prototype.isMeshClothMaterial = true;
+  
+  MeshClothMaterial.prototype.copy = function ( source ) {
+  
+    MeshStandardMaterial.prototype.copy.call( this, source );
+  
+    this.defines = {
+  
+      'STANDARD': '',
+      'CLOTH': ''
+  
+    };
+  
+    if ( source.sheen ) {
+  
+      this.sheen = ( this.sheen || new Color() ).copy( source.sheen );
+  
+    }
+  
+    this.transmission = source.transmission;
+    this.transmissionMap = source.transmissionMap;
+  
+    if ( source.subsurface ) {
+  
+      this.subsurface = ( this.subsurface || new Color() ).copy( source.subsurface );
+  
+    } else {
+  
+      this.subsurface = null;
+  
+    }
+  
+    if ( source.brdfCloth ) {
+  
+      this.brdfCloth = source.brdfCloth;
+  
+    } else {
+  
+      this.brdfCloth = null;
+  
+    }
+  
+    return this;
+  
+  };
+  
+  export { MeshClothMaterial };
+  
+\end{lstlisting}
+
+Para que el motor de render de ThreeJS reconozca este nuevo material es necesario, a\~nadir
+su tipo (MeshClothMaterial) al mapa de ShaderIds para que el gestor de programas (WebGLPrograms)
+lo utilice para detectar obtener los uniforms y shaders necesarios para el material. Adem\'as
+los nuevos par\'ametros necesarios para el material se deben de incluir en el array
+parametersNames, de forma que el sistema de cacheo de programas de ThreeJS detecte estas
+nuevas propiedades.\newline
+
+\begin{lstlisting}[caption=Clase MeshClothMaterial]
+function WebGLPrograms( renderer, cubemaps, extensions, capabilities, bindingStates, clipping ) {
+
+  // ...
+
+  const shaderIDs = {
+    MeshDepthMaterial: 'depth',
+    MeshDistanceMaterial: 'distanceRGBA',
+    MeshNormalMaterial: 'normal',
+    MeshBasicMaterial: 'basic',
+    MeshLambertMaterial: 'lambert',
+    MeshPhongMaterial: 'phong',
+    MeshToonMaterial: 'toon',
+    MeshStandardMaterial: 'physical',
+    MeshPhysicalMaterial: 'physical',
+    MeshClothMaterial: 'cloth',
+    MeshMatcapMaterial: 'matcap',
+    LineBasicMaterial: 'basic',
+    LineDashedMaterial: 'dashed',
+    PointsMaterial: 'points',
+    ShadowMaterial: 'shadow',
+    SpriteMaterial: 'sprite'
+  };
+
+  const parameterNames = [
+		"precision", "isWebGL2", "supportsVertexTextures", "outputEncoding", "instancing", "instancingColor",
+		"map", "mapEncoding", "matcap", "matcapEncoding", "envMap", "envMapMode", "envMapEncoding", "envMapCubeUV",
+		"lightMap", "lightMapEncoding", "aoMap", "emissiveMap", "emissiveMapEncoding", "bumpMap", "normalMap", "objectSpaceNormalMap", "tangentSpaceNormalMap", "clearcoatMap", "clearcoatRoughnessMap", "clearcoatNormalMap", "displacementMap", "specularMap", "subsurface", "brdfCloth",
+		"roughnessMap", "metalnessMap", "gradientMap",
+		"alphaMap", "combine", "vertexColors", "vertexTangents", "vertexUvs", "uvsVertexOnly", "fog", "useFog", "fogExp2",
+		"flatShading", "sizeAttenuation", "logarithmicDepthBuffer", "skinning",
+		"maxBones", "useVertexTexture", "morphTargets", "morphNormals",
+		"maxMorphTargets", "maxMorphNormals", "premultipliedAlpha",
+		"numDirLights", "numPointLights", "numSpotLights", "numHemiLights", "numRectAreaLights",
+		"numDirLightShadows", "numPointLightShadows", "numSpotLightShadows",
+		"shadowMapEnabled", "shadowMapType", "toneMapping", 'physicallyCorrectLights',
+		"alphaTest", "doubleSided", "flipSided", "numClippingPlanes", "numClipIntersection", "depthPacking", "dithering",
+		"sheen", "transmissionMap"
+	];
+
+  // ...
+
+  function getParameters( material, lights, shadows, scene, object ) {
+
+    const shaderID = shaderIDs[ material.type ];
+
+    // ...
+
+    let vertexShader, fragmentShader;
+
+    if ( shaderID ) {
+
+      const shader = ShaderLib[ shaderID ];
+
+      vertexShader = shader.vertexShader;
+      fragmentShader = shader.fragmentShader;
+
+    }
+
+    // ...
+
+    const parameters = {
+
+      shaderID: shaderID,
+
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
+
+      sheen: !! material.sheen,
+
+      subsurface: !! material.subsurface,
+
+      brdfCloth: !! envMap && shaderID === 'MeshClothMaterial',
+      // ...
+    };
+
+    // ...
+
+    return parameters;
+  }
+\end{lstlisting}
+
+Finalmente, en el gestor de materiales de ThreeJs, necesitamos a\~nadir un nuevo m\'etodo
+que actualice los unfiroms del programa creado, de la misma forma que se hace con los
+materiales nativos de la librer\'ia.\newline
+
+\begin{lstlisting}[caption=Clase WebGLMaterials]
+function refreshMaterialUniforms( uniforms, material, pixelRatio, height ) {
+
+// ...
+
+if ( material.isMeshStandardMaterial ) {
+
+  refreshUniformsCommon( uniforms, material );
+
+  if ( material.isMeshPhysicalMaterial ) {
+
+    refreshUniformsPhysical( uniforms, material );
+
+  } else if ( material.isMeshClothMaterial ) {
+
+    refreshUniformsCloth( uniforms, material );
+
+  } else {
+
+    refreshUniformsStandard( uniforms, material );
+
+  }
+
+}
+
+// ...
+
+function refreshUniformsCloth( uniforms, material, environment ) {
+
+  refreshUniformsStandard( uniforms, material, environment );
+
+  uniforms.reflectivity.value = material.reflectivity; // also part of uniforms common
+
+  if ( material.sheen ) {
+
+    uniforms.sheen.value.copy( material.sheen );
+
+  } else {
+
+    uniforms.sheen.value.copy( material.color );
+    uniforms.sheen.value.r = Math.sqrt( uniforms.sheen.value.r );
+    uniforms.sheen.value.g = Math.sqrt( uniforms.sheen.value.g );
+    uniforms.sheen.value.b = Math.sqrt( uniforms.sheen.value.b );
+
+  }
+
+  if ( material.subsurface ) uniforms.subsurface.value.copy( material.subsurface );
+
+  if ( material.brdfCloth ) uniforms.brdfCloth.value = material.brdfCloth;
+
+}
+  
+\end{lstlisting}
+
+De esta forma, tenemos un material con la interfaz nativa de ThreeJS, que tiene acceso a los
+chunks definidos en la clase ShaderChunk y cuyos uniforms y composici\'on de chunks definiremos
+en ShaderLib.\newline
+
+El BRDF para el componente especular de la iluminaci\'on directa del material Cloth de Filament,
+se utiliza en ThreeJS para a\~nadir opcionalmente un l\'obulo de Sheen al material. Por otra
+parte, el difuso, utiliza en Filament un t\'ermino opcional para ofrecer una aproximaci\'on
+barata el subsurface scattering para iluminaci\'on directa que utiliza Filament.\newline
+
+\begin{lstlisting}[caption=Implementaci\'on del BRDF de iluminaci\'on directa de Filament]
+  vec3 surfaceShading(const PixelParams pixel, const Light light) {
+    vec3 h = normalize(shading_view + light.l);
+    float NoL = light.NoL;
+    float NoH = saturate(dot(shading_normal, h));
+    float LoH = saturate(dot(light.l, h));
+
+    // specular BRDF
+    float D = D_Charlie(pixel.roughness, NoH);
+    float V = V_Neubelt(shading_NoV, NoL);
+    vec3  F = pixel.f0; // f0 is sheen color for Cloth materials 
+    vec3 Fr = (D * V) * F;
+
+    // diffuse BRDF
+    float diffuse = diffuse(pixel.roughness, shading_NoV, NoL, LoH);
+    #if defined(MATERIAL_HAS_SUBSURFACE_COLOR)
+      diffuse *= Fd_Wrap(dot(shading_normal, light.l), 0.5);
+    #endif
+
+    vec3 Fd = diffuse * pixel.diffuseColor;
+
+  #if defined(MATERIAL_HAS_SUBSURFACE_COLOR)
+    Fd *= saturate(pixel.subsurfaceColor + NoL);
+    vec3 color = ( Fd + Fr * NoL ) * light.colorIntensity
+  #else
+    vec3 color = Fd + Fr * NoL * light.colorIntensity;
+  #endif
+
+  return color;
+}
+\end{lstlisting}
+
+Primero definimos la interfaz de nuestro MeshClothMaterial y pondremos en comparaci\'on con
+el MeshPhysicalMaeterial, para analizar los par\'ametros en com\'un y los cambios en sus BRDF
+y ecuaciones de render.\newline
+
+\centering
+\begin{tabular}{| c | c |}
+  \hline
+  MeshPhysicalMaterial & MeshClothMaterial \\ \hline
+  color & color \\
+  roughness & roughness \\
+  clearCoat & NO \\
+  clearCoatRoughness & NO \\
+  sheen  & sheen  \\
+  NO  & subsurface  \\
+  metalness & NO \\
+  emissive & emissive \\
+  alpha & alpha \\
+  lightmap & lightmap \\
+  normalMap & normalMap \\ \hline
+\end{tabular}
+

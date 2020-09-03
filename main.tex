@@ -12,6 +12,11 @@
 \usepackage[autostyle=true]{csquotes}
 \usepackage{mathtools} % Add additional tools for math writing 
 
+\makeatletter
+\renewcommand{\frontmatter}{\cleardoublepage\@mainmatterfalse}
+\renewcommand{\mainmatter}{\cleardoublepage\@mainmattertrue}
+\makeatother
+
 \graphicspath{ {./images/} }
 \setcounter{tocdepth}{4}
 \setcounter{secnumdepth}{4}
@@ -30,24 +35,20 @@
     \include{titlepage}
     \include{tmp}
     \pagestyle{empty}
-
+    
     \tableofcontents
-
-    \begingroup
-      \frontmatter
-        \include{prologue/01-marco_colaborativo}
-    \endgroup
-
     \clearpage
     \pagestyle{fancy}
+
+    \frontmatter
+      \include{prologue/01-marco_colaborativo}
+
     \mainmatter % Begin pagination
-      \include{chapters/01-introduccion}
-      \include{chapters/02-objetivo}
-      \include{chapters/03-contexto}
-      \include{chapters/04-conceptos}
-      \include{chapters/05-estadodelarte}
-      \include{chapters/06-analisis}
-      \include{chapters/07-resultados}
-      \include{chapters/08-conclusiones}
+      \include{chapters/01-marcoteorico}
+      \include{chapters/02-objetivos}
+      \include{chapters/03-estadodelarte}
+      \include{chapters/04-metodologia}
+      \include{chapters/05-desarrollo}
+      \include{chapters/06-resultados}
       \printbibliography
 \end{document}
