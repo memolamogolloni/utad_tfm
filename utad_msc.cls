@@ -2,7 +2,10 @@
 
 \LoadClassWithOptions{book}
 
-\RequirePackage[backend=bibtex,style=verbose-trad2]{biblatex}
+\RequirePackage[
+    backend=biber,
+    style=alphabetic,
+]{biblatex}
 \bibliography{references} 
 
 % Packages
