@@ -33,12 +33,14 @@
 
 \begin{document}
     \include{titlepage}
-    \pagestyle{empty}
-    
-    \tableofcontents
+    \begingroup
+      \pagestyle{plain}
+      \tableofcontents
+      \listoffigures
+    \endgroup
     \clearpage
-    \pagestyle{fancy}
 
+    \pagestyle{fancy}
     \frontmatter
       \include{prologue/01-marco_colaborativo}
 
@@ -49,9 +51,8 @@
       \include{chapters/04-metodologia}
       \include{chapters/05-desarrollo}
       \include{chapters/06-resultados}
-      \appendix
+    \appendix
       \addcontentsline{toc}{chapter}{Appendix}
-      \chapter{Questionnaire Requirement}
-      \chapter{Questionnaire Testing}
-      \printbibliography
+      \include{appendix/A-conceptosbasicos}
+    \printbibliography
 \end{document}

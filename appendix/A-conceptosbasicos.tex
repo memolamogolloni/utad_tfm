@@ -1,0 +1,47 @@
+\chapter{Conceptos b\'asicos}
+
+\section{Unidades b\'asicas radiom\'etricas}
+\bgroup
+    Cuando hablamos de la cantidad de luz, no es la medicion sobre un foton de luz independiente, si no que se tratan de medidas en relacion
+    al tiempo, la direccion o el \'area.
+
+    \begin{itemize}
+    \item[] \textbf {{\'Angulo s\'olido}}
+    \item[] \textbf {Flujo} La unidad que representa la energia sobre la unidad de tiempo es el flujo, representado por Phi. Es la energía que transportan las ondas
+    por unidad de tiempo, se mide en vatios. En los motores de render se utiliza para expresar la cantidad total de energia emitida por un a fuente de luz.
+    \begin{equation}
+        \Phi_e = \dfrac{d{Q_e}}{dt}
+    \end{equation}
+    \item[] \textbf {Intensidad}
+    \begin{equation}
+        I = \dfrac{d\Phi}{d\omega}
+    \end{equation} 
+    \item[] \textbf {Irradiancia} La irradiancia, es la cantidad de energ\'ia por unidad de tiempo por unidad de superficie, o flujo por superficie. Se representa como
+    E, su unidad son los vatios/m2 y se utiliza para medir la cantidad de luz que incide sobre una superficie.
+    \begin{equation}
+        E = \dfrac{d\Phi}{dA}
+    \end{equation}
+    Cuando este flujo de radiancia se mide en direcci\'on contraria, de salida, se llama emitancia (M)
+    \item[] \textbf {Radiancia} Simula luz tan lejana que sus rayos son paralelos entre si, como por ejemplo el sol.
+    \begin{equation}
+        L = \dfrac{d^2\Phi}{dA_{proj}d\omega}
+    \end{equation}
+    \end{itemize}
+\egroup
+
+
+\section{BxDF}
+    \bgroup
+    A continuaci\'on se detallan los nombres de las funciones en funcion del fen\'omeno f\'isico que modelan.
+    \begin{itemize}
+        \item[] \textbf {BRDF} Es la funci\'on que modela el comportamiento de la luz al golpear una superficie opaca, la reflexi\'on. Fue definido por primera vez en 1965 por
+        Fred Nicodemus y su definici\'on es el ratio entre radiancia reflectada e irraciancia incidente.
+        Para determinar el \'angulo de salida del rayo se utiliza la ley de la reflexi\'on y las tres caracter\'isticas que ha de cumplir un BRDF basado en
+        f\'isica es que sea positivo, que cumpla con la reciprocidad de Helmholtz y que cumpla con la ley de conservaci\'on de la energ\'ia.
+        \item[] \textbf {BTDF} Describe el comportamiento del rayo de luz al atravesar una superficie, la refracci\'on. Para calcular el angulo de salida del rayo se utiliza la
+        ley de Snell, y al contrario que el BRDF, no sumple el principio de reciprocidad de Helmholtz.
+        \item[] \textbf {BSSRDF y BSSTF} Son ampliaciones del modelo de reflexi\'on y refracci\'on, respectivamente, teniendo en cuenta las reflexiones internas del rayo a traves de la
+        superficie del objeto.
+        \item[] \textbf {BSDF} Se utiliza comunmente para hablar de cualquier forma de BxDF. En un sentido mas estricto, se refiere al conjunto de un BSSRDF y un BSSTDF.
+    \end{itemize}
+    \egroup

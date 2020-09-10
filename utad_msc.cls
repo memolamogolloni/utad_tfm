@@ -2,10 +2,7 @@
 
 \LoadClassWithOptions{book}
 
-\RequirePackage[
-    backend=biber,
-    style=alphabetic,
-]{biblatex}
+\RequirePackage[backend=bibtex]{biblatex}
 \bibliography{references} 
 
 % Packages
@@ -25,7 +22,7 @@
     bottom=2.5cm,
     marginparwidth=3.5cm,
 ]{geometry} % Edit page layout
-\RequirePackage{setspace} % Set spaces between lines
+\RequirePackage{setspace} % Set spaces between lines,
 \RequirePackage{float} % Better tables and figures handling
 \RequirePackage{listings}
 \RequirePackage{xargs} % Use more than one optional parameter in a new commands
