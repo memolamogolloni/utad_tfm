@@ -1,7 +1,7 @@
 \chapter{An\'alisis}
 
-\section{Comparaci\'on ThreeJS - Disney 2012}
-    \subsection{Esquema BRDF ThreeJS}
+\section{Comparaci\'on ThreeJs - Disney 2012}
+    \subsection{Esquema BRDF ThreeJs}
         En el modelo de Disney 2012, se utilizan dos BRDFs distintos, uno objetos metálicos y
         otro para dieléctricos y se hace blending entre ellos:
     \singlespacing
@@ -82,7 +82,7 @@ material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
             f_d = \frac{baseColor}{\pi}(1 + (F_{D90} - 1) (1 - cos{\theta}_t)^5)(1 + F_{D90} - 1)
             (1 - cos\theta_v)^5)
             $$
-            La implementación de ThreeJS utiliza el BRDF para el difuso de Lambert:
+            La implementación de ThreeJs utiliza el BRDF para el difuso de Lambert:
             \singlespacing
             \begin{lstlisting}[caption=My Javascript Example]
 vec3 BRDF_Diffuse_Lambert( const in vec3 diffuseColor ) {
@@ -93,7 +93,7 @@ vec3 BRDF_Diffuse_Lambert( const in vec3 diffuseColor ) {
         \subsubsection{L\'obulo primario (material base)}
             Representa el material base y puede ser anisotr\'opico y/o  met\'alico.
 
-            Implementaci\'on en ThreeJS:
+            Implementaci\'on en ThreeJs:
             \singlespacing
             \begin{lstlisting}[caption=My Javascript Example]
 vec3 BRDF_Specular_GGX(
@@ -117,7 +117,7 @@ vec3 BRDF_Specular_GGX(
 }
             \end{lstlisting}
             \singlespacing
-            El BRDF de ThreeJS es isotrópico y no metálico.
+            El BRDF de ThreeJs es isotrópico y no metálico.
             \singlespacing
             T\'ERMINOS DEL BRDF:
             \singlespacing
@@ -162,7 +162,7 @@ float G_GGX_SmithCorrelated( const in float alpha, const in float dotNL, const i
         \subsubsection{L\'obulo secundario (clearcoat)}
             El l\'obulo secundario representa una capa de clearcoat sobre el material y siempre es isotr\'opica
             y no met\'alica. Se utiliza un IOR fijo de 1.5, que representa la refracci\'on del poliuretano (F0 = 0.04)
-            ThreeJS utiliza el mismo BRDF que para el material base, con un F0 = 0.04
+            ThreeJs utiliza el mismo BRDF que para el material base, con un F0 = 0.04
             \singlespacing
             \begin{lstlisting}[caption=My Javascript Example]
 float clearcoatDHR = material.clearcoat * clearcoatDHRApprox(material.clearcoatRoughness, ccDotNL);
@@ -201,7 +201,7 @@ vec3 BRDF_Specular_GGX(const in IncidentLight incidentLight, const in vec3 viewD
             siempre es isotr\'opica y no met\'alica.
             Se utiliza un IOR fijo de 1.5, que representa la refracci\'on del poliuretano (F0 = 0.04)
         
-            ThreeJS utiliza el mismo BRDF que para el material base, con un F0 = 0.04
+            ThreeJs utiliza el mismo BRDF que para el material base, con un F0 = 0.04
             \singlespacing
             \begin{lstlisting}[caption=My Javascript Example]
 float clearcoatDHR = material.clearcoat * clearcoatDHRApprox(material.clearcoatRoughness,                      ccDotNL );
@@ -260,7 +260,7 @@ float clearcoatDHRApprox( const in float roughness, const in float dotNL ) {
             utiliza Schlick-Fresnel: \(sheen * (1 − cos{\zeta}d\exp{5})\),  se puede te\~nir su
             color con uno diferente al del material base con el par\'ametro sheenTint.
             
-            ThreeJS implementation
+            ThreeJs implementation
             \singlespacing
             \begin{lstlisting}[caption=My Javascript Example]
 // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"

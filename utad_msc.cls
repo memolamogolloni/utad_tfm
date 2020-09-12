@@ -2,8 +2,37 @@
 
 \LoadClassWithOptions{book}
 
-\RequirePackage[backend=bibtex]{biblatex}
+\RequirePackage[
+            style=alphabetic,%numeric-comp,%authoryear-comp,%
+            sorting=nyt,%ynt                    
+            hyperref=true, %    
+            firstinits=true,%
+            backend=bibtex,
+            natbib=true,
+            url=false,
+            isbn=false,
+            maxnames=2, %for et al to be used
+            maxalphanames=1, %to avoid printing a + for every et al in the abbreviation
+            doi=false]{biblatex}  
 \bibliography{references} 
+
+\usepackage{afterpage}
+\usepackage{float}
+\usepackage{aliascnt}
+\newaliascnt{eqfloat}{equation}
+\newfloat{eqfloat}{h}{eqflts}
+\floatname{eqfloat}{Ecuaci\'on}
+
+\newcommand*{\ORGeqfloat}{}
+\let\ORGeqfloat\eqfloat
+\def\eqfloat{%
+  \let\ORIGINALcaption\caption
+  \def\caption{%
+    \addtocounter{equation}{-1}%
+    \ORIGINALcaption
+  }%
+  \ORGeqfloat
+}
 
 % Packages
 \usepackage[autostyle=true]{csquotes}
@@ -22,7 +51,7 @@
     bottom=2.5cm,
     marginparwidth=3.5cm,
 ]{geometry} % Edit page layout
-\RequirePackage{setspace} % Set spaces between lines,
+\RequirePackage{setspace} % Set spaces between lines
 \RequirePackage{float} % Better tables and figures handling
 \RequirePackage{listings}
 \RequirePackage{xargs} % Use more than one optional parameter in a new commands
@@ -180,8 +209,16 @@
     \todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}
 }
 
+% Create command to create blank pages
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
+
 % Set default font family to sans serif
 \renewcommand{\familydefault}{\sfdefault}
+
 
 % Headers and footers style
 \pagestyle{fancy}
