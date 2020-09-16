@@ -1,352 +1,201 @@
 \chapter{Estado del arte}
 
-\subsection{BRDF Cook-Torrance}
-Es un modelo anal\'itico permite representar con gran realismo materiales electricos y dielectricos con diferentes
-grados de rugosidad y, en general, funciona bien para modelar cambios en el color que dependen del punto de vista.\\
-Este modelo permite estudiar por separado las dos componentes de la luz, especular y difuso:
+En 1970 se presenta el primer algoritmo de sombreado en gr\'aficos rasterizados \autocite{gouraud}, posteriormente 
+Phong \autocite{phong} presentada un modelo para la componente especular, revisado y mejorado posteriormente en el modelo Blinn-Phong
+\autocite{blinnphong} por James Blinn. Estos modelos consiguen describir el comportamiento del material en todos sus puntos,
+estableciendo un ratio entre la luz que llega a una superficie y la luz reflejada, sin embargo no tienen en cuenta el modelo f\'isico de
+la luz, por lo que no podemos hablar de materiales PBR hasta 1981, a\~no en el que Robert Cook y Kenneth Torrance presentan su modelo
+de BRDF basado en microfacetas \autocite{cooktorrance}
 
-\begin{eqfloat}[!htb]
-    \begin{equation}
-        f_r = k_{d}f_{lambert} + k_sf_{cook-torrance}
-    \end{equation}
-    \caption{BRDF como suma de la componente difusa y especular}
-\end{eqfloat}
-
-siendo $k_d$ y $k_s$, parametros de peso que cumplen $k_d + k_s = 1$
-\singlespacing
-
-T\'ipicamente la componente difusa, utiliza el modelo de Lambert, que asume una distribuci\'on completamente uniforme a lo
-largo de la superficie:\\
-
-\begin{equation}
-f_{Lambert} = \frac{diffuse}{\pi}
-\end{equation}
-\singlespacing
-
-La componente especular es una funci\'on compuesta de otras tres funciones y un factor de normalizaci\'on en el
-denominador.\\
-
-\begin{equation}
-    f(l, v) = \frac{F(w_i, h) G(w_i, h, w_o) D(h)} {4(n\cdot{w_i}) (n \cdot{w_o})}
-\end{equation}
-\singlespacing
-
-\subsubsection{T\'erminos del BRDF especular}
-    El BRDF de Cook-Torrance est\'a compuesto por otras tres funciones y un factor de normalizaci\'on en el denominador.
-    Las funciones D, F y G, se corresponden con la funci\'on de distribuci\'on de las normales, la ecuaci\'on de Fresnel,
-    y la funci\'on de geometr\'ia.\\
-
-    $D(l, v, h)$  es la funci\'on de distribuci\'on de las normales y se encarga de representar la rugosidad de una superficie
-    y es el t\'ermino que afecta en mayor grado a la forma y taman\~no del brillo especular. T\'ipicamente el par\'ametro
-    \textit{roughness} se utiliza para representar la cantidad de microfacetas alineadas con la normal h, cuanta mayor sea la
-    la cantidad de de microfacetas alineadas, m\'as lisa parecer\'a la superficie.
-
-    $$
-    D(h) = \frac{\alpha^2}{\pi((n\cdot{h})^2(\alpha^2 - 1) + 1)^2}
-    $$
-
-    \begin{figure}[H]
-        \vspace{0.5cm}
-        \centering
-        \frame{\includegraphics[scale=0.65]{ndf}}
-        \caption{Representaci\'on gr\'afica de la funci\'on de geometr\'ia}
-    \end{figure}
-
-    $G(w_o)$ es la funci\'on de geometr\'ia. Esta funci\'on tiene en cuenta las oclusiones debidas a la propia superficie.
-    Mientras que el t\'ermino de distribucion de las normales, $D(h)$, define la concentraci\'on de microfacetas con una normal h,
-    no define si esas microfacetas son visible o no. El t\'ermino de geometr\'ia tiene en cuenta las dos cosas, la sombra
-    y el enmascaramiento. La sombra representa que una microfaceta no es visible desde la direcci\'on de la luz, mientras que el
-    enmascaramiento significa que una microfaceta no es visible desde la direcci\'on de vista y, por tanto, no contribuyen
-    a la reflexi\'on.
-
-    $$
-    G(w_i, w_o) = G(w_i)G(w_o)
-    $$
-    \singlespacing
-    $$
-    G(w_o) = \frac{n\cdot{w_o}}{(n\cdot) (1 - k) + k}
-    $$
-    \singlespacing
-    $$
-    G(w_i) = \frac{n\cdot{w_i}}{(n\cdot) (1 - k) + k}
-    $$
-    \singlespacing
-
-    \begin{equation}
-    k = \frac{(roughness + 1)^2}{8}
-    \end{equation}
-
-    \begin{figure}[H]
-        \vspace{0.5cm}
-        \centering
-        \frame{\includegraphics[scale=0.65]{microgeometria}}
-        \caption{Representaci\'on gr\'afica de la sombra y el enmascaramiento en la funci\'on de geometr\'ia}
-    \end{figure}
-
-    $F(l, v, h)$ es la funci\'on de Fresnel. Representa la radiancia reflejada por un material seg\'un el \'angulo de incidencia
-    de la luz. Para la mayor\'ia de los materiales no met\'alicos, las reflexiones son m\'as intensas bajo cuando el \'angulo
-    de incidencia es muy agudo. En la mayor\'ia de los algoritmos de sombreado, el fresnel se utiliza a nivel de la macrosuperficie,
-    sin embargo, al aplicar el fresnel sobre la normal de la microfacetas, se consigue un mayor grado de realismo para los valores
-    altos de \textit{roughness}.
-
-    $$
-    F_{Schlick}(F_o, w_i, h) = F_o + (1 - F_o) (1 - (l\cdot{h}))^5
-    $$
-
-    \begin{figure}[H]
-        \vspace{0.5cm}
-        \centering
-        \frame{\includegraphics[scale=0.65]{fresnel}}
-        \caption{Representaci\'on gr\'afica de la funci\'on de geometr\'ia}
-    \end{figure}
-    \singlespacing
-
-    El denominador es una caracter\'istica t\'ipica de los modelos de microfacetas y es un factor de correci\'on debido al cambio
-    de espacio entre el espacio local de las microfacetas y el espacio local de la macrosuperficie. Para modelos que no
-    incluyen este factor, se puede aplicar un factor de sombreado directamente multiplicando el t\'ermino de geometr\'ia por
-
-    \begin{equation}
-    \frac{1}{4(n\cdot{l}) (n\cdot{v})}
-    \end{equation}
-    \singlespacing
-
-    % La funci\on de distribuci\'on de las normales, aproxima la cantidad de microfacetas aproxima la alineadas con el
-    % vector h, el medio entre el rayo de luz y el punto del vista. El par\'ametro que modela la rugosidad de una superficie
-    % afecta en gran medida al resultado. Este es el factor m\'as caracter\'istico del modelo de microfacetas.
-    % La funci\'on de geometr\'ia describe la cantidad de rayos ocluidos por las propias microfacetas.\\
-
-    % Finalmente, la ecuaci\'on de fresnel describe el ratio de reflexi\'on de una superficie bajo diferentes \'angulos de
-    % incidencia.\\
-
-\section{T\'erminos del BRDF}
+\section{Componentes y t\'erminos del BRDF basado en microfacetas}
 \todo[inline]{
-    Blinn \autocite{blinn77}, Beckmann \autocite{beckmann}, Walter \autocite{walter}, Neumann \autocite{neumann}, Kelemen
+    Blinn \autocite{blinn77}, Beckmann \autocite{beckmann}, Walter \autocite{ggx}, Neumann \autocite{neumann}, Kelemen
     \autocite{kelemen}, Smith \autocite{smith}, Karis \autocite{karis}, \autocite{reed}
 }
 
-\section{Disney Principled BRDF}
-\todo[inline]{Modelo emp\'irico basado en las observaciones de la tabla MERL}
-
-\begin{figure}[H]
-    \vspace{0.5cm}
-    \centering
-    \frame{\includegraphics[scale=0.47]{slicespace}}
-    \caption{Muestras de materiales MERL, junto a un esquema explicativo de las im\'agenes muestreadas}
-    \vspace{0.5cm}
-\end{figure}
-
-El BRDF de Disney fue presentado por Brent Burley en 2012 y es el utilizado por Disney en sus peliculas de animacion. Es,
-junto al modelo de Cook-Torrance, el mas utilizado en los motores de tiempo real, sin embargo, el modelo de Burley, es mas
-amigable para los artistas, a costa de no ser completamente basado en fisica. Los parametros tienen nombres y valores que
-definen que el aspecto de los materiales son mas intuitivos. Los lobulos adicionales, a diferencia del modelo de Cook-Torrance,
-pueden variar mucho en forma y tamanho, por lo que es un modelo muy flexible, que permite representar con gran realismo una
-amplia variedad de materiales.\\
-
-Es conocido como \textit{principled} por cumplir una serie de m\'aximas, que se respetan en el modelo por encima de las leyes fisicas.
-El modelo ha de ser intuitivo y no utilizar parametros que se refieran al modelo basado en fisica, debe tener el menor
-numero de parametros posible, deben de estar normalizados, algunos valores pueden exceder su rango para permitir mayor
-expresividad y, finalmente, todas las combinaciones de parametros deben de ser robustas y plausibles. Para ello utiliza los
-par\'ametros: \textit{baseColor}, \textit{subsurface}, \textit{metal}, \textit{specular}, \textit{specularTint}, \textit{roughness},
-\textit{sheen}, \textit{sheenTint}, \textit{clearCoat}, \textit{clearcoatGloss}
-
-\begin{figure}[H]
-    \vspace{0.5cm}
-    \centering
-      \frame{\includegraphics[scale=0.47]{disney}}
-    \caption{Modelo de Disney}
-\end{figure}
-% \begin{itemize}
-% 	\item \textit{baseColor}: el color de la superficie, comunmente utiliza un mapa.
-% 	\item \textit{subsurface}: aproximacion para controlar el color de la reflexion difusa.
-% 	\item \textit{metal}: interpolaci\'on lineal entre los dos modelos. El met\'alico no tiene
-%     componente de reflexi\'on difusa y su componente de reflexi\'on especular es del mismo color que el color base. 
-%     \item \textit{specular}: cantidad de luz incidente reflejada, se utiliza para controlar de forma intuitiva el \'indice de refracci\'on de
-%     una superficie.
-% 	\item \textit{specularTint}: par\'ametro que permite a los artistas controlar el color de la reflexi\'on especular sobre el color
-% 	base.
-% 	\item \textit{roughness}: describe la rugosidad de una superficie, afectando a la reflexi\'on difusa y especular.
-% 	\item \textit{sheen}: permite mayor grado de control sobre la reflexi\'on especular, muy \'util sobre tejidos.
-% 	\item \textit{sheenTint}: color del \textit{sheen}
-% 	\item \textit{clearCoat}: un l\'obulo extra.
-% 	\item \textit{clearcoatGloss}: permite controlar la rugosidad de este l\'obulo.
-% \end{itemize}
-    
-    \subsection{Componente difusa}
-
-    En base a las observaciones sobre los datos de MERL, el modelo difuso parece muy oscuro hacia los bordes, y aplicando
-    la funci\'on de Fresnel, para intentar conseguir un modelo f\'isicamente plausible, parece oscurecer m\'as los bordes,
-    acentuando el problema. Disney desarroll\'o un modelo emp\'irico, que utiliza la aproximaci\'on de Fresnel Schlick:
-
-    \begin{equation}
-        (1 - F(\theta_l) (1 - F(\theta_d)))
-    \end{equation}
-    \singlespacing
-
-
-    Modific\'andolo para conseguir que la retroreflexi\'on dependa del valor de \textit{roughness} y as\'i
-    adaptarse mejor a los datos obtenidos de MERL.
-
-    \begin{equation}
-    f_d = \frac{baseColor}{\pi}
-    \left(  1 + (F_{D90} - 1)(1 - cos\theta_{wi})^5  \right)
-    \left(  1 + (F_{D90} - 1)(1 - cos\theta_{wo})^5  \right)
-    \end{equation}
-    
-    $$
-    F_{D90} = 0.5 + 2roughness\cdot{cos^2\theta_d}
-    $$
-
-    \subsection{Componente especular}
-        \subsubsection{F, t\'ermino de Fresnel}
-            Para el especular, la aproximaci\'on de Fresnel Schlick es lo suficientemente precisa y mucho menos costosa que
-            que la ecuaci\'on completa de Fresnel.
-
-            \begin{equation}
-            (1 - F(\theta_l) (1 - F(\theta_d)))^5
-            \end{equation}
-
-            $F_0$ representa la reflectancia de una incidencia del mismo \'angulo que la normal. $\theta_d$ es el \'angulo
-            entre el vector $h$, y el de vista $w_o$. Es acrom\'actico para los diel\'ectricos y crom\'atico para los metales.
-
-        \subsubsection{G, t\'ermino de geometr\'ia}
-            En el t\'ermino G, Disney utiliza dos modelos diferentes, uno para el l\'obulo primario y otro para el de clearcoat.
-            Para el l\'obulo primario, utiliza el modelo de Smith GGX, remapeando el valor de \textit{roughness} para evitar
-            ganar demasiada energ\'ia hacia los bordes de materiales brillantes.
-
-            $$
-            G(l, v, h) = G_{GGX}(l)G_{GGX}(v)
-            $$
-
-            $$
-            G_{GGX}(v) = \frac
-            {2 (n \cdot{v})}
-            {(n \cdot{v}) + \sqrt{ \alpha^2 + (1 - \alpha)^2 (n \cdot{v})^2 }}
-            $$
-
-            \begin{equation}
-            \alpha = (0.5 + roughness / 2)^2
-            \end{equation}
-            \singlespacing
-
-            Para el l\'obulo secundario se utiliza un valor fijo de $\alpha = 0.25$.
-
-        \subsubsection{D, t\'ermino de distribuci\'on de las normales}
-            La distribuci\'on GGX es equivalente a la de Trowbridge-Reitz, no tiene una cola lo suficientemente larga para la
-            mayor\'ia de materiales.
-
-            \begin{equation}
-                D_{TR} = \frac
-                {c}
-                {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^2}
-            \end{equation}
-            \singlespacing
-
-            El modelo de Disney utiliza un exponente en el denominador que permite mayor control sobre el radio de la reflexi\'on
-            especular, llamando a \'este t\'ermino Generalized Trowbridge-Reitz, o GTR:
-
-            \begin{equation}
-                D_{GTR} = \frac
-                {c}
-                {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^\gamma}
-            \end{equation}
-            \singlespacing
-
-            \todo[inline]{NDFs anisotr\'opicas}
-
-            Los dos l\'obulos, primario y secundario utilizan la distribuci\'on GTR. El l\'obulo primario,
-            que representa la reflexi\'on del material base, utiliza $\gamma = 2$ y puede ser diel\'etrico o met\'alico,
-            isotr\'opico o anisotr\'opico. Por otra parte, el l\'obulo secundario representa la capa de \textit{clearcoat}
-            sobre el material base, utiliza $\gamma = 1$ y suele ser isotr\'opico y no met\'alico.
-
-
-
-
-\section{Iluminaci\'on indirecta en tiempo real}
-
-Para los efectos de iluminacion global, se necesita conocer la irradiancia proviniente en todas
-direcciones $w_i$ sobre la esfera $\Omega$.\\
-
-\begin{figure}[H]
-    \vspace{0.5cm}
-    \centering
-      \frame{\includegraphics[scale=0.5]{hemisphere}}
-    \caption{hemisphere}
-  \end{figure}
-  \singlespacing
-
-La ecuaci\'on de render describe la radiancia de salida sobre un punto.
-\begin{equation}
-L_o(p, w_o) = \int_{\Omega} f_r(p, w_i, w_o)L_i(p, w_i)n\cdot{w_i}dw_i
-\end{equation}
-\singlespacing
-
-Siendo $\Omega$ la hemiesfera centrada en el punto sobre la que calculamos la irradiancia,
-$f_r$ representa el brdf, $Li$, la irradiancia de la escena, mientras que $n\cdot{w_i}$ toma en
-cuenta el \'angulo entre la de incidencia de la luz sobre la superficie.
-
-\begin{equation}
-L_o(p, w_o) = \int_{\Omega} (k_d + \frac{c}{\pi} + 
-k_s \frac{DFG}{4(w_o\cdot{n})(w_i\cdot{n})})L_i(p, w_i)n\cdot{w_i}dw_i
-\end{equation}
-\singlespacing
-
-Los terminos $k_s$ y $k_d$ de la ecuacion de reflectancia son independientes, por lo que, de la
-misma forma que en la iluminacion directa, los componentes se pueden separar en difuso y
-especular.
-
-\begin{equation}
-L_o(p, w_o) = \int_{\Omega}
-(k_d \frac{c}{\pi}) L_i(p, w_i)n\cdot{w_i}dw_i +
-\int_{\Omega} 
-k_s \frac{DFG}{4(w_o\cdot{n})(w_i\cdot{n})})L_i(p, w_i)n\cdot{w_i}dw_i
-\end{equation}
-\singlespacing
+El modelo de Cook-Torrance \autocite{cooktorrance}, que explicaremos en detalle en el Cap\'itulo 4, sus principales aportaciones son
+separar el BRDF como la suma de sus dos componentes, especular y difuso y utilizar un BRDF especular basado en microfacetas. El BRDF
+especular es la como la combinaci\'on de los t\'erminos de distribuci\'on de las normales, el de geometr\'ia o visibilidad que modela
+los fen\'omenos de sombra y enmascaramiento y el de Fresnel.
+% El trabajo utiliza la funcion de distribuci\'on de las normales de Beckmann \autocite{beckmann}, mientras que para el t\'ermino de Fresenl presenta
+% una aproximaci\'on original de \'este trabajo. Aunque con variaciones en su componente difusa o los t\'erminos del BRDF especular que
+% repasaremos a continuaci\'on, este sigue siendo el modelo de referencia hoy en d\'ia para materiales PBR.
 
     \subsection{Componente difusa}
-    La soluci\'on de la integral de la irradiancia de salida sobre $\Omega$ requiere samplear el entorno
-    en todas las direcciones posibles. Es por ello que en tiempo real, la soluci\'on consiste en
-    precomputar este c\'alculo.\\
+        Johann Heinrich Lambert introdujo en 1760 \autocite{lambert} el concepto de difusi\'on perfecta, superficies cuya radiancia no
+        dependen del punto de vista, si no que parecen tener la misma radiancia desde todas las direcciones. Este modelo fue el utilizado
+        por Cook-Torrance \autocite{cooktorrance} y se sigue utilizando con frecuencia a d\'ia de hoy, ya que supone una buena
+        aproximaci\'on para una gran parte de materiales. Sin embargo, este modelo ideal no tiene en cuenta la conservaci\'on
+        de la energ\'ia y cuando se utiliza en conjunto con un BRDF basado en f\'isica, podemos observar un oscurecimiento
+        en las zonas de mayor rugosidad, que se acent\'ua a medida que aumenta al incrementar el \'angulo de incidencia de la luz.
+        El modelo de Oren-Nayar \autocite{orennayar}, presenta por primera vez un t\'ermino difuso f\'isicamente plausible,
+        basado en la teor\'ia de microfacetas, especialmente en el trabajo de Torrance-Sparrow \autocite{torrancesparrow}. M\'as
+        tarde, los modelos de Disney \autocite{disney12} \autocite{disney15}, Yoshiharu Gotanda \autocite{gotanda14} o Eal Hammon
+        \autocite{earlhammon} presentaron sucesivas aproximaciones a la componente difusa basada en f\'isica teniendo en cuenta la
+        distribuci\'on de las microfacetas dependiendo de los t\'erminos utilizados para la componente especular.
 
-    Habiendo separado la ecuaci\'on para la componente difusa y especular, podemos observar que el t\'ermino del difuso
-    de Lambert es constante y lo podemos sacar de la integral.
+        % en computaci\'n gr\'afica para representar la componente difusa de un material,
 
-    \begin{equation}
-    L_o(p, w_o) = \int_{\Omega}
-    (k_d \frac{c}{\pi}) L_i(p, w_i)n\cdot{w_i}dw_i=
-    k_d \frac{c}{\pi} \int_{\Omega}
-    (L_i(p, w_i)n\cdot{w_i}dw_i
-    \end{equation}
-    \singlespacing
+        % Superficies con una reflexi\'on ideal, concepto que fue introducido en 1760 por Johann Heinrich Lambert en su libro fotometr\'ia,
+        % este tipo de superficies se conocen como perfectamente difusas o superficies Lambertianas en su honor.
+        % % Lambertian surfaces are ideally diusing surfaces, whose radiance is in dependent of viewing direction
+        % % they appear equally brightfrom all directions.
+        % The apparent brightness of a Lambertian surface to an observer is the same regardless of the observer's angle of view
+        % El modelo de reflexi\'on difusa de Lambert representa un color ideal. El concepto de difusi\'on perfecta fue introducido
+        % en el libro Photometria de Johann Heinrich Lambert\\
 
-        \subsubsection{Mapas de irradiancia}
-        T\'ecnica IBL (\textit{Image Based Lighting}), que permite precalcular la irradiacia del entorno, utilizando una im\'agen
-        de referencia y almacenarla en una nueva textura, el mapa de irradiancia. Para ello se 
-        \todo[inline]{t\'enica IBL}
-        \todo[inline]{
-            Convolution is applying some computation to each entry in a data set considering all other entries in the data set;
-            the data set being the scene's radiance or environment map. Thus for every sample direction in the cubemap, we take
-            all other sample directions over the hemisphere $\Omega$ into account.
-            To convolute an environment map we solve the integral for each output wo sample direction by discretely sampling a
-            large number of directions wi over the hemisphere $\Omega$ and averaging their radiance. The hemisphere we build the sample
-            directions wi from is oriented towards the output wo sample direction we're convoluting.
-        }
-        \todo[inline]{
-            computed sum of all indirect diffuse light of the scene hitting some surface aligned along direction wo. Such a
-            cubemap is known as an irradiance map seeing as the convoluted cubemap effectively allows us to directly sample the
-            scene's (pre-computed) irradiance from any direction wo.
-        }
+        % Aunque el modelo de Lambert \autocite{lambert} funciona perfectamente sobre materiales met\'alicos o pl\'asticos, el
+        % modelo de Lambert produce sombras para valores altos del par\'ametro de rugosidad, lo que se acent\'ua al incrementar
+        % el \'angulo de incidencia de la luz en la mayor\'ia de casos, al utilizar el modelo de Lmabert , sobre modelos de microfacetas
+        % En 1994, el modelo de Oren-Nayar \autocite{orennayar} supuso el primer modelo de reflex\'on difusa basado en la teor\'ia de
+        % microfacetas, especialmente en el trabajo de Torrance y Sparrow, optimizado m\'as tarde por Yoshiharu Gotanda \autocite{gotanda}
+        % y posteriormente por
+        % Disney presenta su propio modelo para la componente difusa \autocite{disney12}, mejorado en 2015 \autocite{disney15}
+        % a new GGX+Smith diffuse shading model, a new and cheap approximation for Smith specular shadowing/masking \autocite{earlhammon}
+        
+        % Used Heitz Multiscattering simulator with GGX NDF. 
+        % Using a multiscattering model means energy reflected diffusely can be reflected again by 
+        % neighboring microfacets. 
+        % We made some additions and some assumptions to his model:
+        % 1) We treat each microfacet as a diffuse reflector of 100%.
+        % 2) We apply Fresnel to determine energy reflected diffusely. 
+        % 3) We use implicit F0 = 0.04 to determine energy reflected specularly and unable to 
+        % participate in diffuse reflectance.
+        % Interestingly, the properties we want fall out of this model automatically: 
+        % Flattening for rough surfaces from strong grazing retroreflective response, 
+        % Rounding for smooth surfaces from energy loss to specular\autocite{callofduty}
+        % Oren and Nayar \autocite{orennayar} have proposed a diuse BRDF that models reectance from rough diuse surfaces. The model is based on microfacet theory,
+        % specically on the work by Torrance and Sparrow. Oren and Nayar have proposed a diuse BRDF that models reflectance from rough diuse surfaces.
+        % The model is based on microfacet theory, specically on the work by Torrance and Sparrow. El modelo de Gotanda \autocite{gotanda}
+        
+        % PBR:\\
+        % Oren Nayar \autocite{orennayar}\\
+        % Simplified Oren-Nayar \autocite{gotanda}\\
+        % Disney Diffuse \autocite{disney12}\\
+        % Renormalized Disney Diffuse \autocite{disney15}\\
+        % Gotanda Diffuse \autocite{gotanda14}\\
+        % PBR diffuse for GGX+Smith \autocite{earlhammon}\\
+        % Multiscattering Diffuse \autocite{callofduty}\\
 
-        \begin{figure}[H]
-            \vspace{0.5cm}
-            \centering
-            \frame{\includegraphics[scale=0.5]{irradiance_map}}
-            \caption{Mapa de irradiancia como \textit{cubemap}}
-        \end{figure}
-        \singlespacing
-
-        \subsubsection{Esf\'ericos harm\'onicos}
-        \todo[inline]{
-            \url{https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-lighting-and-shadows/chapter-10-real-time-computation-dynamic}
-        }
     \subsection{Componente especular}
+    Aunuqe podemos considerar la mayor\'ia de materiales como isotr\'opicos, la radiancia de los puntos de su superficie no dependen
+    del angulo de rotacion sobre la normal de la superficie, existen materiales sobre los que \'esta rotaci\'on s\'i afecta
+    a la radiancia de salida. La mayor\'ia de modelos anal\'iticos presentan un modelo isotr\'opico, que es suficiente para
+    representar una amplia variedad de materiales, sin embargo exiten alguno modelos que se encargan de representar \'estas
+    variaciones en la normal de la superficie seg\'un la rotati\'on. A continuaci\'on se describen los diferentes modelos
+    para cada t\'ermino del BRDF.
 
+    % \todo[inline]{
+    %     If we were to rotate the surface about its normal, the BRDF value (and consequently the
+    %     resulting illumination) would remain unchanged. Materials with this characteristic such
+    %     as smooth plastics have isotropic BRDFs.
+    %     In general, most real-world BRDFs are anisotropic to some degree, but
+    %     the notion of isotropic BRDFs is useful because many classes of analytical BRDF models
+    %     fall within this class. In general, most real-world BRDFs are probably more isotropic
+    %     than anisotropic though many real-world surfaces have subtle anisotropy. Any material
+    %     that exhibits even the slightest anisotropic reflection has a BRDF that is anisotropic. 
+    % }
+
+        \subsubsection*{T\'ermino D}
+            \todo[inline]{
+                [Neubelt13] David Neubelt and Matt Pettineo. 2013. Crafting a Next-Gen Material Pipeline for The Order: 1886. Physically Based Shading in Theory and Practice, ACM SIGGRAPH 2013 Courses.
+            }
+
+            En el modelo de Cook-Torrance \autocite{cooktorrance} se utiliza el t\'ermino presentado en 1963 por Beckmann \autocite{beckmann}.
+            Los modelos de Phong \autocite{phong} y Blinn-Phong \autocite{blinnphong}, a pesar de no ser basados en f\'isica, se pueden considerar
+            como modelos emp\'iricos isotr\'opicos de la funci\'on de distribuci\'on de las normales.
+            Recientemente, podemos destacar como modelos isotr\'opicos como los presentados por Disney \autocite{disney12}, el modelo
+            de Eric Heitz \autocite{ggx} o el modelo de \textit{sheen} \autocite{sheenbrdf}, muy adecuado para la representaci\'on de tejidos
+            y que explicaremos en detalle en el Cap\'itulo 5.\\
+            \hspace*{1.5em}Por otra parte, el modelo anisotr\'opico de Phong \autocite{anisotropicphong} fue el primer modelo en representar
+            \'este tipo de superficies, posteriormente, el modelo anistro\'opico de Beckmann \autocite{beckmannspinozo} o el de
+            GGX \autocite{anisotropicggx} han trabajado tambi\'en sobre \'este tipo de materiales
+
+            % \singlespacing
+            % \todo[inline]{
+            %     Isotropic\\
+            %     Rotationally invariant (3D)\\
+            %     True for many materials\\
+            %     One dimension less\\
+            % }
+
+            % \todo[inline]{
+            %     Anisotropic\\
+            %     Depends on the angle of rotation around the surface normal\\
+            % }
+            
+            % \singlespacing
+            % Isotropic:\\
+            % GGX \autocite{ggx}\\
+            % Generalized Trowbridge Reitz (GTR) \autocite{disney12}\\
+            % Ashikhmin \autocite{ashikhmin} <= check Filament\\
+            % Estevez SheenBRDF \autocite{sheenbrdf} <= check Filament\\
+
+            \todo[inline]{
+                [McAuley15] Stephen McAuley. 2015. Rendering the World of Far Cry 4. GDC 2015, basado en [Revie12] Donald Revie. 2012. Implementing Fur in Deferred Shading. GPU Pro 2, Chapter 2.
+            }
+
+        \subsubsection*{T\'ermino F}
+            El t\'ermino F es una aproximaci\'on de la funci\'on de Fresnel. La primera aproximaci\'on de de la funci\'on de Fresnel
+            fue la presentada por Cook-Torrance. M\'as tarde Schlick \autocite{schlick}, Largarde \autocite{frostbite} y Gotanda \autocite{gotanda}
+            presentaron sucesivas aproximaciones.
+
+        \subsubsection*{T\'ermino G}
+            El t\'ermino de geometr\'ia fue presentado en el modelo de microfacetas de Cook-Torrance \autocite{cooktorrance}
+            y se utiliza para describir la cantidad de microfacetas que quedan en sombra y depende t\'ipicamente de los par\'ametros
+            de rugosidad y distribuci\'on de las microfacetas. Adem\'as del citado modelo, tambi\'en son populares los modelos de
+            Neumann \autocite{neumann}, y Kelemen \autocite{kelemen}. No obstante, en la actualidad, los modelos m\'as usados son los
+            basados en el m\'etodo de Smith \autocite{smith}, que consiste en separa la f\'ormula en dos partes que utilizan la misma
+            ecuaci\'on pero una utilizando el vector de vista y otra la de la luz, representando los fen\'omenos de sombreado y
+            enmascaramiento respectivamente. De entre \'estos t\'erminos de geometr\'ia, cabe destacar el trabajo de Earl Hammon
+            \autocite{earlhammon}, el modelo de Schlick-Beckmann \autocite{schlick}, o el utilizado en Unreal \autocite{unreal}, que remapea
+            el valor de rugosidad para conseguir unos valores m\'as intuitivos para los artistas.
+            
+            % \singlespacing
+            % Smith [1967]\\
+            % Cook-Torrance [1982]
+            % Neumann [1999]
+            % Kelemen [2001]
+            % Implicit [2013]
+
+            % \singlespacing
+            % Smith joint masking-shadowing function:\\
+            % Smith-Beckmann\\
+            % Smith-Schlick\\
+            % Schlick-GGX\\
+            % \todo[inline]{
+            %     [Kelemen01] Csaba Kelemen et al. 2001. A Microfacet Based Coupled Specular-Matte BRDF Model with Importance Sampling. Eurographics Short Presentations.
+            %     relacionado demuestra q no es PBR pero es una buena aproximacion para tiempo real [Heitz14] Eric Heitz. 2014. Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs. Journal of Computer Graphics Techniques, 3 (2).
+            % }
+
+            % \todo[inline]{
+            %     Blinn \autocite{blinn77}, Beckmann \autocite{beckmann}, Walter \autocite{ggx}, Neumann \autocite{neumann}, Kelemen
+            %     \autocite{kelemen}, Smith \autocite{smith}, Karis \autocite{karis}, \autocite{reed}
+            % }
+
+        \subsubsection*{Luz indirecta en tiempo real}
+
+            \textbf{Prefiltered Importance Sampling}
+            [Krivanek08] Jaroslave Krivànek and Mark Colbert. 2008. Real-time Shading with Filtered Importance Sampling. Eurographics Symposium on Rendering 2008, Volume 27, Number 4.
+
+            \textbf{Spherical Harmonics}
+            [Ramamoorthi01] Ravi Ramamoorthi and Pat Hanrahan. 2001. On the relationship between radiance and irradiance: determining the illumination from images of a convex Lambertian object. Journal of the Optical Society of America, Volume 18, Number 10, October 2001.
+
+            \textbf{Analytical DFG terms for IBL}
+            \todo[inline]{
+                [Karis14] Brian Karis. 2014. Physically Based Shading on Mobile. https://www.unrealengine.com/blog/physically-based-shading-on-mobile\\
+                basado en: [Lazarov13] Dimitar Lazarov. 2013. Physically-Based Shading in Call of Duty: Black Ops. Physically Based Shading in Theory and Practice, ACM SIGGRAPH 2013 Courses.
+            }
+            \todo[inline]{
+                [Narkowicz14] Krzysztof Narkowicz. 2014. Analytical DFG Term for IBL. https://knarkowicz.wordpress.com/2014/12/27/analytical-dfg-term-for-ibl
+        }
+
+    \subsection{Modelos de BRDF}
+    Cook-Torrance \autocite{cooktorrance}
+    Disney 2012 \autocite{disney12}
+    Disney 2015 \autocite{disney15}
+    Real Shading in Unreal 4 \autocite{karis}
+    Electronic Arts \autocite{frostbite}
+    Filament \autocite{filament}
+    Especificaci\'on MaterialX \autocite{materialx}
+    Referencia de t\'erminos del BRDF \autocite{brdfreference}
