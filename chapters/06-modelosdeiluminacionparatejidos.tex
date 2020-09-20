@@ -1,7 +1,7 @@
 \chapter{Modelos de iluminaci\'on para tejidos}
 
 Los materiales PBR \textit{MeshStandardMaterial} y \textit{MeshPhysicalMaterial} de ThreeJs, aunque funcionan muy bien para gran parte de
-materiales, como pl\'asticos o metales, carecen de par\'ametros que permitan representar los fen\'omenos de retroreflexi\'on o
+materiales, como pl\'asticos o metales, carecen de par\'ametros que permitan representar los fen\'omenos de retrodispersi\'on o
 la reflexi\'on interna caractir\'istica de los tejidos, compuestos de una gran cantidad de hilos que absorben y dispersan la luz.
 Es por ello que Filament presenta un nuevo BRDF basado en los trabajos de y que utiliza un par\'ametro de \textit{sheen} para
 que ofrece un control sobre el brillo especular para simular los fen\'omenos de reflexi\'on hacia delante y hacia detr\'as
@@ -157,7 +157,7 @@ function getParameters( material, lights, shadows, scene, object ) {
 
 
 \vspace{1cm}
-\section{Integraci\'on del c\'odigo GLSL sobre ThreeJs}
+\section{Integraci\'on del nuevo \textit{shader} sobre ThreeJs}
   Para a\~nadir un nuevo BRDF hemos de extender el sistema de \textit{chunks} de ThreeJs. Para ello hemos de a\~nadir el
   punto de entrada del nuevo shader al objeto \textit{shaderChunk}. Siguiendo el sistema de nomenclatura de ThreeJs,
   llamaremos \textit{meshcloth\_frag.glsl.js} al nuevo shader, que utiliza chunks comunes con el \textit{MeshStandardMaterial},
@@ -167,19 +167,16 @@ function getParameters( material, lights, shadows, scene, object ) {
   directa e indirecta del nuevo material.
 
   \subsection{Componente difusa}
-
-  El difuso, aunque muy parecido al de Threejs, que utiliza un BRDF de Lambert,
-  Filament a\~nade un factor de correcci\'on que permite simular el efecto de \textit{subsurface}.
-  \todo[inline]{
-    In addition, diffuse and subsurface scattering are actually the same physical phenomenon, essentially the result of
-    subsurface scattering of refracted light. The only difference is the scattering distance relative to the observed scale.
-    The scattering distance is negligible compared to the pixel, and the subsurface scattering can be approximated as diffuse
-    reflection. That is to say, the phenomenon of light refraction, modeled as diffuse or subsurface scattering, depends on
-    the scale of observation.
-  }
+  El color difuso y el color de \textit{subsurface}, modelan en realidad el mismo fen\'omeno f\'isico, la cantidad de reflexi\'on
+  interna que resulta en aportaci\'on sobre la reflexi\'on en direcci\'on al vector de vista. Cuando la distancia de reflexi\'on
+  es despreciable en comparaci\'on con el tama\~no del pixel, se aproxima como una reflexi\'on difusa, sin embargo, cuando
+  la distancia es considerable, el fen\'omeno se modela de forma diferente. En tiempo real, es com\'un utilizar la citada aproximaci\'on
+  \textit{wrapped diffuse lighting} \autocite{orennayar}.
+  El modelo para tejidos de Filament utiliza el difuso de Lambert en caso de no utilizar el par\'ametro \textit{subsurface},
+  mientras que si lo utiliza utiliza el factor de correci\'on que permite simular los rebotes internos de la luz.
 
   \begin{equation}
-  f_d(v, h) = \frac{c_{diff}}{\pi}(1 - F(v, h))
+  f_d(v, h) = \frac{c_{diff}}{\pi}
   \Bigg\langle
   n\cdot{l} + \frac{w}{(1+ w)^2}\langle c_{subsurface} + n \cdot{l} \rangle
   \Bigg\rangle
@@ -188,7 +185,7 @@ function getParameters( material, lights, shadows, scene, object ) {
 
   \subsection{Componente especular}
 
-  El MeshPhysicalMaterial utiliza por defecto un BRDF GGX, \autocite{ggx}. Sin embargo, si el par\'ametro de \text{sheen}
+  El \textit{MeshPhysicalMaterial} utiliza por defecto un BRDF GGX, \autocite{ggx}. Sin embargo, si el par\'ametro de \text{sheen}
   est\'a activo, utiliza 
   Al contrario que el MeshPhysicalMaterial, que utiliza una una distribucion GGX, el material
   Cloth de Filament utiliza una  version modificada del BRDF presentado por Ashikmin y Premoze
@@ -201,7 +198,7 @@ function getParameters( material, lights, shadows, scene, object ) {
   \end{equation}
   \singlespacing
 
-  en su lugar se utiliza la la presentada por Est\'evez y Kulla \autocite{sheen}
+  \hspace{-1.5em}en su lugar se utiliza la la presentada por Est\'evez y Kulla \autocite{sheen}
 
   \begin{equation}
     D_{Charlie}(\alpha) = \frac
@@ -210,10 +207,10 @@ function getParameters( material, lights, shadows, scene, object ) {
   \end{equation}
   \singlespacing
 
-  y se utiliza una version modificada del denominador para suavizar:
+  \hspace{-1.5em}y se utiliza una version modificada del denominador para suavizar el degradado de la sombra.
 
   \begin{equation}
-  \frac{1}{4(N\cdot{V})(N\cdot{L})}
+  \frac{1}{4(n\cdot{l} + n\cdot{v} - (n\cdot{l})(n\cdot{v}) )}
   \end{equation}
   \singlespacing
 
@@ -317,7 +314,7 @@ en el an\'alisis de las citadas propiedades \textit{sheen} y \textit{subsurface}
 
 El nuevo material no ofrece un control directo sobre la intensidad del \textit{sheen}, sin embargo, un efecto similar se puede
 alcanzar utilizando un el mismo que el color base aumentando la luminosidad. De \'esta forma se consigue que el l\'obulo
-de \textit{sheen} produzca reflexiones m\'as brillantes (Figura 6.3).
+de \textit{sheen} produzca reflexiones m\'as brillantes (figura 6.3).
 
 \begin{figure}[H]
   \vspace{0.5cm}
@@ -327,7 +324,7 @@ de \textit{sheen} produzca reflexiones m\'as brillantes (Figura 6.3).
 \end{figure}
 \singlespacing
 
-Como se muestra en la Figura 6.4, utilizar un color de \textit{sheen} diferente al color base permite conseguir reflexiones especular en dos tonos como
+Como se muestra en la figura 6.4, utilizar un color de \textit{sheen} diferente al color base permite conseguir reflexiones especular en dos tonos como
 resultado de la combinaci\'on del l\'obulo primario y el l\'obulo de sheen.
 
 \begin{figure}[H]
@@ -338,7 +335,7 @@ resultado de la combinaci\'on del l\'obulo primario y el l\'obulo de sheen.
 \end{figure}
 \singlespacing
 
-En la Figura 6.5, el color base permanece constante, mientras que el \textit{subsurface}, de un tono similar al color base,
+En la figura 6.5, el color base permanece constante, mientras que el \textit{subsurface}, de un tono similar al color base,
 aumenta su saturaci\'on. Del mismo modo que en el \textit{sheen}, jugando con el valor de luminosidad del \textit{subsurface},
 se puede obtener control sobre la intensidad del efecto.
 
@@ -354,19 +351,22 @@ se puede obtener control sobre la intensidad del efecto.
 En la figura 6.6, se utilizan dos tonos de color complementarios para el color base y el \textit{subsurface}. El color
 base es constante, mientras que el \textit{sheen} aumenta por pasos su saturaci\'on.
 El factor de correcci\'on aplicado sobre el color difuso, que simula el efecto de reflexi\'on interna, ti\~ne progresivasivamente
-las sombras del color asignado al par\'ametro \textit{subsurface}.
+las sombras del color asignado al par\'ametro \textit{subsurface}.\\
 
-\begin{figure}[H]
-  \vspace{0.5cm}
-  \centering
-    \frame{\includegraphics[scale=0.37]{results/grid_subsurface_roughness.jpg}}
-  \caption{En el eje $x$ aumenta la intensidad del \textit{subsurface}, en el eje $y$ el valor de \textit{roughness}.}
-  \vspace{0.5cm}
-\end{figure}
-\singlespacing
+Las siguientes comparativas son matrices bidimensionales que muestran la evoluci\'on de un par\'ametro por cada uno de los ejes
+$x$ e $y$ y permiten ver la relaci\'on entre estos dos par\'ametros y su efecto sobre la apariencia final del material.\\
 
-En la comparativa de la figura 6.7, se muestra en el eje $x$ un aumento del efecto de \textit{subsurface}, mientras que en el
-eje $y$ aumenta el valor de roughness del material.
+En la comparativa de la figura 6.7, se muestra en el eje $x$ un aumento del efecto de \textit{sheen}, mientras que en el
+eje $y$ aumenta el valor de roughness del material. Se puede apreciar que con valores bajos de \textit{sheen}, el efecto
+se aprecia con intensidad en los \'angulos cr\'iticos y decae r\'apidamente, mientras que para valores altos de este par\'ametro,
+el efecto se extiende hacia los tonos medios, creando una transici\'on m\'as suave entre el color base y el de \textit{sheen}.\\
+
+La figura 6.8 muestra los incrementos del color de \textit{sheen} en el eje $x$ e incrementos en el eje $y$ del color de subsurface.
+El \textit{sheen} de color verde simula el efecto de retrodispersi\'on que ti\~ne el brillo especular de \'este color, mientras
+que el \textit{subsurface}, de color rojo, da a los tonos medios un color rojizo. El valor de \textit{roughness} del material
+es alto, es por ello que a medida que aumentan los valores de \textit{subsuface}, \textit{sheen}, se aprecia una transici\'on
+suave entre estos dos par\'ametros, que proporcionan el aspecto amarillo/anaranjado, como resultado de la transici\'on entre
+el verde del brillo especular y el rojo de las sombras y tonos medios.
 
 \begin{figure}[H]
   \vspace{0.5cm}

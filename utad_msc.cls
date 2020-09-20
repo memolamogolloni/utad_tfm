@@ -14,7 +14,7 @@
             maxnames=2, %for et al to be used
             maxalphanames=1, %to avoid printing a + for every et al in the abbreviation
             doi=false]{biblatex}  
-\bibliography{references} 
+\bibliography{references}
 
 \usepackage{afterpage}
 \usepackage{float}
@@ -222,18 +222,20 @@
 
 % Headers and footers style
 \pagestyle{fancy}
-\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
-\renewcommand{\headrulewidth}{0.4pt}% Line at the header visible
+% \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+% \renewcommand{\headrulewidth}{0.4pt}% Line at the header visible
 \renewcommand{\footrulewidth}{0.4pt}% Line at the footer visible
 \fancyhf{}
-\headheight 20pt
-\fancyhead[R]{\utadtitle}
-\fancyhead[L]{\leftmark}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+% \headheight 20pt
+% \fancyhead[R]{\utadtitle}
+% \fancyhead[L]{\leftmark}
 \fancyfoot[R]{\thepage}
 % Set header and footer also for the first page of each chapter
 \fancypagestyle{plain}{%
-  \fancyhf{}%
-  \fancyhead[R]{\utadtitle}
-  \fancyhead[L]{\leftmark}
+  % \fancyhf{}%
+  % \fancyhead[R]{\utadtitle}
+  % \fancyhead[L]{\leftmark}
   \fancyfoot[R]{\thepage}
 }
