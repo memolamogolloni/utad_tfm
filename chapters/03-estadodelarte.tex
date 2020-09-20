@@ -1,201 +1,160 @@
 \chapter{Estado del arte}
+En \'este cap\'itulo, por una parte se hace un breve repaso de los diferentes sistemas de almacenamiento m\'as comunes en aplicaciones web
+y las diferencias entre ellos, que sirven para contextualizar la implementaci\'on del modelo de datos sobre una base de datos no
+relacional basada en documentos que se describe en el Cap\'itulo 5.
+Adem\'as, se comentan brevemente los avances en t\'ecnicas de visualizaci\'on realistas en motores de renderizado en tiempo real, que suponen
+el marco te\'orico de este proyecto. Muchas de estas t\'ecnicas se analizan en detalle en el Cap\'itulo 4.
+
+% \section{Arquitectura y almacenamiento en aplicaciones web}
+% El patr\'on m\'as utilizado en la actualidad para la organizaci\'on de un proyecto web es el MVC, o modelo vista controlador.
+% El modelo representa a la base de datos, mientras que el controlador es la aplicaci\'on en el lado del servidor que act\'ua
+% como intermediaria entre las peticiones del usuario y las consultas a la base de datos y finalmente la vista es la visualizaci\'on
+% que se le ofrece al usuario para permitirle interactuar con la aplicaci\'on.
+
+\section{Sistemas de almacenamiento}
+En la actualidad, los modelos de bases de datos m\'as utilizados son SQL \autocite{sql}, un sistema de filas y columnas
+contenidas en tablas y relacionadas a trav\'es de claves y NoSQL, que agrupa a un conjunto de sistemas de datos no relacionales.
+Mientras que las bases de datos relacionales aseguran la consistencia de los datos cumpliendo con las propiedades ACID
+\autocite{acid}, los sistemas NoSQL nacieron durante los a\~nos 90 para dar respuesta a la alta disponibilidad de los recursos debido al creciente
+n\'umero de usuarios de las aplicaciones web. Otras car\'acter\'isticas de los sistemas NoSQL son su flexibilidad en el modelo de datos
+y su escalabilidad horizontal, al soportar estructuras distribu\'idas. Dentro de los sistemas no relacionales, podemos identificar
+cuatro grupos principales: las bases de datos de clave/valor, en la sus datos se organizan en una estructura parecida a un diccionario
+y ofrece una respuesta con muy baja latencia, bases de datos basadas en documentos, que relacionan una clave con una estructura
+de datos compleja, bases de datos basadas en columnas, muy comunes en aplicaciones Big Data al funcionar muy bien sobre sistemas
+distribu\'idos muy grandes y bases de datos basadas en grafos, que utilizan colecciones de nodos unidos por aristas que definen
+las relaciones entre nodos.
+
+        % \textbf{Graph databases}\\
+        % Modeled after the concept of a mathematical graph, the graph database contains a collection of items (called nodes) and edges 
+        % known as graphs) which define the relationships between items. Graph databases are designed for transactional integrity,
+        % flexibility, and operational availability, making them a good choice for a range of use cases requiring speedy parsing of
+        % relationships between heterogeneous data points – applications such as fraud prevention, advanced enterprise operations, online
+        % transaction processing (OLTP), certain types of data security, churn analysis, and regulatory reporting, to name a few.
+
+        % Their data models are a lot simpler than those of relational or other NoSQL databases. A drawback to widespread adoption, though,
+        % is the lack of a standard graph database query language. You can’t use SQL (that’s what “NoSQL” means) or any other popular language.
+        % Aspiring graph database developers should plan on acquiring fluency in a language only applicable to a few databases.\textbf{Neo4j}
+
+        % \textbf{Key-value databases}\\
+        % Another specialized non-relational type is the key-value database. Similar to a dictionary, it is used for fairly simply-organized
+        % information that needs to be accessed with very low latency. A typical use case is the storage of configuration data. While these
+        % lightweight databases are not that widely known, one was voted the “most loved database” in a popular annual survey for three years
+        % running. \textbf{Redis}
+
+        % \textbf{Document databases}\\
+        % Document databases pair each key with a complex data structure known as a document. Documents can contain many different
+        % key-value pairs, or key-array pairs, or even nested documents. MongoDB is a document database. \textbf{MongoDB}
+
+        % \textbf{Column store databases}\\
+        % The other NoSQL database type is known as a column store, wide column store, or column family database. Very fast and monstrously
+        % scalable, these are capable of accommodating petabytes of data in vast distributed systems with thousands of servers. All of this
+        % makes them perfect for specific kinds of Big Data applications.\textbf{Cassandra}
+
+    % El modelo de base de datos no relacional fue introducido  por Edgar F. Codd \autocite{sql}, utilizando un sistema de filas y
+    % columnas asociadas utilizando las claves de las filas. SQL ha sido usado y es usado extensivamente desde su nacimiento,
+    % sin embargo, las nuevas necesidades de las aplicaciones durante los a\~nos 90 el nacimiento de nuevos sistemas de informaci\'on
+    % las bases de datos no relacionales, que permiten una alta disponibilidad de los datos, a coste de no cumplir las propiedades ACID
+    % frente a la consistencia de las bases de datos relacionales, las NoSQL aportan flexibilidad en sus estructuras de datos,
+    % escalabidad horizontal, al soportar estructuras distribuidas y una alta disponibilidad de los datos
+
+\section{T\'ecnicas de visualizaci\'on realista en tiempo real}
 
 En 1970 se presenta el primer algoritmo de sombreado en gr\'aficos rasterizados \autocite{gouraud}, posteriormente 
-Phong \autocite{phong} presentada un modelo para la componente especular, revisado y mejorado posteriormente en el modelo Blinn-Phong
-\autocite{blinnphong} por James Blinn. Estos modelos consiguen describir el comportamiento del material en todos sus puntos,
+Phong \autocite{phong} presentada un modelo para la componente especular, revisado y mejorado posteriormente por James Blinn
+\autocite{blinnphong}. Estos modelos consiguen describir el comportamiento del material en todos sus puntos,
 estableciendo un ratio entre la luz que llega a una superficie y la luz reflejada, sin embargo no tienen en cuenta el modelo f\'isico de
 la luz, por lo que no podemos hablar de materiales PBR hasta 1981, a\~no en el que Robert Cook y Kenneth Torrance presentan su modelo
 de BRDF basado en microfacetas \autocite{cooktorrance}
 
-\section{Componentes y t\'erminos del BRDF basado en microfacetas}
-\todo[inline]{
-    Blinn \autocite{blinn77}, Beckmann \autocite{beckmann}, Walter \autocite{ggx}, Neumann \autocite{neumann}, Kelemen
-    \autocite{kelemen}, Smith \autocite{smith}, Karis \autocite{karis}, \autocite{reed}
-}
-
-El modelo de Cook-Torrance \autocite{cooktorrance}, que explicaremos en detalle en el Cap\'itulo 4, sus principales aportaciones son
-separar el BRDF como la suma de sus dos componentes, especular y difuso y utilizar un BRDF especular basado en microfacetas. El BRDF
-especular es la como la combinaci\'on de los t\'erminos de distribuci\'on de las normales, el de geometr\'ia o visibilidad que modela
-los fen\'omenos de sombra y enmascaramiento y el de Fresnel.
-% El trabajo utiliza la funcion de distribuci\'on de las normales de Beckmann \autocite{beckmann}, mientras que para el t\'ermino de Fresenl presenta
-% una aproximaci\'on original de \'este trabajo. Aunque con variaciones en su componente difusa o los t\'erminos del BRDF especular que
-% repasaremos a continuaci\'on, este sigue siendo el modelo de referencia hoy en d\'ia para materiales PBR.
-
-    \subsection{Componente difusa}
-        Johann Heinrich Lambert introdujo en 1760 \autocite{lambert} el concepto de difusi\'on perfecta, superficies cuya radiancia no
-        dependen del punto de vista, si no que parecen tener la misma radiancia desde todas las direcciones. Este modelo fue el utilizado
-        por Cook-Torrance \autocite{cooktorrance} y se sigue utilizando con frecuencia a d\'ia de hoy, ya que supone una buena
-        aproximaci\'on para una gran parte de materiales. Sin embargo, este modelo ideal no tiene en cuenta la conservaci\'on
-        de la energ\'ia y cuando se utiliza en conjunto con un BRDF basado en f\'isica, podemos observar un oscurecimiento
-        en las zonas de mayor rugosidad, que se acent\'ua a medida que aumenta al incrementar el \'angulo de incidencia de la luz.
-        El modelo de Oren-Nayar \autocite{orennayar}, presenta por primera vez un t\'ermino difuso f\'isicamente plausible,
-        basado en la teor\'ia de microfacetas, especialmente en el trabajo de Torrance-Sparrow \autocite{torrancesparrow}. M\'as
-        tarde, los modelos de Disney \autocite{disney12} \autocite{disney15}, Yoshiharu Gotanda \autocite{gotanda14} o Eal Hammon
-        \autocite{earlhammon} presentaron sucesivas aproximaciones a la componente difusa basada en f\'isica teniendo en cuenta la
-        distribuci\'on de las microfacetas dependiendo de los t\'erminos utilizados para la componente especular.
-
-        % en computaci\'n gr\'afica para representar la componente difusa de un material,
-
-        % Superficies con una reflexi\'on ideal, concepto que fue introducido en 1760 por Johann Heinrich Lambert en su libro fotometr\'ia,
-        % este tipo de superficies se conocen como perfectamente difusas o superficies Lambertianas en su honor.
-        % % Lambertian surfaces are ideally diusing surfaces, whose radiance is in dependent of viewing direction
-        % % they appear equally brightfrom all directions.
-        % The apparent brightness of a Lambertian surface to an observer is the same regardless of the observer's angle of view
-        % El modelo de reflexi\'on difusa de Lambert representa un color ideal. El concepto de difusi\'on perfecta fue introducido
-        % en el libro Photometria de Johann Heinrich Lambert\\
-
-        % Aunque el modelo de Lambert \autocite{lambert} funciona perfectamente sobre materiales met\'alicos o pl\'asticos, el
-        % modelo de Lambert produce sombras para valores altos del par\'ametro de rugosidad, lo que se acent\'ua al incrementar
-        % el \'angulo de incidencia de la luz en la mayor\'ia de casos, al utilizar el modelo de Lmabert , sobre modelos de microfacetas
-        % En 1994, el modelo de Oren-Nayar \autocite{orennayar} supuso el primer modelo de reflex\'on difusa basado en la teor\'ia de
-        % microfacetas, especialmente en el trabajo de Torrance y Sparrow, optimizado m\'as tarde por Yoshiharu Gotanda \autocite{gotanda}
-        % y posteriormente por
-        % Disney presenta su propio modelo para la componente difusa \autocite{disney12}, mejorado en 2015 \autocite{disney15}
-        % a new GGX+Smith diffuse shading model, a new and cheap approximation for Smith specular shadowing/masking \autocite{earlhammon}
-        
-        % Used Heitz Multiscattering simulator with GGX NDF. 
-        % Using a multiscattering model means energy reflected diffusely can be reflected again by 
-        % neighboring microfacets. 
-        % We made some additions and some assumptions to his model:
-        % 1) We treat each microfacet as a diffuse reflector of 100%.
-        % 2) We apply Fresnel to determine energy reflected diffusely. 
-        % 3) We use implicit F0 = 0.04 to determine energy reflected specularly and unable to 
-        % participate in diffuse reflectance.
-        % Interestingly, the properties we want fall out of this model automatically: 
-        % Flattening for rough surfaces from strong grazing retroreflective response, 
-        % Rounding for smooth surfaces from energy loss to specular\autocite{callofduty}
-        % Oren and Nayar \autocite{orennayar} have proposed a diuse BRDF that models reectance from rough diuse surfaces. The model is based on microfacet theory,
-        % specically on the work by Torrance and Sparrow. Oren and Nayar have proposed a diuse BRDF that models reflectance from rough diuse surfaces.
-        % The model is based on microfacet theory, specically on the work by Torrance and Sparrow. El modelo de Gotanda \autocite{gotanda}
-        
-        % PBR:\\
-        % Oren Nayar \autocite{orennayar}\\
-        % Simplified Oren-Nayar \autocite{gotanda}\\
-        % Disney Diffuse \autocite{disney12}\\
-        % Renormalized Disney Diffuse \autocite{disney15}\\
-        % Gotanda Diffuse \autocite{gotanda14}\\
-        % PBR diffuse for GGX+Smith \autocite{earlhammon}\\
-        % Multiscattering Diffuse \autocite{callofduty}\\
-
-    \subsection{Componente especular}
-    Aunuqe podemos considerar la mayor\'ia de materiales como isotr\'opicos, la radiancia de los puntos de su superficie no dependen
-    del angulo de rotacion sobre la normal de la superficie, existen materiales sobre los que \'esta rotaci\'on s\'i afecta
-    a la radiancia de salida. La mayor\'ia de modelos anal\'iticos presentan un modelo isotr\'opico, que es suficiente para
-    representar una amplia variedad de materiales, sin embargo exiten alguno modelos que se encargan de representar \'estas
-    variaciones en la normal de la superficie seg\'un la rotati\'on. A continuaci\'on se describen los diferentes modelos
-    para cada t\'ermino del BRDF.
-
+    \subsection{Componentes y t\'erminos del BRDF basado en microfacetas}
     % \todo[inline]{
-    %     If we were to rotate the surface about its normal, the BRDF value (and consequently the
-    %     resulting illumination) would remain unchanged. Materials with this characteristic such
-    %     as smooth plastics have isotropic BRDFs.
-    %     In general, most real-world BRDFs are anisotropic to some degree, but
-    %     the notion of isotropic BRDFs is useful because many classes of analytical BRDF models
-    %     fall within this class. In general, most real-world BRDFs are probably more isotropic
-    %     than anisotropic though many real-world surfaces have subtle anisotropy. Any material
-    %     that exhibits even the slightest anisotropic reflection has a BRDF that is anisotropic. 
+    %     Blinn \autocite{blinn77}, Beckmann \autocite{beckmann}, Walter \autocite{ggx}, Neumann \autocite{neumann}, Kelemen
+    %     \autocite{kelemen}, Smith \autocite{smith}, Karis \autocite{karis}, \autocite{reed}
     % }
 
-        \subsubsection*{T\'ermino D}
-            \todo[inline]{
-                [Neubelt13] David Neubelt and Matt Pettineo. 2013. Crafting a Next-Gen Material Pipeline for The Order: 1886. Physically Based Shading in Theory and Practice, ACM SIGGRAPH 2013 Courses.
-            }
+    El modelo de Cook-Torrance \autocite{cooktorrance}, que explicaremos en detalle en el Cap\'itulo 4, sus principales aportaciones son
+    separar el BRDF como la suma de sus dos componentes, especular y difuso y utilizar un BRDF especular basado en microfacetas. El BRDF
+    especular es la como la combinaci\'on de los t\'erminos de distribuci\'on de las normales, el de geometr\'ia o visibilidad que modela
+    los fen\'omenos de sombra y enmascaramiento y el de Fresnel.
 
-            En el modelo de Cook-Torrance \autocite{cooktorrance} se utiliza el t\'ermino presentado en 1963 por Beckmann \autocite{beckmann}.
-            Los modelos de Phong \autocite{phong} y Blinn-Phong \autocite{blinnphong}, a pesar de no ser basados en f\'isica, se pueden considerar
-            como modelos emp\'iricos isotr\'opicos de la funci\'on de distribuci\'on de las normales.
-            Recientemente, podemos destacar como modelos isotr\'opicos como los presentados por Disney \autocite{disney12}, el modelo
-            de Eric Heitz \autocite{ggx} o el modelo de \textit{sheen} \autocite{sheenbrdf}, muy adecuado para la representaci\'on de tejidos
-            y que explicaremos en detalle en el Cap\'itulo 5.\\
-            \hspace*{1.5em}Por otra parte, el modelo anisotr\'opico de Phong \autocite{anisotropicphong} fue el primer modelo en representar
-            \'este tipo de superficies, posteriormente, el modelo anistro\'opico de Beckmann \autocite{beckmannspinozo} o el de
-            GGX \autocite{anisotropicggx} han trabajado tambi\'en sobre \'este tipo de materiales
+        \subsubsection{Componente difusa}
+            Johann Heinrich Lambert introdujo en 1760 \autocite{lambert} el concepto de difusi\'on perfecta, superficies cuya radiancia no
+            dependen del punto de vista, si no que parecen tener la misma radiancia desde todas las direcciones. Este modelo fue el utilizado
+            por Cook-Torrance \autocite{cooktorrance} y se sigue utilizando con frecuencia a d\'ia de hoy, ya que supone una buena
+            aproximaci\'on para una gran parte de materiales. Sin embargo, este modelo ideal no tiene en cuenta la conservaci\'on
+            de la energ\'ia y cuando se utiliza en conjunto con un BRDF basado en f\'isica, podemos observar un oscurecimiento
+            en las zonas de mayor rugosidad, que se acent\'ua a medida que aumenta al incrementar el \'angulo de incidencia de la luz.
+            El modelo de Oren-Nayar \autocite{orennayar}, presenta por primera vez un t\'ermino difuso f\'isicamente plausible,
+            basado en la teor\'ia de microfacetas, especialmente en el trabajo de Torrance-Sparrow \autocite{torrancesparrow}. M\'as
+            tarde, los modelos de Disney \autocite{disney12} \autocite{disney15}, Yoshiharu Gotanda \autocite{gotanda14} o Eal Hammon
+            \autocite{earlhammon} presentaron sucesivas aproximaciones a la componente difusa basada en f\'isica teniendo en cuenta la
+            distribuci\'on de las microfacetas dependiendo de los t\'erminos utilizados para la componente especular.
 
-            % \singlespacing
-            % \todo[inline]{
-            %     Isotropic\\
-            %     Rotationally invariant (3D)\\
-            %     True for many materials\\
-            %     One dimension less\\
-            % }
+        \subsubsection{Componente especular}
+        Aunuqe podemos considerar la mayor\'ia de materiales como isotr\'opicos, la radiancia de los puntos de su superficie no dependen
+        del angulo de rotacion sobre la normal de la superficie, existen materiales sobre los que \'esta rotaci\'on s\'i afecta
+        a la radiancia de salida. La mayor\'ia de modelos anal\'iticos presentan un modelo isotr\'opico, que es suficiente para
+        representar una amplia variedad de materiales, sin embargo exiten alguno modelos que se encargan de representar \'estas
+        variaciones en la normal de la superficie seg\'un la rotati\'on. A continuaci\'on se describen los diferentes modelos
+        para cada t\'ermino del BRDF.
 
-            % \todo[inline]{
-            %     Anisotropic\\
-            %     Depends on the angle of rotation around the surface normal\\
-            % }
-            
-            % \singlespacing
-            % Isotropic:\\
-            % GGX \autocite{ggx}\\
-            % Generalized Trowbridge Reitz (GTR) \autocite{disney12}\\
-            % Ashikhmin \autocite{ashikhmin} <= check Filament\\
-            % Estevez SheenBRDF \autocite{sheenbrdf} <= check Filament\\
+            \paragraph*{\hspace*{1.5em}T\'ermino D}
+                En el modelo de Cook-Torrance \autocite{cooktorrance} se utiliza el t\'ermino presentado en 1963 por Beckmann \autocite{beckmann}.
+                Los modelos de Phong \autocite{phong} y Blinn-Phong \autocite{blinnphong}, a pesar de no ser basados en f\'isica, se pueden considerar
+                como modelos emp\'iricos isotr\'opicos de la funci\'on de distribuci\'on de las normales.
+                Recientemente, podemos destacar como modelos isotr\'opicos como los presentados por Disney \autocite{disney12}, el modelo
+                de Eric Heitz \autocite{ggx} o el modelo de \textit{sheen} \autocite{sheenbrdf}, muy adecuado para la representaci\'on de tejidos
+                y que explicaremos en detalle en el Cap\'itulo 5.\\
+                \hspace*{1.5em}Por otra parte, el modelo anisotr\'opico de Phong \autocite{anisotropicphong} fue el primer modelo en representar
+                \'este tipo de superficies, posteriormente, el modelo anistro\'opico de Beckmann \autocite{beckmannspinozo} o el de
+                GGX \autocite{anisotropicggx} han trabajado tambi\'en sobre \'este tipo de materiales
 
-            \todo[inline]{
-                [McAuley15] Stephen McAuley. 2015. Rendering the World of Far Cry 4. GDC 2015, basado en [Revie12] Donald Revie. 2012. Implementing Fur in Deferred Shading. GPU Pro 2, Chapter 2.
-            }
+                \todo[inline]{
+                    Estevez and Kulla propose a different NDF (called the “Charlie” sheen) that is based on an exponentiated
+                    sinusoidal instead of an inverted Gaussian. This NDF is appealing for several reasons: its parameterization
+                    feels more natural and intuitive, it provides a softer appearance and, as shown in equation 49, its
+                    implementation is simpler:
+                }
 
-        \subsubsection*{T\'ermino F}
-            El t\'ermino F es una aproximaci\'on de la funci\'on de Fresnel. La primera aproximaci\'on de de la funci\'on de Fresnel
-            fue la presentada por Cook-Torrance. M\'as tarde Schlick \autocite{schlick}, Largarde \autocite{frostbite} y Gotanda \autocite{gotanda}
-            presentaron sucesivas aproximaciones.
+            \paragraph*{\hspace*{1.5em}T\'ermino F}
+                El t\'ermino F es una aproximaci\'on de la funci\'on de Fresnel. La primera aproximaci\'on de de la funci\'on de Fresnel
+                fue la presentada por Cook-Torrance. M\'as tarde Schlick \autocite{schlick}, Largarde \autocite{frostbite} y Gotanda \autocite{gotanda}
+                presentaron sucesivas aproximaciones.
 
-        \subsubsection*{T\'ermino G}
-            El t\'ermino de geometr\'ia fue presentado en el modelo de microfacetas de Cook-Torrance \autocite{cooktorrance}
-            y se utiliza para describir la cantidad de microfacetas que quedan en sombra y depende t\'ipicamente de los par\'ametros
-            de rugosidad y distribuci\'on de las microfacetas. Adem\'as del citado modelo, tambi\'en son populares los modelos de
-            Neumann \autocite{neumann}, y Kelemen \autocite{kelemen}. No obstante, en la actualidad, los modelos m\'as usados son los
-            basados en el m\'etodo de Smith \autocite{smith}, que consiste en separa la f\'ormula en dos partes que utilizan la misma
-            ecuaci\'on pero una utilizando el vector de vista y otra la de la luz, representando los fen\'omenos de sombreado y
-            enmascaramiento respectivamente. De entre \'estos t\'erminos de geometr\'ia, cabe destacar el trabajo de Earl Hammon
-            \autocite{earlhammon}, el modelo de Schlick-Beckmann \autocite{schlick}, o el utilizado en Unreal \autocite{unreal}, que remapea
-            el valor de rugosidad para conseguir unos valores m\'as intuitivos para los artistas.
-            
-            % \singlespacing
-            % Smith [1967]\\
-            % Cook-Torrance [1982]
-            % Neumann [1999]
-            % Kelemen [2001]
-            % Implicit [2013]
+            \paragraph*{\hspace*{1.5em}T\'ermino G}
+                El t\'ermino de geometr\'ia fue presentado en el modelo de microfacetas de Cook-Torrance \autocite{cooktorrance}
+                y se utiliza para describir la cantidad de microfacetas que quedan en sombra y depende t\'ipicamente de los par\'ametros
+                de rugosidad y distribuci\'on de las microfacetas. Adem\'as del citado modelo, tambi\'en son populares los modelos de
+                Neumann \autocite{neumann}, Kelemen \autocite{kelemen} o el presentado de por Neubelt \autocite{theordertalk}. No
+                obstante, en la actualidad, los modelos m\'as usados son los basados en el m\'etodo de Smith \autocite{smith}, que
+                consiste en separar la f\'ormula en dos partes que utilizan la misma ecuaci\'on pero una utilizando el vector de vista
+                y otra la de la luz, representando los fen\'omenos de sombreado y enmascaramiento respectivamente. De entre \'estos t\'erminos
+                de geometr\'ia, cabe destacar el trabajo de Earl Hammon \autocite{earlhammon}, el modelo de Schlick-Beckmann \autocite{schlick},
+                o el utilizado en Unreal \autocite{unreal}, que remapea el valor de rugosidad para conseguir unos valores m\'as intuitivos para
+                los artistas.
+                
+        \subsection{Luz indirecta en tiempo real}
+        La ecuaci\'on para el c\'alculo de iluminaci\'on indirecta, analizada en detalle en el Cap\'itulo 4, fue presentada por primera vez
+        por Kajiya \autocite{kajiya}, sin embargo la parte integral de la ecuaci\'on supone un c\'aculo recursivo que no puede ser resulto
+        en tiempo real. Es por ello, que para los motores de renderizado en tiempo real, se utilizan t\'ecnicas que permiten conseguir
+        \'este efecto, a trav\'es de precalculos o aproximaciones anal\'iticas.
 
-            % \singlespacing
-            % Smith joint masking-shadowing function:\\
-            % Smith-Beckmann\\
-            % Smith-Schlick\\
-            % Schlick-GGX\\
-            % \todo[inline]{
-            %     [Kelemen01] Csaba Kelemen et al. 2001. A Microfacet Based Coupled Specular-Matte BRDF Model with Importance Sampling. Eurographics Short Presentations.
-            %     relacionado demuestra q no es PBR pero es una buena aproximacion para tiempo real [Heitz14] Eric Heitz. 2014. Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs. Journal of Computer Graphics Techniques, 3 (2).
-            % }
+            \subsubsection*{\hspace*{1.5em}Prec\'aculo de irradiancia sobre un punto}
+            Para calcular la irradiancia sobre un punto debida al entorno, Paul Debevec \autocite{debevec} present\'o la t\'ecnica
+            de mapas de irradiancia, mientras que en 2001, Ravi Ramamoorthi y Pat Hanrahan \autocite{sh} presentan la t\'ecnica de esf\'ericos har\'omicos,
+            que permite la compresi\'on de informaci\'on utilizando una representaci\'on de frecuencias de color frente a espacio.
+            La t\'ecnica de \textit{pre-filterd importance sampling} \autocite{prefilteredimportancesampling}, muy parecida a la de mapas
+            de irradiancia \autocite{debevec}, pero adem\'as utiliza la t\'ecnica de \textit{mipmapping} para devolver diferentes mapas
+            de entorno en funci\'on del valor de rugosidad del material.
 
-            % \todo[inline]{
-            %     Blinn \autocite{blinn77}, Beckmann \autocite{beckmann}, Walter \autocite{ggx}, Neumann \autocite{neumann}, Kelemen
-            %     \autocite{kelemen}, Smith \autocite{smith}, Karis \autocite{karis}, \autocite{reed}
-            % }
+            \subsubsection*{\hspace*{1.5em}Integraci\'on de los t\'erminos DFG}
+            La aproximaci\'on de sumas parciales, \autocite{karis} almacena el resultado de la integraci\'on de los t\'erminos en un \textit{look-up texture}
+            y permite simplemente consultarlos en tiempo real. Adem\'as existen funciones anal\'iticas seg\'un el tipo de BRDF,
+            como la utizada por Epic Games \autocite{dfgapproximation} para plataformas m\'oviles o la presentada por Krzysztof Narkowicz
+            \autocite{narkowicz}, que resultan una buena aproximaci\'on en dispositivos con un rendimiento limitado.
 
-        \subsubsection*{Luz indirecta en tiempo real}
-
-            \textbf{Prefiltered Importance Sampling}
-            [Krivanek08] Jaroslave Krivànek and Mark Colbert. 2008. Real-time Shading with Filtered Importance Sampling. Eurographics Symposium on Rendering 2008, Volume 27, Number 4.
-
-            \textbf{Spherical Harmonics}
-            [Ramamoorthi01] Ravi Ramamoorthi and Pat Hanrahan. 2001. On the relationship between radiance and irradiance: determining the illumination from images of a convex Lambertian object. Journal of the Optical Society of America, Volume 18, Number 10, October 2001.
-
-            \textbf{Analytical DFG terms for IBL}
-            \todo[inline]{
-                [Karis14] Brian Karis. 2014. Physically Based Shading on Mobile. https://www.unrealengine.com/blog/physically-based-shading-on-mobile\\
-                basado en: [Lazarov13] Dimitar Lazarov. 2013. Physically-Based Shading in Call of Duty: Black Ops. Physically Based Shading in Theory and Practice, ACM SIGGRAPH 2013 Courses.
-            }
-            \todo[inline]{
-                [Narkowicz14] Krzysztof Narkowicz. 2014. Analytical DFG Term for IBL. https://knarkowicz.wordpress.com/2014/12/27/analytical-dfg-term-for-ibl
-        }
-
-    \subsection{Modelos de BRDF}
-    Cook-Torrance \autocite{cooktorrance}
-    Disney 2012 \autocite{disney12}
-    Disney 2015 \autocite{disney15}
-    Real Shading in Unreal 4 \autocite{karis}
-    Electronic Arts \autocite{frostbite}
-    Filament \autocite{filament}
-    Especificaci\'on MaterialX \autocite{materialx}
-    Referencia de t\'erminos del BRDF \autocite{brdfreference}
+        \subsection{Modelos de referencia de BRDF en la actualidad}
+        Hoy d\'ia el modelo de referencia es el de Disney \autocite{disney12} \autocite{disney15}, conocido como \textit{"Principled"},
+        y que explicaremos en detalle en el Cap\'itulo 4. Adem\'as los modelos de Electronic Arts \autocite{frostbite} o Filament \autocite{filament}
+        suponen implementaciones completas de modelos de BRDDF que integran iluminaci\'on global y  que sirven de inspiraci\'on a otros
+        motores de renderizado en tiempo real.

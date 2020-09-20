@@ -1,12 +1,23 @@
 \chapter{Modelos de iluminaci\'on para tejidos}
 
-En \'este cap\'itulo se detallan los detalles de implementaci\'on del nuevo material sobre la arquitectura de ThreeJs.
-El material a implementar, siguiendo la nomenclatura de los materiales nativos de la librer\'ia, se llamar\'a
-\textit{MeshClothMaterial} y est\'a basado en el material de \textit{Cloth} presentado por Filament.
+Los materiales PBR \textit{MeshStandardMaterial} y \textit{MeshPhysicalMaterial} de ThreeJs, aunque funcionan muy bien para gran parte de
+materiales, como pl\'asticos o metales, carecen de par\'ametros que permitan representar los fen\'omenos de retroreflexi\'on o
+la reflexi\'on interna caractir\'istica de los tejidos, compuestos de una gran cantidad de hilos que absorben y dispersan la luz.
+Es por ello que Filament presenta un nuevo BRDF basado en los trabajos de y que utiliza un par\'ametro de \textit{sheen} para
+que ofrece un control sobre el brillo especular para simular los fen\'omenos de reflexi\'on hacia delante y hacia detr\'as
+caracter\'istico de tejidos como el terciopelo. Adem\'as algunos materiales absorben parcialmente la luz y la emiten de nuevo,
+aport\'ando un color caracter\'istico determinado por las fibras del tejido, \'este fen\'omeno se representa con el par\'ametro
+\textit{subsurface} de Filament, que utiliza la aproximaci\'on conocida como \textit{wrapped diffuse lighting} \autocite{orennayar}
+
 
 \section{Integraci\'on de una nueva clase de material en ThreeJs}
-Para extender la librer\'ia de materiales con un material destinado a tejidos, se ha optado por extender a la clase base
-de materiales PBR en ThreeJs, \textit{MeshStandardMaterial}. El nuevo material tiene un BRDF diferente al \textit{MeshPhysicalMaterial},
+ThreeJs proporciona un API para extender de forma sencilla su librer\'ia de materiales, sin embargo, para proporcionar al nuevo
+material de la misma interfaz que los materiales nativos de ThreeJs, as\'i como seguir extendiendo la librer\'ia y ser flexible
+a futuros cambios, se ha optado por crear un \textit{fork} de la librer\'ia e introducir los cambios necesarios para crear
+este nuevo material. Siguiendo la nomenclatura de ThreeJs: \textit{MeshBasicMaterial}, \textit{MeshStandardMaterial}, etc., el
+nuevo material se llama \textit{MeshClothMaterial}.
+
+El nuevo material tiene un BRDF diferente al \textit{MeshPhysicalMaterial},
 y diferentes par\'ametros, sin embargo si que soporta los mismos efectos de \textit{normal mapping}, \textit{displacement}, etc.
 y comparte gran cantidad de los par\'ametros con el material base, a\~nadiendo \textit{subsurface}, \textit{sheen}.
 \textit{MeshClothMaterial} utiliza sus propios \textit{type}, para identificar el tipo
@@ -145,7 +156,7 @@ function getParameters( material, lights, shadows, scene, object ) {
 % barata el subsurface scattering para iluminaci\'on directa que utiliza Filament.\\
 
 
-
+\vspace{1cm}
 \section{Integraci\'on del c\'odigo GLSL sobre ThreeJs}
   Para a\~nadir un nuevo BRDF hemos de extender el sistema de \textit{chunks} de ThreeJs. Para ello hemos de a\~nadir el
   punto de entrada del nuevo shader al objeto \textit{shaderChunk}. Siguiendo el sistema de nomenclatura de ThreeJs,
@@ -289,3 +300,88 @@ vec3 Fd = Fd_SH + Fd_Lod;
       Sin embargo, \'este c\'aculo no es v\'alido para nuestro BRDF, por que, deberemos utilizar una
       tabla en la que almacenar los resultados calculados para el BRDF presentado por Est\'evez y Kulla.
     \egroup
+
+\vspace{1cm}
+\section{Resultados}
+
+A continuaci\'on se muestran y comentan las im\'agenes como resultado de la implementaci\'on. Los resultados se centran
+en el an\'alisis de las citadas propiedades \textit{sheen} y \textit{subsurface} del material \textit{MeshClothMaterial}.
+% Por una parte se muestran interpolaciones de dichas propiedades frente a un color base constante y por otra,
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.2]{results/sheenintensity.jpg}}
+  \caption{Interpolaci\'on de un color de \textit{sheen} aumentando su luminosidad frente a un color base constante.}
+\end{figure}
+
+El nuevo material no ofrece un control directo sobre la intensidad del \textit{sheen}, sin embargo, un efecto similar se puede
+alcanzar utilizando un el mismo que el color base aumentando la luminosidad. De \'esta forma se consigue que el l\'obulo
+de \textit{sheen} produzca reflexiones m\'as brillantes (Figura 6.3).
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.2]{results/sheentint.jpg}}
+  \caption{Interpolaci\'on de un color de \textit{sheen} aumentando su saturacion frente a un color base constante.}
+\end{figure}
+\singlespacing
+
+Como se muestra en la Figura 6.4, utilizar un color de \textit{sheen} diferente al color base permite conseguir reflexiones especular en dos tonos como
+resultado de la combinaci\'on del l\'obulo primario y el l\'obulo de sheen.
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.2]{results/subsurfaceintensity.jpg}}
+    \caption{Interpolaci\'on de un color de \textit{subsurface} aumentando su saturaci\'on frente a un color base constante.}
+\end{figure}
+\singlespacing
+
+En la Figura 6.5, el color base permanece constante, mientras que el \textit{subsurface}, de un tono similar al color base,
+aumenta su saturaci\'on. Del mismo modo que en el \textit{sheen}, jugando con el valor de luminosidad del \textit{subsurface},
+se puede obtener control sobre la intensidad del efecto.
+
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.2]{results/subsurfacetint.jpg}}
+    \caption{Interpolaci\'on de un color de \textit{subsurface} aumentando su luminosidad frente a un color base constante.}
+ \end{figure}
+\singlespacing
+
+En la figura 6.6, se utilizan dos tonos de color complementarios para el color base y el \textit{subsurface}. El color
+base es constante, mientras que el \textit{sheen} aumenta por pasos su saturaci\'on.
+El factor de correcci\'on aplicado sobre el color difuso, que simula el efecto de reflexi\'on interna, ti\~ne progresivasivamente
+las sombras del color asignado al par\'ametro \textit{subsurface}.
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.37]{results/grid_subsurface_roughness.jpg}}
+  \caption{En el eje $x$ aumenta la intensidad del \textit{subsurface}, en el eje $y$ el valor de \textit{roughness}.}
+  \vspace{0.5cm}
+\end{figure}
+\singlespacing
+
+En la comparativa de la figura 6.7, se muestra en el eje $x$ un aumento del efecto de \textit{subsurface}, mientras que en el
+eje $y$ aumenta el valor de roughness del material.
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.37]{results/grid_sheen_roughness.jpg}}
+    \caption{En el eje $x$ aumenta la intensidad del \textit{sheen}, en el eje $y$ el valor de \textit{roughness}.}
+  \vspace{0.5cm}
+\end{figure}
+\singlespacing
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.37]{results/grid_sheen_subsurface.jpg}}
+  \caption{Integraci\'on del nuevo material MeshClothMaterial}
+  \vspace{0.5cm}
+\end{figure}
+\singlespacing

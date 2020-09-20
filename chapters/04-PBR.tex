@@ -74,27 +74,49 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
 
 
     \subsection{Tipos de BRDFs}
-    Los diferentes tipos de BRDFs permiten para modelar diferentes propiedades de los materiales, isotropia o anisotropia,
-    transmitancia, reflexiones internas, etc. Podemos clasificar los diferentes tipos de BRDFs entre modelos analiticos y BDRFs
-    de datos adquiridos. Los modelos analiticos son funciones matemáticas que modelan diferentes efectos de la luz en funcion de
-    sus datos de entrada, mientras que los BRDFs de datos adquiridos, capturan el BRDF de un material con un gonioreflectometro,
-    y permiten una representacion muy precisa del material escaneado.
+    Existen diferentes tipos de BRDFs en funci\'on de las propiedades f\'isicas del material que se quiera representar. Los
+    materiales met\'alicos utilizan un BRDF diferente a los diel\'ectricos, esto es as\'i porque los efectos de absorci\'on y
+    dispersi\'on, son completamente diferentes en funci\'on de esta propiedad.\\
 
-    Comunmente, en la industria se utilizan modelos anal\'iticos, debido a su flexibilidad y rendimiento y el mas utilizado a
-    d\'ia de hoy en la industria, aunque con algunas variaciones en sus t\'erminos, sigue siendo el modelo de Cook-Torrance\autocite{cooktorrance}.
-    \todo[inline]{
-        Metal. The appearance of the metal mainly depends on the direct reflection of light at the interface of the two media (ie, specular reflection). The metallic specular reflection color is a three-channel color, and R, G, and B are different. The light refracted into the metal is almost immediately absorbed by free electrons, and there is no scattering of light refracted into the metal.
-        Non-Metal. Non-metal is a dielectric, and its overall appearance is mainly determined by its combination of absorption and scattering characteristics. Similarly, the interaction between non-metal and light is divided into reflection and refraction. According to the scattering and absorption characteristics of the medium type, refraction is divided into multiple categories:
-    }
-    \todo[inline]{
-        The term isotropic is used to describe BRDFs that represent reflectance properties that
-        are invariant with respect to rotation of the surface around the surface normal vector.
-        Consider a small relatively smooth surface element and fix the light and viewer positions.
-        Anisotropy, on the other hand, refers to BRDFs that describe reflectance properties that
-        do exhibit change with respect to rotation of the surface around the surface normal
-        vector. Some examples of materials that have anisotropic BRDFs are brushed metal,
-        satin, and hair.
-    }
+    En los materiales metalicos, la reflexi\'on especular es de color, la luz refractada es absorbida por el propio material
+    y no existen efectos de dispersi\'on de la luz bajo la superficie, mientras que en los materiales diel\'ectricos, o no
+    met\'alicos, el aspecto final del material esta determinado por una combinaci\'on de los fen\'omenos de absorci\'on y
+    dispersi\'on de la luz.\\
+
+    Por otra parte, podemos distinguir entre materiales anisotr\'opicos, como el metal pulido o el pelo, cuyas propiedades
+    de reflexi\'on cambian al rotar sobre la superficie alrededor de su vector normal. Aunque casi todos los materiales son, en cierta medida, anisotr\'opicos, la
+    aportaci\'on de esta propiedad sobre la apariencia final suele ser tan baja que se desprecia y se utilizan modelos
+    isotr\'opicos.\\
+
+    Adem\'as, seg\'un su origen, podemos distinguir principalmente entre tres tipos de modelos: emp\'iricos, te\'oricos y
+    experimentales. Los modelos emp\'iricos no est\'an basados en f\'isica, si no que son simplificaciones de menor coste que
+    aproximan un determinado fen\'omeno, ejemplos de modelos emp\'iricos son los modelos de Phong \autocite{phong} o el
+    de Blinn-Phong \autocite{blinnphong}. Los modelos te\'oricos, como los basados en microfacetas, se basan en observaciones sobre el comportamiento de la luz y su
+    interacci\'on sobre las superficies para crear un sistema de ecuaciones que describan este comportamiento sobre un modelo
+    matem\'atico. Por \'ultimo, los modelo experimentales, se basan en datos de estudios experimentales con la luz a partir de los
+    que crean funciones que se ajustan a los datos obtenidos en dichos estudios, el BRDF de Schlick es un ejemplo de modelo
+    experimental.
+    % Los diferentes tipos de BRDFs permiten para modelar diferentes propiedades de los materiales, isotropia o anisotropia,
+    % transmitancia, reflexiones internas, etc. Podemos clasificar los diferentes tipos de BRDFs entre modelos analiticos y BDRFs
+    % de datos adquiridos. Los modelos analiticos son funciones matemáticas que modelan diferentes efectos de la luz en funcion de
+    % sus datos de entrada, mientras que los BRDFs de datos adquiridos, capturan el BRDF de un material con un gonioreflectometro,
+    % y permiten una representacion muy precisa del material escaneado.
+
+    % Comunmente, en la industria se utilizan modelos anal\'iticos, debido a su flexibilidad y rendimiento y el mas utilizado a
+    % d\'ia de hoy en la industria, aunque con algunas variaciones en sus t\'erminos, sigue siendo el modelo de Cook-Torrance\autocite{cooktorrance}.
+    % \todo[inline]{
+    %     Metal. The appearance of the metal mainly depends on the direct reflection of light at the interface of the two media (ie, specular reflection). The metallic specular reflection color is a three-channel color, and R, G, and B are different. The light refracted into the metal is almost immediately absorbed by free electrons, and there is no scattering of light refracted into the metal.
+    %     Non-Metal. Non-metal is a dielectric, and its overall appearance is mainly determined by its combination of absorption and scattering characteristics. Similarly, the interaction between non-metal and light is divided into reflection and refraction. According to the scattering and absorption characteristics of the medium type, refraction is divided into multiple categories:
+    % }
+    % \todo[inline]{
+    %     The term isotropic is used to describe BRDFs that represent reflectance properties that
+    %     are invariant with respect to rotation of the surface around the surface normal vector.
+    %     Consider a small relatively smooth surface element and fix the light and viewer positions.
+    %     Anisotropy, on the other hand, refers to BRDFs that describe reflectance properties that
+    %     do exhibit change with respect to rotation of the surface around the surface normal
+    %     vector. Some examples of materials that have anisotropic BRDFs are brushed metal,
+    %     satin, and hair.
+    % }
 
     \begin{figure}[H]
         \centering
@@ -391,7 +413,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     \singlespacing
     
     Siendo $\Omega$ la hemiesfera centrada en el punto sobre la que calculamos la irradiancia,
-    $f_r$ representa el brdf, $Li$, la irradiancia de la escena, mientras que $n\cdot{w_i}$ toma en
+    $f_r$ representa el BRDF, $Li$, la irradiancia de la escena, mientras que $n\cdot{w_i}$ toma en
     cuenta el \'angulo entre la de incidencia de la luz sobre la superficie.
     
     \begin{equation}
