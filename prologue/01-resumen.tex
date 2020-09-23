@@ -1,16 +1,133 @@
 \chapter{Res\'umen}
 
-El realismo de los motores de renderizado web ha aumentado constantemente a lo largo de los \'ultimos a\~nos gracias al incremento en
-capacidad de computaci\'on de los ordenadores, el soporte de APIs gr\'aficas sobre el navegador y el desarrollo de librer\'ias
-que integran t\'ecnicas de renderizado en tiempo real que acercan a los desarrolladores web, de una forma accesible,
-herramientas que antes estaban destinadas al mundo de los videojuegos o la simulaci\'on. Motivado por \'este desarrollo t\'ecnico,
-las plataformas web buscan sorprender a sus usuarios con nuevas formas de contenido, lo que ha propiciado recientemente
-el aumento de \'estes librer\'ias de renderizado 3D: ThreeJs, Babylon, AFrame o Filament son algunos ejemplos de proyectos en cont\'inuo
-crecimiento. El prop\'osito de \'estas librer\'ias es ofrecer una experiencia de uso c\'omoda para los desarrolladores, por lo que intentan
-abstraer de los detalles de implementaci\'on de bajo nivel de la API gr\'afica, proporcionando soluciones que funcionan muy bien
-para la mayor parte de casos a costa de un menor control sobre el sistema de renderizado.\\
+Con la llegada del API gr\'afica WebGL y posterioremente WebGL 2.0 han aparecido cantidad de librer\'ias, como ThreeJs, Babylon,
+AFrame, Filament, etc.,  que proporcionan a los desarrolladores un API que cubre la mayor parte de casos de uso
+del d\'ia a d\'ia y ofrece una experiencia de desarrollo intuitiva a costa de ocultar detalles de implementaci\'on de bajo nivel.\\
+% Las necesidades espec\'ificas de este proyecto, la visualizaci\'on realista de tejidos sobre un entorno web, hace necesario un
+% estudio de las diferentes tipos de t\'ecnicas de r realista para representar este tipo de material, especialmente complejo,
+% ya que las soluciones 
 
-En el presente trabajo se extiende la librer\'ia de materiales de una de las citadas librer\'ias, ThreeJs, con intenci\'on
-de crear un nuevo material que permita representar los fen\'omenos f\'isicos caracter\'isticos de los tejidos y que no se
-modelan los materiales est\'andar de la librer\'ia para conseguir de \'esta forma un mayor grado de realismo sobre este tipo
-de material.
+No obstante, el cometido de este proyecto es renderizar tejidos sobre un entorno web interactivo de la forma m\'as realista posible
+y los modelos est\'andar basados en f\'isica no consiguen, por lo general, una representaci\'on lo suficientemente
+precisa para esta labor. Las im\'agenes generadas por este motor de renderizado sirven como previsualizaci\'on de im\'agenes
+en alta fidelidad generadas por un motor de renderizado de rayos, por lo que, adem\'as de realismo, debe buscarse la mayor
+coherencia posible entre estos dos motores.\\
+
+% interactivo se compara\'n con im\'agenes de alta
+% fidelidad generadas por un motor basado en trazado de rayos, por lo que, adem\'as de realismo, debe buscarse la mayor
+% coherencia posible entre estos dos motores.\\
+
+Basado en el estudio te\'orico de los fundamentos t\'ecnicos del renderizado basado en aspectos f\'isicos (PBR) y el an\'alisis
+de diferentes modelos de Bidirectional Reflectance Distribution Function (BRDF) para la representaci\'on de materiales,
+este trabajo presenta un material especializado en tejidos integrado dentro de una arquitectura de servicios en la nube.
+Para dar soporte a este nuevo material en los servicios en la nube, se han extendido el modelo de datos de los materiales
+y actualizado la interfaz que propociona acceso a ellos. El modelo de BRDF para telas se ha implementado sobre ThreeJs,
+extendiendo la librer\'ia con un nuevo material que ofrece la misma interfaz que los materiales nativos de la librer\'ia.\\
+
+Los resultados presentados ofrecen comparativas entre el material de telas y el material PBR est\'andar de ThreeJs
+y entre las im\'agenes generadas por el este nuevo modelo e im\'agenes de referencia renderizadas por el motor de
+trazado de rayos. En la comparativa con el material de ThreeJs se aprecia un mayor grado de realismo en el nuevo modelo, adem\'as
+frente a las im\'agenes con el motor de trazados de rayos se aprecia poca discrepancia.
+
+
+% muestran una comparativa del nuevo material frente a los materiales est\'andar de la librer\'ia en los que
+% se muestra una mayor fidelidad de los im\'agenes obtenidas con este nuevo modelo.
+
+% Adem\'as las im\'agenes presentadas
+% frente a frente con los resultados generados por el motor de renderizado basado en trazado de rayos, que muestran una mayor
+% coherencia entre ambos motores.
+
+
+% Sin embargo, los tejidos son materiales dif\'iciles de simular al tratarse de estructuras compuestas por gran cantidad de elementos
+% cuyas propiedades e interacciones entre s\'i afectan al aspecto de la superficie 
+% y que se compar\'an con los resultados obtenidos por un motor de trazado de rayos
+% El motor de renderizado utilizado en el cliente web de Author es ThreeJs,
+
+
+
+% Esta integraci\'on es fruto del estudio de diferentes modelos de BRDFs, con el fin de enteder las bases teor\'ias sobre la que se sustentan los
+% motores de renderizado PBR, y el estudio de los detalles de implementaci\'on a bajo nivel del sistema de materiales de ThreeJs,
+% el motor de renderizado utilizado en Author.\\
+% Para ofrecer soporte a este nuevo tipo de material, se han actualizado el modelo
+% de datos y las interfaces de los servicios en la nube de Seddi, adem\'as de extender la librer\'ia ThreeJs de forma que el nuevo
+% material presente la misma interfaz que los materiales nativos de la librer\'ia.\\
+
+
+
+% En este trabajo se actualizan el modelo de datos e interfaces de los servicios en la nube de Seddi, para proporcionar la
+% infraestructura necesaria que soporte un nuevo tipo de material especializado en tejidos dentro del contexto de Author. Adem\'as
+% del desarrollo de infraestructura, se estudian diferentes modelos de BRDF para entender la teor\'ia sobre la que se sostienen los motores de renderizado basados en f\'isica y
+% se analiza la arquitectura del motor de renderizado de ThreeJs
+
+% y se es
+% supone un an\'alisis de los detalles de implementaci\'on a bajo nivel del sistema de materiales en ThreeJs, el motor de renderizado
+% usado en Author, para extenderlo implementando un nuevo Bidirectional Reflectance Distribution Function (BRDF) que represente
+% adecuadamente los fen\'omenos f\'isicos caracter\'isticos de este tipo de material.\\
+
+
+% web para 
+
+% Este trabajo ampl\'ia el modelo de datos y actualiza las interfaces de los servicios web para dar soporte a un tipo de material
+% especial para tejidos q
+
+% Este trabajo supone la comprension a bajo nivel de los detalles de implementacion de la libreria de materiales de ThreeJs
+% para extenderla y crear un material especifico para telas.
+
+% El realismo de los motores de renderizado ha aumentado constantemente a lo largo de los \'ultimos a\~nos gracias al incremento en
+% capacidad de computaci\'on de los ordenadores y nuevas t\'ecnicas de renderizado en tiempo real basadas en f\'isica.
+% Gracias al soporte en web de la API gr\'afica WebGL y m\'as recientemente WebGL 2.0, estas t\'ecnicas, se pueden ver a d\'ia de hoy
+% en aplicaciones web, que dotan a sus gr\'aficos de una calidad excepcional, antes exclusiva del sector videojuegos.
+% Librer\'ias como ThreeJs, Babylon o Filament, acercan muchas de estas t\'ecnicas a disposici\'on del desarrollador,
+% ofreciendo una API intuitiva, que oculta detalles de implementaci\'on de bajo nivel para conseguir una experiencia de desarrollo
+% intuitiva. Estas librer\'ias cubren gran parte de los casos de uso del d\'ia a d\'ia, no obstante, las necesidades espec\'ificas
+% en el departamento de Author hacen necesario extender la librer\'ia para dotarla de nuevas funcionalidades.\\
+% Este trabajo extiende la librer\'ia de 3D ThreeJs, una de las m\'as populares del entorno web, para
+% crear un nuevo material que permita representar los fen\'omenos f\'isicos caracter\'isticos de cierto tipo de tejidos y que no se
+% modelan los materiales est\'andar de la librer\'ia, tratando de conseguir un mayor grado de realismo sobre este tipo
+% de materiales.
+
+
+% mayor\'ia de casos de uso, pero requieren implementaciones espec\'ificas para
+% dar soporte a casos de uso concretos como el de este proyecto: a\~nadir 
+
+% ocultando
+% detalles de implementaci\'on de bajo nivel para , que cumple con la
+% mayor\'ia de casos de uso, 
+
+% bajo
+% unas APIs intuitivas que ocultan detalles de implementaci\'on de bajo nivel.
+
+% ha incrementado la cantidad
+% y calidad del contenido 3D en el navegador, popularizando librer\'ias como ThreeJs, Babylon o AFrame, que acercan estas nuevas t\'enicas
+% de renderizado, antes limitadas esencialmente al desarrollo de videojuegos, que buscan ofrecer
+% una experiencia c\'omoda de desarrollo y 
+
+% abstrayendo detalles de implementaci\'on y ofreciendo 
+
+% que acercan a los desarrolladores web, de una forma accesible,
+% herramientas que antes estaban destinadas al mundo de los videojuegos o la simulaci\'on. Motivado por \'este desarrollo t\'ecnico,
+% las plataformas web buscan sorprender a sus usuarios con nuevas formas de contenido, lo que ha propiciado recientemente
+% el aumento de \'estes librer\'ias de renderizado 3D: ThreeJs, Babylon, AFrame o Filament son algunos ejemplos de proyectos en cont\'inuo
+% crecimiento. El prop\'osito de \'estas librer\'ias es ofrecer una experiencia de uso c\'omoda para los desarrolladores, por lo que intentan
+% abstraer de los detalles de implementaci\'on de bajo nivel de la API gr\'afica, proporcionando soluciones que funcionan muy bien
+% para la mayor parte de casos a costa de un menor control sobre el sistema de renderizado.\\
+
+% En el presente trabajo se extiende la librer\'ia de materiales de una de las citadas librer\'ias, ThreeJs, con intenci\'on
+% de crear un nuevo material que permita representar los fen\'omenos f\'isicos caracter\'isticos de los tejidos y que no se
+% modelan los materiales est\'andar de la librer\'ia para conseguir de \'esta forma un mayor grado de realismo sobre este tipo
+% de material.
+
+% El realismo de los motores de renderizado ha aumentado constantemente a lo largo de los \'ultimos a\~nos gracias al incremento en
+% capacidad de computaci\'on de los ordenadores, el soporte de APIs gr\'aficas sobre el navegador y el desarrollo de librer\'ias
+% que integran t\'ecnicas de renderizado en tiempo real que acercan a los desarrolladores web, de una forma accesible,
+% herramientas que antes estaban destinadas al mundo de los videojuegos o la simulaci\'on. Motivado por \'este desarrollo t\'ecnico,
+% las plataformas web buscan sorprender a sus usuarios con nuevas formas de contenido, lo que ha propiciado recientemente
+% el aumento de \'estes librer\'ias de renderizado 3D: ThreeJs, Babylon, AFrame o Filament son algunos ejemplos de proyectos en cont\'inuo
+% crecimiento. El prop\'osito de \'estas librer\'ias es ofrecer una experiencia de uso c\'omoda para los desarrolladores, por lo que intentan
+% abstraer de los detalles de implementaci\'on de bajo nivel de la API gr\'afica, proporcionando soluciones que funcionan muy bien
+% para la mayor parte de casos a costa de un menor control sobre el sistema de renderizado.\\
+
+% En el presente trabajo se extiende la librer\'ia de materiales de una de las citadas librer\'ias, ThreeJs, con intenci\'on
+% de crear un nuevo material que permita representar los fen\'omenos f\'isicos caracter\'isticos de los tejidos y que no se
+% modelan los materiales est\'andar de la librer\'ia para conseguir de \'esta forma un mayor grado de realismo sobre este tipo
+% de material.

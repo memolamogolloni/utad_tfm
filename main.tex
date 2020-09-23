@@ -24,7 +24,7 @@
 \student{Anxo Babío Rodríguez}
 \tutor{Dr. Iván Alduán Íñiguez}
 \course{Máster en computación gráfica, realidad virtual y simulación}
-\project{Renderizado hiperrealista de tejidos en WebGL 2.0}
+\project{Renderizado de Telas basado en Aspectos Físicos (PBR) para un Entorno Interactivo Web}
 
 
 \AtBeginDocument{%
@@ -35,16 +35,17 @@
     \include{titlepage}
     \blankpage
     \pagestyle{fancy}
-    \fancyfoot{}
     \pagenumbering{roman}
     \frontmatter
       \include{prologue/01-resumen}
+      \include{prologue/02-marcocolaborativo}
     \pagestyle{plain}
     \begingroup
       \pagestyle{fancy}
       \fancyfoot{}
       \setcounter{tocdepth}{2}
       \tableofcontents{\thispagestyle{empty}}
+      \pagestyle{fancy}
       \listoffigures
     \endgroup
     \clearpage
@@ -54,7 +55,6 @@
       \pagenumbering{arabic}
       \setcounter{page}{1}
       \include{chapters/01-introduccion}
-      \include{chapters/02-marcocolaborativo}
       \include{chapters/03-estadodelarte}
       \include{chapters/04-PBR}
       \include{chapters/05-infraestructurayserviciosweb}

@@ -16,6 +16,7 @@
             doi=false]{biblatex}  
 \bibliography{references}
 
+\usepackage{enumitem}
 \usepackage{afterpage}
 \usepackage{float}
 \usepackage{aliascnt}

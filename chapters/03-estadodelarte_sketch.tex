@@ -10,10 +10,10 @@ de BRDF basado en microfacetas \autocite{cooktorrance}
 \section{Componentes y t\'erminos del BRDF basado en microfacetas}
 \todo[inline]{
     Blinn \autocite{blinn77}, Beckmann \autocite{beckmann}, Walter \autocite{ggx}, Neumann \autocite{neumann}, Kelemen
-    \autocite{kelemen}, Smith \autocite{smith}, Karis \autocite{karis}, \autocite{reed}
+    \autocite{kelemen}, Smith \autocite{smith}, Karis \autocite{unreal}, \autocite{reed}
 }
 
-El modelo de Cook-Torrance \autocite{cooktorrance}, que explicaremos en detalle en el Cap\'itulo 4, sus principales aportaciones son
+El modelo de Cook-Torrance \autocite{cooktorrance}, que explicaremos en detalle en el Cap\'itulo 3, sus principales aportaciones son
 separar el BRDF como la suma de sus dos componentes, especular y difuso y utilizar un BRDF especular basado en microfacetas. El BRDF
 especular es la como la combinaci\'on de los t\'erminos de distribuci\'on de las normales, el de geometr\'ia o visibilidad que modela
 los fen\'omenos de sombra y enmascaramiento y el de Fresnel.
@@ -97,19 +97,20 @@ los fen\'omenos de sombra y enmascaramiento y el de Fresnel.
     % }
 
         \subsubsection*{T\'ermino D}
-            \todo[inline]{
-                [Neubelt13] David Neubelt and Matt Pettineo. 2013. Crafting a Next-Gen Material Pipeline for The Order: 1886. Physically Based Shading in Theory and Practice, ACM SIGGRAPH 2013 Courses.
-            }
+            % \todo[inline]{
+            %     [Neubelt13] David Neubelt and Matt Pettineo. 2013. Crafting a Next-Gen Material Pipeline for The Order: 1886. Physically Based
+            %     Shading in Theory and Practice, ACM SIGGRAPH 2013 Courses.
+            % }
 
             En el modelo de Cook-Torrance \autocite{cooktorrance} se utiliza el t\'ermino presentado en 1963 por Beckmann \autocite{beckmann}.
             Los modelos de Phong \autocite{phong} y Blinn-Phong \autocite{blinnphong}, a pesar de no ser basados en f\'isica, se pueden considerar
             como modelos emp\'iricos isotr\'opicos de la funci\'on de distribuci\'on de las normales.
             Recientemente, podemos destacar como modelos isotr\'opicos como los presentados por Disney \autocite{disney12}, el modelo
             de Eric Heitz \autocite{ggx} o el modelo de \textit{sheen} \autocite{sheenbrdf}, muy adecuado para la representaci\'on de tejidos
-            y que explicaremos en detalle en el Cap\'itulo 5.\\
-            \hspace*{1.5em}Por otra parte, el modelo anisotr\'opico de Phong \autocite{anisotropicphong} fue el primer modelo en representar
-            \'este tipo de superficies, posteriormente, el modelo anistro\'opico de Beckmann \autocite{beckmannspinozo} o el de
-            GGX \autocite{anisotropicggx} han trabajado tambi\'en sobre \'este tipo de materiales
+            y que se explica en detalle en el Cap\'itulo 5.\\
+            % \hspace*{1.5em}Por otra parte, el modelo anisotr\'opico de Phong \autocite{anisotropicphong} fue el primer modelo en representar
+            % \'este tipo de superficies, posteriormente, el modelo anistro\'opico de Beckmann \autocite{beckmannspinozo} o el de
+            % GGX \autocite{anisotropicggx} han trabajado tambi\'en sobre \'este tipo de materiales
 
             % \singlespacing
             % \todo[inline]{
@@ -131,25 +132,32 @@ los fen\'omenos de sombra y enmascaramiento y el de Fresnel.
             % Ashikhmin \autocite{ashikhmin} <= check Filament\\
             % Estevez SheenBRDF \autocite{sheenbrdf} <= check Filament\\
 
-            \todo[inline]{
-                [McAuley15] Stephen McAuley. 2015. Rendering the World of Far Cry 4. GDC 2015, basado en [Revie12] Donald Revie. 2012. Implementing Fur in Deferred Shading. GPU Pro 2, Chapter 2.
-            }
+            % \todo[inline]{
+            %     [McAuley15] Stephen McAuley. 2015. Rendering the World of Far Cry 4. GDC 2015, basado en [Revie12] Donald Revie. 2012. Implementing Fur in Deferred Shading. GPU Pro 2, Chapter 2.
+            % }
 
         \subsubsection*{T\'ermino F}
             El t\'ermino F es una aproximaci\'on de la funci\'on de Fresnel. La primera aproximaci\'on de de la funci\'on de Fresnel
-            fue la presentada por Cook-Torrance. M\'as tarde Schlick \autocite{schlick}, Largarde \autocite{frostbite} y Gotanda \autocite{gotanda}
-            presentaron sucesivas aproximaciones.
+            fue la presentada en el modelo de Cook-Torrance \autocite{cooktorrance}. El modelo de Schlick \autocite{schlick}, es uno de
+            los m\'as populares y el que utiliza ThreeJs los materiales PBR.
+            
+            % Largarde \autocite{frostbite}
+            % y Gotanda \autocite{gotanda} presentaron sucesivas aproximaciones.
 
         \subsubsection*{T\'ermino G}
             El t\'ermino de geometr\'ia fue presentado en el modelo de microfacetas de Cook-Torrance \autocite{cooktorrance}
             y se utiliza para describir la cantidad de microfacetas que quedan en sombra y depende t\'ipicamente de los par\'ametros
             de rugosidad y distribuci\'on de las microfacetas. Adem\'as del citado modelo, tambi\'en son populares los modelos de
             Neumann \autocite{neumann}, y Kelemen \autocite{kelemen}. No obstante, en la actualidad, los modelos m\'as usados son los
-            basados en el m\'etodo de Smith \autocite{smith}, que consiste en separa la f\'ormula en dos partes que utilizan la misma
+            basados en el m\'etodo de Smith \autocite{smith}, que consiste en separar la f\'ormula en dos partes que utilizan la misma
             ecuaci\'on pero una utilizando el vector de vista y otra la de la luz, representando los fen\'omenos de sombreado y
-            enmascaramiento respectivamente. De entre \'estos t\'erminos de geometr\'ia, cabe destacar el trabajo de Earl Hammon
-            \autocite{earlhammon}, el modelo de Schlick-Beckmann \autocite{schlick}, o el utilizado en Unreal \autocite{unreal}, que remapea
-            el valor de rugosidad para conseguir unos valores m\'as intuitivos para los artistas.
+            enmascaramiento respectivamente. Los materiales PBR de ThreeJs el modelo GGX-Smith \autocite{walter} en concordancia con
+            la funci\'on GGX \autocite{ggx} que utiliza en el t\'ermino de distribuci\'on de las normales y utiliza el ajuste
+            presentado para el par\'ametro de \textit{roughness} presentado por Brian Karis \autocite{unreal}
+            
+            % De entre \'estos t\'erminos de geometr\'ia, cabe destacar el trabajo de Earl Hammon
+            % \autocite{earlhammon}, el modelo de Schlick-Beckmann \autocite{schlick}, o el utilizado en Unreal \autocite{unreal}, que remapea
+            % el valor de rugosidad para conseguir unos valores m\'as intuitivos para los artistas.
             
             % \singlespacing
             % Smith [1967]\\
@@ -194,7 +202,7 @@ los fen\'omenos de sombra y enmascaramiento y el de Fresnel.
     Cook-Torrance \autocite{cooktorrance}
     Disney 2012 \autocite{disney12}
     Disney 2015 \autocite{disney15}
-    Real Shading in Unreal 4 \autocite{karis}
+    Real Shading in Unreal 4 \autocite{unreal}
     Electronic Arts \autocite{frostbite}
     Filament \autocite{filament}
     Especificaci\'on MaterialX \autocite{materialx}

@@ -1,28 +1,28 @@
 \chapter{Estado del arte}
-% En este cap\'itulo, por una parte se hace un breve repaso de los diferentes sistemas de almacenamiento m\'as comunes en aplicaciones web
-% y las diferencias entre ellos, que sirven para contextualizar la implementaci\'on del modelo de datos sobre una base de datos no
-% relacional basada en documentos que se describe en el Cap\'itulo 5.
-% Adem\'as, se comentan brevemente los avances en t\'ecnicas de visualizaci\'on realistas en motores de renderizado en tiempo real, que suponen
-% el marco te\'orico de este proyecto. Muchas de estas t\'ecnicas se analizan en detalle en el cap\'itulo 4.
+En este cap\'itulo, por una parte se hace un breve repaso de los diferentes sistemas de almacenamiento m\'as comunes en aplicaciones web
+y las diferencias entre ellos, que sirven para contextualizar la implementaci\'on del modelo de datos sobre una base de datos no
+relacional basada en documentos que se describe en el Cap\'itulo 5.
+Adem\'as, se comentan brevemente los avances en t\'ecnicas de visualizaci\'on realistas en motores de renderizado en tiempo real, que suponen
+el marco te\'orico de este proyecto. Muchas de estas t\'ecnicas se analizan en detalle en el cap\'itulo 4.
 
-% % \section{Arquitectura y almacenamiento en aplicaciones web}
-% % El patr\'on m\'as utilizado en la actualidad para la organizaci\'on de un proyecto web es el MVC, o modelo vista controlador.
-% % El modelo representa a la base de datos, mientras que el controlador es la aplicaci\'on en el lado del servidor que act\'ua
-% % como intermediaria entre las peticiones del usuario y las consultas a la base de datos y finalmente la vista es la visualizaci\'on
-% % que se le ofrece al usuario para permitirle interactuar con la aplicaci\'on.
+% \section{Arquitectura y almacenamiento en aplicaciones web}
+% El patr\'on m\'as utilizado en la actualidad para la organizaci\'on de un proyecto web es el MVC, o modelo vista controlador.
+% El modelo representa a la base de datos, mientras que el controlador es la aplicaci\'on en el lado del servidor que act\'ua
+% como intermediaria entre las peticiones del usuario y las consultas a la base de datos y finalmente la vista es la visualizaci\'on
+% que se le ofrece al usuario para permitirle interactuar con la aplicaci\'on.
 
-% \section{Sistemas de almacenamiento}
-% En la actualidad, los modelos de bases de datos m\'as utilizados son SQL \autocite{sql}, un sistema de filas y columnas
-% contenidas en tablas y relacionadas a trav\'es de claves y NoSQL, que agrupa a un conjunto de sistemas de datos no relacionales.
-% Mientras que las bases de datos relacionales aseguran la consistencia de los datos cumpliendo con las propiedades ACID
-% \autocite{acid}, los sistemas NoSQL nacieron durante los a\~nos 90 para dar respuesta a la alta disponibilidad de los recursos debido al creciente
-% n\'umero de usuarios de las aplicaciones web. Otras car\'acter\'isticas de los sistemas NoSQL son su flexibilidad en el modelo de datos
-% y su escalabilidad horizontal, al soportar estructuras distribu\'idas. Dentro de los sistemas no relacionales, podemos identificar
-% cuatro grupos principales: las bases de datos de clave/valor, en la sus datos se organizan en una estructura parecida a un diccionario
-% y ofrece una respuesta con muy baja latencia, bases de datos basadas en documentos, que relacionan una clave con una estructura
-% de datos compleja, bases de datos basadas en columnas, muy comunes en aplicaciones Big Data al funcionar muy bien sobre sistemas
-% distribu\'idos muy grandes y bases de datos basadas en grafos, que utilizan colecciones de nodos unidos por aristas que definen
-% las relaciones entre nodos.
+\section{Sistemas de almacenamiento}
+En la actualidad, los modelos de bases de datos m\'as utilizados son SQL \autocite{sql}, un sistema de filas y columnas
+contenidas en tablas y relacionadas a trav\'es de claves y NoSQL, que agrupa a un conjunto de sistemas de datos no relacionales.
+Mientras que las bases de datos relacionales aseguran la consistencia de los datos cumpliendo con las propiedades ACID
+\autocite{acid}, los sistemas NoSQL nacieron durante los a\~nos 90 para dar respuesta a la alta disponibilidad de los recursos debido al creciente
+n\'umero de usuarios de las aplicaciones web. Otras car\'acter\'isticas de los sistemas NoSQL son su flexibilidad en el modelo de datos
+y su escalabilidad horizontal, al soportar estructuras distribu\'idas. Dentro de los sistemas no relacionales, podemos identificar
+cuatro grupos principales: las bases de datos de clave/valor, en la sus datos se organizan en una estructura parecida a un diccionario
+y ofrece una respuesta con muy baja latencia, bases de datos basadas en documentos, que relacionan una clave con una estructura
+de datos compleja, bases de datos basadas en columnas, muy comunes en aplicaciones Big Data al funcionar muy bien sobre sistemas
+distribu\'idos muy grandes y bases de datos basadas en grafos, que utilizan colecciones de nodos unidos por aristas que definen
+las relaciones entre nodos.
 
         % \textbf{Graph databases}\\
         % Modeled after the concept of a mathematical graph, the graph database contains a collection of items (called nodes) and edges 
@@ -57,6 +57,8 @@
     % frente a la consistencia de las bases de datos relacionales, las NoSQL aportan flexibilidad en sus estructuras de datos,
     % escalabidad horizontal, al soportar estructuras distribuidas y una alta disponibilidad de los datos
 
+\section{T\'ecnicas de visualizaci\'on realista en tiempo real}
+
 El primer modelo de BRDF basado en aspectos f\'isicos fue presentado por Robert Coook y Ephraim Sparrow en 1967 \autocite{torrancesparrow}
 y presenta por primera vez el modelo de microfacetas en el que se basan todos los modelos de BRDF realistas presentados posteriormente.
 Ya en 1981, el modelo de Cook-Torrance \autocite{cooktorrance} combina las ideas del modelo de microfacetas y la funci\'on de distribuci\'on
@@ -84,7 +86,7 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
 % la luz, por lo que no podemos hablar de materiales PBR hasta 1981, a\~no en el que Robert Cook y Kenneth Torrance presentan su modelo
 % de BRDF basado en microfacetas \autocite{cooktorrance}
 
-    \section{Componentes y t\'erminos del BRDF basado en microfacetas}
+    \subsection{Componentes y t\'erminos del BRDF basado en microfacetas}
     El modelo de Cook-Torrance \autocite{cooktorrance}, explicado en detalle en el Cap\'itulo 3, permite representar una amplia
     variedad de materiales y, aunque con variaciones en sus t\'erminos, es el modelo de referencia de BRDF basado en aspectos f\'isicos.
     A continuaci\'on se detallan los trabajos sobre el c\'alculo de sus componentes y t\'erminos.
@@ -100,7 +102,7 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
     % especular es la como la combinaci\'on de los t\'erminos de distribuci\'on de las normales, el de geometr\'ia o visibilidad que modela
     % los fen\'omenos de sombra y enmascaramiento y el de Fresnel.
 
-        \subsection{Componente difusa}
+        \subsubsection{Componente difusa}
             Las superficies lambertianas son superfies ideales que reflejan la luz incidente en todas direcciones por igual, por lo
             que su radiancia es independiente del punto de vista. Este modelo de superficie ideal de reflexi\'on difusa fue presentado
             por Johann Heinrich Lambert 1760 \autocite{lambert} y es el utilizado en los modelos de Torrance-Sparrow \autocite{torrancesparrow}
@@ -134,7 +136,7 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
             % \autocite{earlhammon} presentaron sucesivas aproximaciones a la componente difusa basada en f\'isica teniendo en cuenta la
             % distribuci\'on de las microfacetas dependiendo de los t\'erminos utilizados para la componente especular.
 
-        \subsection{Componente especular}
+        \subsubsection{Componente especular}
             El BRDF especular basado en microfacetas consta de tres t\'erminos, una funci\'on de distribuci\'on de las normales, una funci\'on
             de geometr\'ia, la ecuaci\'on de Fresnel, a continuaci\'on un breve repaso de las diferentes implementaciones de estos
             t\'erminos.
@@ -177,9 +179,9 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
                 % }
 
             \subsubsection*{T\'ermino F}
-                El t\'ermino F es una aproximaci\'on de la funci\'on de Fresnel. La primera aproximaci\'on a la funci\'on de Fresnel
-                fue la presentada por Cook-Torrance. ThreeJs utiliza el t\'ermino presentado en el modelo de Schlick \autocite{schlick},
-                m\'as tarde Largarde \autocite{frostbite} y Gotanda \autocite{gotanda} presentaron sucesivas aproximaciones.
+                El t\'ermino F es una aproximaci\'on de la funci\'on de Fresnel. La primera aproximaci\'on de de la funci\'on de Fresnel
+                fue la presentada por Cook-Torrance. M\'as tarde Schlick \autocite{schlick}, Largarde \autocite{frostbite} y Gotanda \autocite{gotanda}
+                presentaron sucesivas aproximaciones.
 
             \subsubsection*{T\'ermino G}
                 El t\'ermino de geometr\'ia fue presentado en el modelo de microfacetas de Cook-Torrance \autocite{cooktorrance}
@@ -193,22 +195,23 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
                 En la actualidad los modelos m\'as usados son los basados en el m\'etodo de Smith \autocite{smith}, que
                 consiste en separar la f\'ormula en dos partes que utilizan la misma ecuaci\'on pero una utilizando el vector de vista
                 y otra la de la luz, representando los fen\'omenos de sombreado y enmascaramiento respectivamente. De entre \'estos t\'erminos
-                de geometr\'ia, cabe destacar el presentado en el trabajo de Schlick-Beckmann \autocite{schlick} o el utilizado en Unreal \autocite{unreal},
-                que remapea el valor de rugosidad para conseguir unos valores m\'as intuitivos para los artistas. El modelo presentado por
-                Neubelt \autocite{theordertalk} es el utilizado para el BRDF de telas integrado sobre ThreeJs.
+                de geometr\'ia, cabe destacar el trabajo de Earl Hammon \autocite{earlhammon}, el modelo de Schlick-Beckmann \autocite{schlick},
+                o el utilizado en Unreal \autocite{unreal}, que remapea el valor de rugosidad para conseguir unos valores m\'as intuitivos para
+                los artistas. El modelo presentado por Neubelt \autocite{theordertalk} es el utilizado para el BRDF de telas integrado sobre
+                ThreeJs.
                 
-        \section{Luz indirecta en sistemas de renderizado interactivos}
+        \subsection{Luz indirecta en tiempo real}
         La ecuaci\'on para el c\'alculo de iluminaci\'on indirecta, analizada en detalle en el Cap\'itulo 4, fue presentada por primera vez
-        por Kajiya \autocite{kajiya}, sin embargo la parte integral de la ecuaci\'on supone un c\'alculo recursivo que no puede ser resuelto
-        en tiempo real. Es por ello, que para los motores de renderizado en interactivos, se utilizan t\'ecnicas que permiten conseguir
+        por Kajiya \autocite{kajiya}, sin embargo la parte integral de la ecuaci\'on supone un c\'alculo recursivo que no puede ser resulto
+        en tiempo real. Es por ello, que para los motores de renderizado en tiempo real, se utilizan t\'ecnicas que permiten conseguir
         \'este efecto, a trav\'es de precalculos o aproximaciones anal\'iticas.
 
-            \subsection{C\'alculo de la componente difusa}
+            \subsubsection*{C\'alculo de la componente difusa}
             Para calcular la irradiancia sobre un punto debida al entorno, Paul Debevec \autocite{debevec} present\'o la t\'ecnica
             de mapas de irradiancia, mientras que en 2001, Ravi Ramamoorthi y Pat Hanrahan \autocite{sh} presentan la t\'ecnica de esf\'ericos har\'omicos,
             que permite la compresi\'on de informaci\'on utilizando una representaci\'on de frecuencias de color frente a espacio.
 
-            \subsection{C\'alculo de la componente especular}
+            \subsubsection*{C\'alculo de la componente especular}
             La aproximaci\'on de sumas parciales \autocite{unreal}, que se comenta en detalle en el Cap\'itulo 3 permite el c\'aculo de la reflexi\'on especular separando el c\'alculo
             de la integral en dos partes, la integral de la radiancia sobre un punto y el c\'alculo del BRDF. La t\'ecnica utiliza
             un mapa de entorno prefiltrado y un \textit{look-up table} (LUT) que almacena los resultados precomputados del BRDF.
@@ -221,7 +224,7 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
             % para plataformas m\'oviles o la presentada por Krzysztof Narkowicz \autocite{narkowicz}, que resultan una buena aproximaci\'on
             % en dispositivos con un rendimiento limitado.
 
-    \section{Modelos de renderizado interactivos de referencia}
+        \subsection{Modelos de renderizado interactivos de referencia}
         Hoy d\'ia el modelo de referencia es el de Disney \autocite{disney12} \autocite{disney15}, conocido como \textit{"Principled"},
         y que se analiza en detalle en el Cap\'itulo 4. Adem\'as los modelos de Electronic Arts \autocite{frostbite}, Unreal \autocite{unreal}
         o Filament \autocite{filament} son implementaciones completas de modelos de BRDDF que integran iluminaci\'on global y  que sirven

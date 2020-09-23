@@ -113,24 +113,24 @@ para la plataforma web. A continuaci\'on se detallan los principales cambios ent
 // bsdfs.glsl
 // ...
 vec3 BRDF_Specular_GGX(
-const in IncidentLight incidentLight,
-const in vec3
-viewDir,
-const in vec3 normal,
-const in vec3
-specularColor,
-const in float roughness
+  const in IncidentLight incidentLight,
+  const in vec3
+  viewDir,
+  const in vec3 normal,
+  const in vec3
+  specularColor,
+  const in float roughness
 ) {
-float alpha = pow2( roughness );
-vec3 halfDir = normalize( incidentLight.direction + viewDir );
-float dotNL = saturate( dot( normal, incidentLight.direction ) );
-float dotNV = saturate( dot( normal, viewDir ) );
-float dotNH = saturate( dot( normal, halfDir ) );
-float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
-vec3 F = F_Schlick( specularColor, dotLH );
-float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
-float D = D_GGX( alpha, dotNH );
-return F * ( G * D );
+  float alpha = pow2( roughness );
+  vec3 halfDir = normalize( incidentLight.direction + viewDir );
+  float dotNL = saturate( dot( normal, incidentLight.direction ) );
+  float dotNV = saturate( dot( normal, viewDir ) );
+  float dotNH = saturate( dot( normal, halfDir ) );
+  float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
+  vec3 F = F_Schlick( specularColor, dotLH );
+  float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
+  float D = D_GGX( alpha, dotNH );
+  return F * ( G * D );
 }
 // ...
   \end{lstlisting}
@@ -162,13 +162,10 @@ A continuaci\'on se detallan las implementaciones de cada t\'ermino y sus cambio
 
   \begin{lstlisting}[caption=Implementaci\'on en ThreeJs del t\'ermino de geometr\'ia]
 float D_GGX( const in float alpha, const in float dotNH ) {
+  float a2 = pow2( alpha );
+  float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;
 
-float a2 = pow2( alpha );
-
-float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0; 
-
-return RECIPROCAL_PI * a2 / pow2( denom );
-
+  return RECIPROCAL_PI * a2 / pow2( denom );
 }
   \end{lstlisting}
   \singlespacing
@@ -191,7 +188,6 @@ return RECIPROCAL_PI * a2 / pow2( denom );
   \caption{Aproximaci\'on de la funci\'on de Fresnel en Disney 2012}
   \end{eqfloat}
 
-  \newpage
   \begin{lstlisting}[caption=Implementaci\'on en ThreeJs de la aproximaci\'on a la funci\'on de Fresnel]
 vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
 
@@ -201,7 +197,8 @@ return ( 1.0 - specularColor ) * fresnel + specularColor;
 
 }
   \end{lstlisting}
-  \singlespacing
+  \newpage
+
 
   \subsubsection{T\'ermino G}
   Para definir las microfacetas en sombra o enmascaradas, ThreeJs utiliza el mismo t\'ermino que Disney 2012, usa

@@ -1,19 +1,110 @@
 \chapter{PBR}
 PBR o \textit{physically based rendering} es el t\'ermino que se utiliza para nombrar al grupo de t\'ecnicas basados en un
-modelo f\'isico. La intenci\'on es conseguir aproximaciones r\'apidas y plausibles de la interacci\'on de un flujo de luz
-con una superficie. Las principales ventajas de este tipo de algoritmos son la consistencia bajo diferentes condiciones de
-luz y su manejo intuitivo por parte de los artistas.
-Los motores PBR cumplen con la ley de la conservaci\'on de la energ\'ia y utilizan BRDFs basados en la teor\'ia de
-microfacetas. Adicionalmente, otros elementos de la escena, como la c\'amara o las luces, pueden estar basados en modelos
-f\'isicos para ofreciendo para aumentar el grado de realismo.
+modelo f\'isico. La intenci\'on de los sistemas de renderizado PBR en entornos interactivos es conseguir aproximaciones plausibles
+y poco costosas de la dispersi\'on de la luz al golpear sobre una superficie. Las principales ventajas de este tipo de algoritmos
+son la consistencia bajo diferentes condiciones de luz y su manejo intuitivo por parte de los artistas.\\
+
+Las caracter\'isticas esenciales de un motor PBR, adem\'as de estar basado en la teor\'ia de microfacetas, son cumplir con el principio
+de conservaci\'on de la energ\'ia y el principio de Helmholtz. Estos dos principios no siempre se cumplen en los sistemas de
+de renderizado realista en entornos interactivos, que pueden presentar optimizaciones que sacrifiquen aspectos f\'isicos del modelo
+en favor de tiempos de respuestas menores, siempre y cuando no resulten en artefactos apreciables.\\
+% Los motores PBR cumplen con la ley de la conservaci\'on de la energ\'ia y utilizan BRDFs basados en la teor\'ia de
+% microfacetas y el principio de reciprocidad de Helmholtz
+
+Aunque este trabajo se centra en el tratamiento de materiales basados en aspectos f\'isicos, adicionalmente, otros elementos
+de la escena, como la c\'amara o las luces, pueden estar basados en modelos f\'isicos para ofrecer un mayor grado de realismo.
+
+\section{Unidades radiom\'etricas}
+    % \todo[inline]{
+    %     When we talk about light arriving (or leaving) a surface from a certain direction, it’s
+    %     more appropriate to speak in terms of the quantity of light arriving at or passing through a
+    %     certain area of space. The reason for this is that light is measured in terms of flow
+    %     through an area. That is, light is measured as energy per-unit surface area (i.e.
+    %     Watts/meter2). This means it doesn’t really make sense to talk about the amount light
+    %     arriving from a single incoming direction – it’s more appropriate to talk about light
+    %     coming from a small region of directions.
+    % }
+    % \todo[inline]{
+    %     Since BRDFs measure how light reflects off a surface when viewed under various
+    %     viewing positions, we must have a good understanding of how much light arrives at a
+    %     surface element (or leaves a surface element) from a particular direction.
+    % }
+    Los modelos de BRDF analizados en este trabajo son basados en f\'isica y utilizan las unidades radiom\'etricas para
+    medir la luz incidente o reflectada por una superficie. En estos modelos, la luz se mide como energ\'ia por unidad de
+    \'area.
+    % para describir la luz incidente sobre las superficies.
+
+    \subsection*{\'Angulo s\'olido}
+    El \'angulo s\'olido ($w$) es la unidad de medida del \'area de una proyecci\'on sobre una esfera de radio 1  es el
+    equivalente tridimensional a la medida en radianes de un arco sobre un c\'irculo. Su unidad es el est\'ereorradi\'an
+    ($sr$), que representa el \'area de un \'angulo s\'olido sobre la esfera de radio unitario $\Omega$ que contiene $4\pi$ radianes.
+
+    \begin{figure}[H]
+        \centering
+          \frame{\includegraphics[scale=0.4]{steradian}}
+        \caption{La superficie de la base del cono extra\'ido de la esfera representa 1$sr$.}
+        \vspace{0.5cm}
+    \end{figure}
+
+    \subsection*{\'Angulo s\'olido diferencial}
+    Es la unidad que se utiliza como \'area de medida en el BRDF para representar la cantidad de luz que incide en una superficie.
+    Un \'angulo s\'olido diferencial ($dw$) es el \'area contenida entre incrementos muy peque\~nos en coordernadas esf\'ericas sobre
+    los \'angulos $\theta$ y $\phi$ de la esfera $\Omega$.
+
+    \begin{figure}[H]
+        \vspace{0.5cm}
+        \centering
+          \frame{\includegraphics[scale=0.2]{differentialsolidangle}}
+        \caption{Esquema explicativo de un \'angulo s\'olido diferencial.}
+        \vspace{0.5cm}
+    \end{figure}
+
+    % \todo[inline]{
+    %     Since both the width and the height of the rectangular patch are measured in radians, the
+    %     area quantity has units of radians squared (or steradians). Steradians sounds like a fancy
+    %     word, but really it’s not too bad. If ever you find the term confusing, just think of it as
+    %     “solid angle units” or “radians squared”. The abbreviation for steradians is sr.
+    % }
+
+    \subsection*{Flujo radiante}
+        El flujo radiante ($\Phi$) es la unidad que mide la  cantidad de energia de energ\'ia transportada
+        por las ondas de luz por unidad de tiempo. En los motores de renderizado utilizan esta unidad para expresar la cantidad
+        total de energia emitida por una fuente de luz y se mide en vatios ($W$).
+        % \begin{equation}
+        %     \Phi_e = \dfrac{d{Q_e}}{dt}
+        % \end{equation}
+
+    \subsection*{Irradiancia}
+        La irradiancia ($E$) es la cantidad de energ\'ia (flujo radiante) de tiempo por unidad de superficie y
+        se mide en vatios por metro cuadrado ($W/m^2$). En los motores de render se utiliza
+        para medir la cantidad de luz que incide sobre un punto desde todas las direcciones.
+
+        \begin{equation}
+            E = \dfrac{d\Phi}{dA}
+        \end{equation}
+
+    \subsection*{Intensidad radiante}
+        Representa el flujo radiante emitido por una fuente de luz en una direcci\'on determinada y se mide expresa
+        como vatios por estereorradi\'an ($W/sr$).
+
+        \begin{equation}
+            I = \dfrac{d\Phi}{d\omega}
+        \end{equation}
+
+    \subsection*{Radiancia}
+        La radiancia ($L$) se puede considerar como la combinaci\'on de los conceptos de irradiancia e intensidad radiante y
+        define la direcci\'on y la intensidad radiante recibida por una superficie. La ecuaci\'on de render, igual que la c\'amaras,
+        sensores o nuestros ojos miden la radiancia que llega desde las superficies del entorno al punto de vista. Su unidad son los
+        vatios por metro cuadrado por estereorradi\'an (${W}/{m^2sr}$)
+        \begin{equation}
+            L = \dfrac{d^2\Phi}{dA_{proj}d\omega}
+        \end{equation}
 
 \section{Ecuaci\'on de render}
-El prop\'osito de la ecuacion de render es conocer el valor de radiancia que llega a la camara en una direcci\'on
-por cada pixel  de la camara.
-
-Para saber la radiancia sobre un punto en una direcci\'on, utilizamos la ecuacion de reflectancia, que depende
-de la luz que llega al puntos, el coseno del angulo con el que incide la luz y el BRDF (bidirectional reflectance
-distribution function), que modela el comportamiento de la luz al rebotar sobre la superficie.\\
+Presentada por primera vez en el trabajo de Kajiya \autocite{kajiya}, el prop\'osito de la ecuacion de render es conocer el valor de
+radiancia que llega a la camara en una direcci\'on por cada pixel de la camara. Para ello se utiliza la ecuacion de reflectancia,
+que depende de la luz que llega al punto, el coseno del angulo con el que incide la luz y el BRDF, que modela el comportamiento
+de la luz al rebotar sobre la superficie.\\
 
 \begin{eqfloat}[!htb]
     \begin{equation}
@@ -25,16 +116,28 @@ distribution function), que modela el comportamiento de la luz al rebotar sobre 
 
 Siendo $L_o(p, w_o)$ la luz reflectada por la superficie, $L_e(x, w_o)$ la luz emitida por la superficie, que est\'a fuera
 de la integral porque es independiente de la luz reflejada o refractada por la superficie. $\int_{\Omega}[...]dw$ que representa
-que la operaci\'on se repite para cada \'angulo s\'olido dentro de la semiesfera $f_r(p, w_i, w_o)$ el BRDF $L_i(p, w_i)$ la luz
-que llega al punto de la superficie que estamos evaluando $n\cdot{w_i}$ el factor de atenuaci\'on de la luz con respecto a la normal.
+que la operaci\'on se repite para cada \'angulo s\'olido dentro de la semiesfera $f_r(p, w_i, w_o)$, el BRDF, $L_i(p, w_i)$, la luz
+que llega al punto de la superficie que estamos evaluando y $n\cdot{w_i}$ el factor de atenuaci\'on de la luz con respecto a la normal.
+
+An important property of the rendering equation is that it is linear with respect to
+the emitted lighting. If we make the lights twice as strong, the result of the shading will
+be two times brighter. The response of the material for each light is also independent
+from other sources. That is, one light’s presence does not affect the interaction of
+another light with the material.\\
+
+In real-time rendering, it is common to use just a local lighting model. Only the
+surface data at visible points are needed to compute the lighting—and that is exactly
+what GPUs can most efficiently provide.\\
 
 \section{BRDF}
 
-El BRDF, o función de ditribuci\'on bidireccional de reflectividad, es la parte de la ecuaci\'on que describe el
-comportamiento de la luz al golpear sobre la superficie y se utiliza para rmodelar propiedades f\'isicas de los diferentes
-materiales. Es una funcion estad\'istica que calcula cuanta de la luz que incide sobre un material es reflejada en direcci\'on
-a la c\'amara, o, en otras palabras, para ello toma como argumentos la direccion de la luz, $w_i$, y la dirección de salida,
-$w_o$, la normal de la superficie, n, y un par\'ametro $\alpha$ que representa la rugosidad del material.
+El BRDF, o función de ditribuci\'on bidireccional de reflectividad, es la parte de la ecuaci\'on $f_r(p, w_i, w_o)$ que describe el
+comportamiento de la luz al golpear sobre la superficie y se utiliza para modelar propiedades f\'isicas de los diferentes
+materiales.\\
+
+Es una funcion estad\'istica que calcula cuanta de la luz que incide sobre un material es reflejada en direcci\'on
+a la c\'amara, para ello toma como argumentos la direccion de la luz, $w_i$, y la dirección de salida,
+$w_o$, la normal de la superficie, $n$, y un par\'ametro $\alpha$ que representa la rugosidad del material.
 
 \begin{figure}[H]
     \vspace{0.5cm}
@@ -55,12 +158,13 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     \bgroup
 
         Aunque a escala macrosc\'opica podamos considerar una superficie como lisa, ninguna superficie es completamente lisa a nivel
-        microsc\'opico. La teor\'ia de microfacetas utiliza una representaci\'on estad\'istica para modelar estas peque\~nas irregularidades.
-        Para ello, la teor\'ia de microfacetas, considera la superficie de reflexi\'on como una superficie compuesta por una matriz de
+        microsc\'opico. La teor\'ia de microfacetas utiliza una representaci\'on estad\'istica para modelar estas peque\~nas irregularidades.\\
+
+        La teor\'ia de microfacetas, considera la superficie de reflexi\'on como una superficie compuesta por una matriz de
         superficies mas peque\~nas que la longitud de onda de la luz pero muy peque\~nas desde el punto de vista de la c\'amara,
         completamente reflectantes, llamadas microfacetas, y cuyas diferentes orientaciones determinan la rugosidad de la superficie.
         Si las microfacetas est\'an completamente alineadas, las reflexiones ser\'an mas definidas, asimilandose a un espejo, mientras
-        que las microfacetas apuntando en diferentes direcciones, daran como resultado una reflexion especular mas difusa.
+        que las microfacetas apuntando en diferentes direcciones, dar\'an como resultado una reflexion especular mas difusa.
 
         \begin{figure}[H]
             \vspace{0.5cm}
@@ -83,7 +187,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     met\'alicos, el aspecto final del material esta determinado por una combinaci\'on de los fen\'omenos de absorci\'on y
     dispersi\'on de la luz.\\
 
-    Por otra parte, podemos distinguir entre materiales anisotr\'opicos, como el metal pulido o el pelo, cuyas propiedades
+    Por otra parte, podemos diferenciar entre materiales anisotr\'opicos, como el metal pulido o el pelo, cuyas propiedades
     de reflexi\'on cambian al rotar sobre la superficie alrededor de su vector normal. Aunque casi todos los materiales son, en cierta medida, anisotr\'opicos, la
     aportaci\'on de esta propiedad sobre la apariencia final suele ser tan baja que se desprecia y se utilizan modelos
     isotr\'opicos.\\
@@ -125,20 +229,6 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         \vspace{0.5cm}
     \end{figure}
 
-    \section{Limitaciones de los motores de renderizado en tiempo real}
-    Los motores de renderizado en tiempo real deben utilizar algoritmos lo menos costosos posibles para garantizar un buen
-    tiempo de respuesta. Es por ello que sus BRDFs, pueden ser m\'as sencillos que los implementados en sistemas de \textit{path-tracing},
-    ofreciendo una soluci\'on de compromiso entre el rendimiento y los fen\'omenos f\'isicos representados por el modelo.\\
-    
-    Por otra parte, resolver la parte integral de la ecuaci\'on de render:
-
-    \begin{center}$L_o(p, w_o) = \int_{\Omega} f_r(p, w_i, w_o)L_i(p, w_i)n\cdot{w_i}dw_i$\end{center}
-    \singlespacing
-    requiere lanzar rayos no en una direcci\'n si no desde todas las posibles direcciones sobre la semiesferea $\Omega$, por
-    lo que no es posible en tiempo real, sin embargo, m\'as adelante analizaremos t\'ecnicas que p\'ermiten simular \'este
-    efecto utilizando c\'alculos precomputados o aproximando la soluci\'on de forma anal\'itica.\\
-
-
     \section{BRDF Cook-Torrance}
     Es un modelo anal\'itico permite representar con gran realismo materiales electricos y dielectricos con diferentes
     grados de rugosidad y, en general, funciona bien para modelar cambios en el color que dependen del punto de vista.\\
@@ -153,6 +243,14 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     
     siendo $k_d$ y $k_s$, parametros de peso que cumplen $k_d + k_s = 1$
     \singlespacing
+
+    \begin{figure}[H]
+        \vspace{0.5cm}
+        \centering
+        \frame{\includegraphics[scale=0.5]{cooktorrance}}
+        \caption{Diferentes tipos de materiales representados por el modelo de Cook-Torrance \autocite{cooktorrance}}
+        \vspace{0.5cm}
+    \end{figure}
     
     T\'ipicamente la componente difusa, utiliza el modelo de Lambert, que asume una distribuci\'on completamente uniforme a lo
     largo de la superficie:\\
@@ -169,8 +267,15 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         f(l, v) = \frac{F(w_i, h) G(w_i, h, w_o) D(h)} {4(n\cdot{w_i}) (n \cdot{w_o})}
     \end{equation}
     \singlespacing
+
+    \begin{figure}[H]
+        \centering
+        \frame{\includegraphics[scale=0.32]{diffusespecular}}
+        \caption{Tipos de reflexi\'on}
+        \vspace{0.5cm}
+    \end{figure}
     
-        \subsection{T\'erminos del BRDF especular}
+        \subsection{Componente especular}
             El BRDF de Cook-Torrance est\'a compuesto por otras tres funciones y un factor de normalizaci\'on en el denominador.
             Las funciones D, F y G, se corresponden con la funci\'on de distribuci\'on de las normales, la ecuaci\'on de Fresnel,
             y la funci\'on de geometr\'ia.\\
@@ -180,9 +285,12 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
             \textit{roughness} se utiliza para representar la cantidad de microfacetas alineadas con la normal h, cuanta mayor sea la
             la cantidad de de microfacetas alineadas, m\'as lisa parecer\'a la superficie.
     
-            $$
+            \singlespacing
+            \begin{equation}
             D(h) = \frac{\alpha^2}{\pi((n\cdot{h})^2(\alpha^2 - 1) + 1)^2}
-            $$
+            \end{equation}
+            \singlespacing
+            
     
             \begin{figure}[H]
                 \vspace{0.5cm}
@@ -258,8 +366,15 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
             % incidencia.\\
     
     \section{Disney Principled BRDF}
-    \todo[inline]{Modelo emp\'irico basado en las observaciones de la tabla MERL}
-    
+    Los modelos de BRDF para materiales tratan de ofrecer gran versatilidad para tratar de representar la mayor cantidad de
+    materiales posibles, por lo que los modelos basados en f\'isica resultan en una defici\'on del material compleja,
+    con gran cantidad de par\'ametros que resultan poco intuitivos para los artistas. En 2012, Disney presenta su modelo
+    conocido como \textit{Principled} \autocite{disney12}, que, a pesar de ser basado en f\'isica, sigue una serie de directivas
+    como tener la menor cantidad de par\'ametros posibles, ofrecer nombres y rangos de par\'ametros amigables para los artistas u ofrecer
+    combinaciones robustas y plausibles para todas sus posibles combinaciones. Desde entonces, los materiales basados en f\'isica
+    han ganado popularidad y se han introducido progresivamente en la industria de las pel\'iculas y videojuegos, convirtiendo
+    al modelo de Disney en el est\'andar de facto en la actualidad.\\
+
     \begin{figure}[H]
         \vspace{0.5cm}
         \centering
@@ -267,20 +382,40 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         \caption{Muestras de materiales MERL, junto a un esquema explicativo de las im\'agenes muestreadas}
         \vspace{0.5cm}
     \end{figure}
+
+    El modelo te\'orico de Disney est\'a basado en las observaciones sobre la tabla MERL \autocite{merl}, que provee una lista
+    de 100 materiales muestreados y representados en una gr\'afica cartesiana, cuyo eje $x$ representa pasos discretos de rotaci\'on
+    alrededor de la tangente del material y en el $y$, la rotaci\'on alrededor de la normal de la superficie. 
+
+    \begin{figure}[H]
+        \vspace{0.5cm}
+        \centering
+        \frame{\includegraphics[scale=0.3]{disney12model}}
+        \caption{Modelo para met\'alicos y diel\'ectricos de Disney}
+    \end{figure}
+
+    En base a estas observaciones, el modelo \textit{Principled} de Disney, ajusta los t\'erminos del BRDF de Cook-Torrance \autocite{cooktorrance}
+    primando la expresividad art\'istica sobre lo f\'isicamente plausible. El modelo aporta dos nuevos l\'obulos que, a diferencia del l\'obulo
+    primario pueden variar mucho en forma y tama\~no, adem\'as los tanto los materiales isotro\'opicos como anisotr\'opicos
+    se representan con el mismo modelo, que utiliza una interpolaci\'on entre los dos BRDFs, por lo que resulta muy atractivo para los artistas,
+    pudiendo representar una enorme variedad de materiales con muy pocos par\'ametros.\\
+
+    La lista de par\'ametros final se compone de: \textit{baseColor}, \textit{subsurface}, \textit{metal}, \textit{specular}, \textit{specularTint},
+    \textit{roughness}, \textit{sheen}, \textit{sheenTint}, \textit{clearCoat}, \textit{clearcoatGloss}
     
-    El BRDF de Disney fue presentado por Brent Burley en 2012 y es el utilizado por Disney en sus peliculas de animacion. Es,
-    junto al modelo de Cook-Torrance, el mas utilizado en los motores de tiempo real, sin embargo, el modelo de Burley, es mas
-    amigable para los artistas, a costa de no ser completamente basado en fisica. Los parametros tienen nombres y valores que
-    definen que el aspecto de los materiales son mas intuitivos. Los lobulos adicionales, a diferencia del modelo de Cook-Torrance,
-    pueden variar mucho en forma y tamanho, por lo que es un modelo muy flexible, que permite representar con gran realismo una
-    amplia variedad de materiales.\\
+    % El BRDF de Disney fue presentado por Brent Burley en 2012 y es el utilizado por Disney en sus peliculas de animacion. Es,
+    % junto al modelo de Cook-Torrance, el mas utilizado en los motores de tiempo real, sin embargo, el modelo de Burley, es mas
+    % amigable para los artistas, a costa de no ser completamente basado en fisica. Los parametros tienen nombres y valores que
+    % definen que el aspecto de los materiales son mas intuitivos. Los lobulos adicionales, a diferencia del modelo de Cook-Torrance,
+    % pueden variar mucho en forma y tamanho, por lo que es un modelo muy flexible, que permite representar con gran realismo una
+    % amplia variedad de materiales.\\
     
-    Es conocido como \textit{principled} por cumplir una serie de m\'aximas, que se respetan en el modelo por encima de las leyes fisicas.
-    El modelo ha de ser intuitivo y no utilizar parametros que se refieran al modelo basado en fisica, debe tener el menor
-    numero de parametros posible, deben de estar normalizados, algunos valores pueden exceder su rango para permitir mayor
-    expresividad y, finalmente, todas las combinaciones de parametros deben de ser robustas y plausibles. Para ello utiliza los
-    par\'ametros: \textit{baseColor}, \textit{subsurface}, \textit{metal}, \textit{specular}, \textit{specularTint}, \textit{roughness},
-    \textit{sheen}, \textit{sheenTint}, \textit{clearCoat}, \textit{clearcoatGloss}
+    % Es conocido como \textit{principled} por cumplir una serie de m\'aximas, que se respetan en el modelo por encima de las leyes fisicas.
+    % El modelo ha de ser intuitivo y no utilizar parametros que se refieran al modelo basado en fisica, debe tener el menor
+    % numero de parametros posible, deben de estar normalizados, algunos valores pueden exceder su rango para permitir mayor
+    % expresividad y, finalmente, todas las combinaciones de parametros deben de ser robustas y plausibles. Para ello utiliza los
+    % par\'ametros: \textit{baseColor}, \textit{subsurface}, \textit{metal}, \textit{specular}, \textit{specularTint}, \textit{roughness},
+    % \textit{sheen}, \textit{sheenTint}, \textit{clearCoat}, \textit{clearcoatGloss}
     
     \begin{figure}[H]
         \vspace{0.5cm}
@@ -330,6 +465,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         $$
     
         \subsection{Componente especular}
+            % \todo[inline]{Por escribir}
             \subsubsection{F, t\'ermino de Fresnel}
                 Para el especular, la aproximaci\'on de Fresnel Schlick es lo suficientemente precisa y mucho menos costosa que
                 que la ecuaci\'on completa de Fresnel.
@@ -392,7 +528,30 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     
     
     \section{Iluminaci\'on indirecta en tiempo real}
+
+    \todo[inline]{
+        Los motores de renderizado en tiempo real deben utilizar algoritmos lo menos costosos posibles para garantizar un buen
+        tiempo de respuesta. Es por ello que sus BRDFs, pueden ser m\'as sencillos que los implementados en sistemas de \textit{path-tracing},
+        ofreciendo una soluci\'on de compromiso entre el rendimiento y los fen\'omenos f\'isicos representados por el modelo.\\
+        
+        Por otra parte, resolver la parte integral de la ecuaci\'on de render:
     
+        \begin{center}$L_o(p, w_o) = \int_{\Omega} f_r(p, w_i, w_o)L_i(p, w_i)n\cdot{w_i}dw_i$\end{center}
+        \singlespacing
+        requiere lanzar rayos no en una direcci\'n si no desde todas las posibles direcciones sobre la semiesferea $\Omega$, por
+        lo que no es posible en tiempo real, sin embargo, m\'as adelante analizaremos t\'ecnicas que p\'ermiten simular \'este
+        efecto utilizando c\'alculos precomputados o aproximando la soluci\'on de forma anal\'itica.\\
+    }
+
+    \todo[inline]{
+        These effects contribute
+        greatly to increasing the realism in a rendered image, and provide cues that
+        help the viewer to understand spatial relationships. At the same time, they are also
+        complex to simulate and might require precomputations or rendering multiple passes
+        that compute some intermediate information.
+    }
+
+
     Para los efectos de iluminacion global, se necesita conocer la irradiancia proviniente en todas
     direcciones $w_i$ sobre la esfera $\Omega$.\\
     
@@ -448,23 +607,33 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         \end{equation}
         \singlespacing
     
-            \subsubsection{Mapas de irradiancia}
-            T\'ecnica IBL (\textit{Image Based Lighting}), que permite precalcular la irradiacia del entorno, utilizando una im\'agen
-            de referencia y almacenarla en una nueva textura, el mapa de irradiancia. Para ello se 
-            \todo[inline]{
-                Convolution is applying some computation to each entry in a data set considering all other entries in the data set;
-                the data set being the scene's radiance or environment map. Thus for every sample direction in the cubemap, we take
-                all other sample directions over the hemisphere $\Omega$ into account.
-                To convolute an environment map we solve the integral for each output wo sample direction by discretely sampling a
-                large number of directions wi over the hemisphere $\Omega$ and averaging their radiance. The hemisphere we build the sample
-                directions wi from is oriented towards the output wo sample direction we're convoluting.
-            }
-            \todo[inline]{
-                computed sum of all indirect diffuse light of the scene hitting some surface aligned along direction wo. Such a
-                cubemap is known as an irradiance map seeing as the convoluted cubemap effectively allows us to directly sample the
-                scene's (pre-computed) irradiance from any direction wo.
-            }
-    
+            \subsubsection{T\'ecnicas IBL}
+            Las t\'enicas IBL (\textit{Image Based Lighting}), permiten precalcular la irradiacia del entorno tratando el entorno
+            como un gran emisoror de luz, utilizando una imagenes de referencia para aproximar la luz emitida por el entorno sobre
+            el punto que estamos calculando.\\
+
+            \textbf{Mapas de irradiancia}\\
+            Los mapas de irradiancia utilizan \textit{cubemaps} para muestrear en coordenadas esf\'ericas en pasos discretos la radincia
+            procedente del entorno. La irradiancia se estima como la media de la radiancia en todas las direcciones $w_i$ sobre la
+            hemiesfera $\Omega$ orientada en direcci\'on a la normal de la superficie, $N$. Una vez preconvolucionado el mapa de
+            entorno, el resultado, conocido como mapa de irradiancia se almacena en una textura a la que se accede en tiempo
+            de ejecuci\'on para consultar los resultados precalculados de irradiancia debida al entorno.
+
+            % % y almacenarla en una nueva textura, el mapa de irradiancia. Para ello se 
+            % \todo[inline]{
+            %     Convolution is applying some computation to each entry in a data set considering all other entries in the data set;
+            %     the data set being the scene's radiance or environment map. Thus for every sample direction in the cubemap, we take
+            %     all other sample directions over the hemisphere $\Omega$ into account.
+            %     To convolute an environment map we solve the integral for each output wo sample direction by discretely sampling a
+            %     large number of directions wi over the hemisphere $\Omega$ and averaging their radiance. The hemisphere we build the sample
+            %     directions wi from is oriented towards the output wo sample direction we're convoluting.
+            % }
+            % \todo[inline]{
+            %     computed sum of all indirect diffuse light of the scene hitting some surface aligned along direction wo. Such a
+            %     cubemap is known as an irradiance map seeing as the convoluted cubemap effectively allows us to directly sample the
+            %     scene's (pre-computed) irradiance from any direction wo.
+            % }
+
             \begin{figure}[H]
                 \vspace{0.5cm}
                 \centering
@@ -472,13 +641,90 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
                 \caption{Mapa de irradiancia como \textit{cubemap}}
             \end{figure}
             \singlespacing
-    
-            \subsubsection{Esf\'ericos harm\'onicos}
-            \todo[inline]{
-                \url{https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-lighting-and-shadows/chapter-10-real-time-computation-dynamic}
-            }
+
+            \textbf{Esf\'ericos harm\'onicos}\\
+            La t\'ecnica de esf\'ericos harm\'onicos \autocite{sh} supone una optimizaci\'on sobre la t\'ecnica de mapas de irradiancia,
+            que, pese a ser muy eficientes para operaciones de lectura, la convoluci\'on necesaria para generarlos tiene un coste alto.
+            Los esf\'ericos harm\'onicos permiten una aproximaci\'on a la irradiancia debida al entorno comprimiendo la informaci\'on
+            en una representaci\'on de espacio frente a frecuencias. De esta forma, la informaci\'on se almacena en la funci\'on de
+            esf\'ericos harm\'onicos y para consultarla, se utiliza su transformada inversa, que devuelve los datos a su repesentaci\'on espacial.
+
+            % \todo[inline]{
+            %     \url{https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-lighting-and-shadows/chapter-10-real-time-computation-dynamic}
+            % }
+
         \subsection{Componente especular}
-    
+        El m\'etodo split-sum approximation presentado por Epic \autocite{karis}, permite separar la integral en dos partes, la integral de
+        la radiancia de la escena y la del BRDF. De forma similar a la componente difusa, precomputar los resultados y consultarlos y para
+        calcular el resultado de la integral durante en tiempo real.\\
+        
+        \singlespacing
+        \begin{equation}
+            L_o(p, w_o) =
+            \int_{\Omega}L_i(p, w_i)dw_i * \int_{\Omega}fr(p, w_i, w_o) n\cdot{w_i}dw_i
+        \end{equation}
+        \singlespacing
+
+        De forma similar al mapa de irradiancia, el mapa de entorno prefiltrado se precomputa con una convoluci\'on sobre el mapa
+        de entorno. La convoluci\'on utiliza la distribuci\'on de normales de Cook-Torrance \autocite{cooktorrance} en funci\'on
+        de la direcci\'on de la vista, la normal y la rugosidad del material.\\
+        Dado que se desconoce la direcci\'on de la vista al precomputar la radiancia, la aproximaci\'on de asume $w_i = w_o$, lo que implica perder las
+        reflexiones especulares en el \'angulo cr\'itico, pero generalmente se considera una aproximaci\'on lo suficientemente buena para entornos
+        interactivos. Los resultados para diferentes niveles de rugosidad se almacenan en diferentes \textit{mipmaps} de la textura.\\
+
+        
+        \begin{figure}[H]
+            \vspace{0.5cm}
+            \centering
+            \frame{\includegraphics[scale=0.5]{prefilteredenvmap}}
+            \caption{Niveles de mipmap del mapa de entorno prefiltrado en funci\'on de la rugosidad del material}
+        \end{figure}
+        \singlespacing
+
+        % Para computar el mapa prefiltrado de entorno, de forma similar al mapa de irradiancia, se convoluciona el mapa de entorno
+        % y se almacenan los resultados en diferentes niveles de mimaps, en funci\'on a la rugosidad de la textura.
+
+        La segunda parte de la integral se precomputa asumiendo una radiancia blanca pura en todas direcciones, que permite calcular
+        todos los posibles valores del BRDF en funci\'on de la normal de la superficie, el punto de vista y el valor de rugosidad del material.
+        El resultado se almacena en un \textit{look-up texture} (LUT) que se conoce como \textit{BRDF integration map} y contiene
+        valores de la escala del Fresnel en el canal rojo de la textura y valores de la desviaci\'on del Fresnel en el canal verde.
+        Este LUT se consulta en tiempo de ejecuci\'on se consulta esta tabla, accediendo a sus valores utilizando rangos normalizados entre
+        0 y 1 en los dos ejes, utilizando el coseno entre la vista y la normal de la superficie para el eje $x$ y valores de rugosidad
+        del material en el eje $y$.
+
+        \begin{figure}[H]
+            \vspace{0.5cm}
+            \centering
+            \frame{\includegraphics[scale=0.5]{brdf_lut}}
+            \caption{\textit{BRDF integration map}}
+        \end{figure}
+        \singlespacing
+
+        
+        En tiempo de ejecuci\'on se accede a esta tabla
+        utilizando los valores del coseno entre la direcci\'on de vista y la normal de la superfie en el eje $x$ y utilizando
+        el valor de rugosidad del material para el eje $y$ para obtener.\\
+
+        Finalmente el c\'alculo de la integral de la componente especular se ve reducido a una consulta al mapa de entorno prefiltrado,
+        otra la \textit{BRDF integration map} y la combinacion de sus resultados:
+
+        \singlespacing
+        \begin{lstlisting}[caption=C\'alculo de la componente especular debida al entorno]
+float lod = getMipLevelFromRoughness(roughness);
+vec3 prefilteredColor = textureCubeLod(PrefilteredEnvMap, refVec, lod);
+vec2 envBRDF = texture2D(BRDFIntegrationMap, vec2(NdotV, roughness)).xy;
+vec3 indirectSpecular = prefilteredColor * (F * envBRDF.x + envBRDF.y) 
+        \end{lstlisting}
+        \singlespacing
+        
+        % un \textit{look-up texture} (LUT), que almacena
+        % los c\'alculos precomputados del BRDF para los diferentes valores de \textit{rougness} y del producto escalar $w_i\cdot{n}$.
+        % El \textit{BRDF integration map} asume 
+
+
+
+
+        % De la misma forma que para el c\'alculo de la componente difusa, el c\'alculo de la componente especular
     
 
 
