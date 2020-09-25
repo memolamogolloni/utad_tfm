@@ -1,21 +1,56 @@
 \chapter{Modelos de iluminaci\'on para tejidos}
+% Los materiales PBR \textit{MeshStandardMaterial} y \textit{MeshPhysicalMaterial} de ThreeJs funcionan muy bien para gran parte de
+% materiales, como pl\'asticos o metales. Sin embargo carecen de par\'ametros que permitan representar fen\'onmenos como la
+% dispersi\'on hacia delante y hacia detr\'as (\textit{forward/backward scattering}) o la absorci\'on y reflexi\'on interna (\textit{suburface scattering}) caracter\'isticos
+% de gran cantidad de tejidos debido a la reflexi\'on de la luz con las fibras que lo componen.
+Los tejidos se componen de fibras entrelazadas con cierta separaci\'on entre s\'i, por lo que la met\'afora de la
+rejilla compuesta por microespejos que se utiliza en la teor\'ia de microfacetas no es la mejor aproximaci\'on para tratar
+de representar este material de forma realista. Los materiales PBR \textit{MeshStandardMaterial} y \textit{MeshPhysicalMaterial} de
+ThreeJs, basados en microfacetas, funcionan muy bien para gran parte de materiales, como pl\'asticos o metales, sin embargo no consiguen
+una representaci\'on realista de tejidos, que suelen presentar un l\'obulo especular m\'as atenuado.\\
 
-Los materiales PBR \textit{MeshStandardMaterial} y \textit{MeshPhysicalMaterial} de ThreeJs, aunque funcionan muy bien para gran parte de
-materiales, como pl\'asticos o metales, carecen de par\'ametros que permitan representar los fen\'omenos de retrodispersi\'on o
-la reflexi\'on interna caractir\'istica de los tejidos, compuestos de una gran cantidad de hilos que absorben y dispersan la luz.
-Es por ello que Filament presenta un nuevo BRDF basado en los trabajos de y que utiliza un par\'ametro de \textit{sheen} para
-que ofrece un control sobre el brillo especular para simular los fen\'omenos de reflexi\'on hacia delante y hacia detr\'as
-caracter\'istico de tejidos como el terciopelo. Adem\'as algunos materiales absorben parcialmente la luz y la emiten de nuevo,
-aport\'ando un color caracter\'istico determinado por las fibras del tejido, \'este fen\'omeno se representa con el par\'ametro
-\textit{subsurface} de Filament, que utiliza la aproximaci\'on conocida como \textit{wrapped diffuse lighting} \autocite{orennayar}
+La estructura de fibras puede provocar los efectos de absorci\'on y reflexi\'on interna (\textit{subsurface scattering}) y, dependiendo
+de la direcci\'on de la luz, los efectos de dispesi\'on hacia delante o hacia detr\'as (\textit{forward} y \textit{backward scattering}).\\
+
+Cuando la luz viene en direcci\'on opuesta al punto de vista y golpea las fibras que salen del tejido provoca el efecto de
+\textit{foward scattering}, mientras que cuando la luz viene en la misma direcci\'on que el punto de vista, el fen\'omeno
+de \textit{backward scattering}. El terciopelo es un caso de tejido en el que se acent\'ua este efecto y el primer trabajo en describirlo, el modelo de BRDF de Ashikmin
+\autocite{ashikhmin}, es tambi\'en conocido como \textit{velvet BRDF} o \textit{velvet distribution}.\\
+
+Este trabajo implementa sobre ThreeJs el modelo de \textit{Cloth} de Filament \autocite{filament}. La librer\'ia de Google
+presenta un BRDF especial para tejidos que, inspirado en los trabajos de Ashikmin \autocite{ashikhmin} y m\'as
+tarde Estevez y Kulla \autocite{sheenbrdf} para el t\'ermino de distribuci\'on de las normales, y el de Neubelt \autocite{theorder}
+para el factor de geometr\'ia, permite una representaci\'on realistas en entornos interactivos de los citados efectos.
+
+
+% al carecer de par\'ametros que permitan representar los fen\'onmenos de dispersi\'on hacia delante y hacia detr\'as (\textit{forward/backward scattering})
+% o la absorci\'on y reflexi\'on interna (\textit{suburface scattering}), efectos caracter\'isticos de una amplia variedad de
+% tejidos.\\
+
+% Dependiendo de la direcci\'on de la luz con respecto al punto de vista, las fibras que componen los tejidos pueden provocar los
+% efectos de \textit{forward scattering} cuando la luz viene de la direcci\'on opuesta al punto de vista y  \textit{backward scattering},
+% cuando la luz viene desde la misma direcci\'on que el punto de vista. 
+
+% Adem\'as la separaci\'on de las fibras puede 
+
+% Adem\'as las ligeras separaciones
+
+
+% los fen\'omenos de retrodispersi\'on o
+% la reflexi\'on interna, compuestos de una gran cantidad de hilos que absorben y dispersan la luz.
+% Es por ello que Filament presenta un nuevo BRDF basado en los trabajos de y que utiliza un par\'ametro de \textit{sheen} para
+% que ofrece un control sobre el brillo especular para simular los fen\'omenos de reflexi\'on hacia delante y hacia detr\'as
+% caracter\'istico de tejidos como el terciopelo. Adem\'as algunos materiales absorben parcialmente la luz y la emiten de nuevo,
+% aport\'ando un color caracter\'istico determinado por las fibras del tejido, \'este fen\'omeno se representa con el par\'ametro
+% \textit{subsurface} de Filament, que utiliza la aproximaci\'on conocida como \textit{wrapped diffuse lighting} \autocite{gpugems}\\
 
 
 \section{Integraci\'on de una nueva clase de material en ThreeJs}
-ThreeJs proporciona un API para extender de forma sencilla su librer\'ia de materiales, sin embargo, para proporcionar al nuevo
+ThreeJs proporciona una API para extender de forma sencilla su librer\'ia de materiales, sin embargo, para proporcionar al nuevo
 material de la misma interfaz que los materiales nativos de ThreeJs, as\'i como seguir extendiendo la librer\'ia y ser flexible
 a futuros cambios, se ha optado por crear un \textit{fork} de la librer\'ia e introducir los cambios necesarios para crear
 este nuevo material. Siguiendo la nomenclatura de ThreeJs: \textit{MeshBasicMaterial}, \textit{MeshStandardMaterial}, etc., el
-nuevo material se llama \textit{MeshClothMaterial}.
+nuevo material se llama \textit{MeshClothMaterial}.\\
 
 El nuevo material tiene un BRDF diferente al \textit{MeshPhysicalMaterial},
 y diferentes par\'ametros, sin embargo si que soporta los mismos efectos de \textit{normal mapping}, \textit{displacement}, etc.
@@ -24,7 +59,8 @@ y comparte gran cantidad de los par\'ametros con el material base, a\~nadiendo \
 de shader, en la clase \textit{WebGLMaterials} y \textit{defines}, que se utilizar\'an para a\~nadir directivas al c\'odigo GLSL
 generado en la clase \textit{WebGLProgram}. Para que el nuevo material est\'e quede expuesto como un material nativo de ThreeJs,
 se an\~ade a objeto \textit{Materials}.\\
-En la clase \textit{WebGLMaterials} se incluye un nuevo m\'etodo para actualizar los uniforms de \'este nuevo material.
+
+En la clase \textit{WebGLMaterials} se incluye un nuevo m\'etodo para actualizar los uniforms de \'este nuevo material.\\
 
 \singlespacing
 \begin{lstlisting}[caption=Cambios sobre la clase WebGLMaterials de ThreeJs]
@@ -173,23 +209,59 @@ function getParameters( material, lights, shadows, scene, object ) {
   la distancia es considerable, el fen\'omeno se modela de forma diferente. En tiempo real, es com\'un utilizar la citada aproximaci\'on
   \textit{wrapped diffuse lighting} \autocite{orennayar}.
   El modelo para tejidos de Filament utiliza el difuso de Lambert en caso de no utilizar el par\'ametro \textit{subsurface},
-  mientras que si lo utiliza utiliza el factor de correci\'on que permite simular los rebotes internos de la luz.
+  mientras que si lo utiliza utiliza el factor de correci\'on que permite simular los rebotes internos de la luz.\\
 
-  \begin{equation}
+  $$
   f_d(v, h) = \frac{c_{diff}}{\pi}
   \Bigg\langle
   n\cdot{l} + \frac{w}{(1+ w)^2}\langle c_{subsurface} + n \cdot{l} \rangle
   \Bigg\rangle
+  $$
+  \begin{equation}
+  \textrm{siendo}\; w = 0.5
   \end{equation}
   \singlespacing
+
+  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
+vec3 BRDF_Diffuse_Cloth(const in IncidentLight incidentLight, const in vec3 viewDir, const in vec3 normal, const in vec3 diffuseColor) {
+
+  float dotNL = saturate( dot( normal, incidentLight.direction ) );
+  float radiance = RECIPROCAL_PI; // Lambert BRDF
+  
+  #if defined(SUBSURFACE)
+    // Fd_Wrap
+    radiance *= saturate((dotNL + 0.5) / 2.25);
+
+  #endif
+
+  vec3 Fd = radiance * diffuseColor;
+
+  return Fd;
+
+}
+  \end{lstlisting}
+
+  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
+void RE_Direct_Cloth( const in IncidentLight directLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
+  // ...
+  reflectedLight.directDiffuse += irradiance * BRDF_Diffuse_Cloth(directLight, geometry.viewDir, geometry.normal, material.diffuseColor);
+
+  #if defined(SUBSURFACE)
+    reflectedLight.directDiffuse *= saturate(subsurface + dotNL); 
+  #endif
+
+  // ...
+}
+  \end{lstlisting}
+
 
   \subsection{Componente especular}
 
   El \textit{MeshPhysicalMaterial} utiliza por defecto un BRDF GGX, \autocite{ggx}. Sin embargo, si el par\'ametro de \text{sheen}
   est\'a activo, utiliza 
   Al contrario que el MeshPhysicalMaterial, que utiliza una una distribucion GGX, el material
-  Cloth de Filament utiliza una  version modificada del BRDF presentado por Ashikmin y Premoze
-  \autocite{velvet}
+  Cloth de Filament utiliza una  version modificada del BRDF presentado por Ashikmin y Premoze.
+  \autocite{ashikhmin}\\
 
   \begin{equation}
   D_{Velvet}(v, h, \alpha) = c_{norm} (
@@ -198,7 +270,7 @@ function getParameters( material, lights, shadows, scene, object ) {
   \end{equation}
   \singlespacing
 
-  \hspace{-1.5em}en su lugar se utiliza la la presentada por Est\'evez y Kulla \autocite{sheen}
+  \hspace{-1.5em}en su lugar se utiliza la la presentada por Est\'evez y Kulla \autocite{sheen}\\
 
   \begin{equation}
     D_{Charlie}(\alpha) = \frac
@@ -207,12 +279,46 @@ function getParameters( material, lights, shadows, scene, object ) {
   \end{equation}
   \singlespacing
 
+  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
+float D_Charlie(float roughness, float NoH) {
+  // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
+  float invAlpha = 1.0 / roughness;
+  float cos2h = NoH * NoH;
+  float sin2h = max(1.0 - cos2h, 0.0078125); // 2^(-14/2), so sin2h^2 > 0 in fp16
+  return (2.0 + invAlpha) * pow(sin2h, invAlpha * 0.5) / (2.0 * PI);
+}
+  \end{lstlisting}
+  \singlespacing
+
   \hspace{-1.5em}y se utiliza una version modificada del denominador para suavizar el degradado de la sombra.
 
   \begin{equation}
   \frac{1}{4(n\cdot{l} + n\cdot{v} - (n\cdot{l})(n\cdot{v}) )}
   \end{equation}
   \singlespacing
+
+
+  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
+float V_Neubelt(float NoV, float NoL) {
+  // Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
+  return saturate(1.0 / (4.0 * (NoL + NoV - NoL * NoV)));
+}
+  \end{lstlisting}
+
+  \singlespacing
+  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
+vec3 BRDF_Specular_Sheen( const in float roughness, const in vec3 L, const in GeometricContext geometry, vec3 specularColor ) {
+
+  vec3 N = geometry.normal;
+  vec3 V = geometry.viewDir;
+
+  vec3 H = normalize( V + L );
+  float dotNH = saturate( dot( N, H ) );
+
+  return specularColor * D_Charlie( roughness, dotNH ) * V_Neubelt( dot(N, V), dot(N, L) );
+
+}
+  \end{lstlisting}
 
   \subsection{Iluminaci\'on indirecta}
     ThreeJs utiliza dos enfoques, por una parte, mapas de irradiancia y por otra, light probes, que
@@ -232,22 +338,47 @@ function getParameters( material, lights, shadows, scene, object ) {
       $$
 
       \begin{lstlisting}
-float diffuseWrapFactor = 1.0;
-#if defined(SUBSURFACE)
-  diffuseWrapFactor *= saturate((dotNV + 0.5) / 2.25);
-#endif
+void RE_IndirectDiffuse_Cloth( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
 
-// Combine envmap and SH diffuse irradiance
-vec3 Fd_SH = reflectedLight.indirectDiffuse * ( 1.0 - E ) * diffuseWrapFactor;
-vec3 Fd_Lod = irradiance * BRDF_Diffuse_Lambert( material.diffuseColor )  * ( 1.0 - E ) * diffuseWrapFactor;
-vec3 Fd = Fd_SH + Fd_Lod;
+    reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 
-#if defined(SUBSURFACE)
-
-  Fd *= saturate(subsurface + dotNV);
-
-#endif
+}
       \end{lstlisting}
+
+      \begin{lstlisting}
+void RE_IndirectSpecular_Cloth(
+  const in vec3 radiance,
+  const in vec3 irradiance,
+  const in vec3 clearcoatRadiance,
+  const in GeometricContext geometry,
+  const in PhysicalMaterial material,
+  inout ReflectedLight reflectedLight
+) {
+  // ...
+
+  float diffuseWrapFactor = 1.0;
+  #if defined(SUBSURFACE)
+    diffuseWrapFactor *= saturate((dotNV + 0.5) / 2.25);
+  #endif
+
+  // E = specular irradiance
+  vec3 Fd_SH = reflectedLight.indirectDiffuse * ( 1.0 - E )
+    * diffuseWrapFactor;
+  vec3 Fd_Lod = irradiance * BRDF_Diffuse_Lambert( material.diffuseColor )
+    * ( 1.0 - E ) * diffuseWrapFactor;
+  vec3 Fd = Fd_SH + Fd_Lod;
+
+  #if defined(SUBSURFACE)
+
+    Fd *= saturate(subsurface + dotNV);
+
+  #endif
+
+  reflectedLight.indirectDiffuse = Fd;
+
+}
+      \end{lstlisting}
+
       \singlespacing
 
     \subsubsection{Componente especular}
@@ -284,19 +415,107 @@ vec3 Fd = Fd_SH + Fd_Lod;
       la presentada por Epic Garmes \autocite{shadingmobile}, para aproximar el c\'alculo el BRDF GGX.\\
 
       \begin{lstlisting}[caption=Apromixaci\'on anal\'itica a la integral del BRDF en ThreeJs]
-      vec2 integrateSpecularBRDF( const in float dotNV, const in float roughness ) {
-        const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
-        const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
-        vec4 r = roughness * c0 + c1;
-        float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
-        return vec2( -1.04, 1.04 ) * a004 + r.zw;
-      }
+vec2 integrateSpecularBRDF( const in float dotNV, const in float roughness ) {
+  const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
+  const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
+  vec4 r = roughness * c0 + c1;
+  float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
+  return vec2( -1.04, 1.04 ) * a004 + r.zw;
+}
       \end{lstlisting}
       \singlespacing
 
       Sin embargo, \'este c\'aculo no es v\'alido para nuestro BRDF, por que, deberemos utilizar una
-      tabla en la que almacenar los resultados calculados para el BRDF presentado por Est\'evez y Kulla.
+      \textit{BRDF integration map} en el que almacenar los resultados calculados para el BRDF presentado por Est\'evez y Kulla.
     \egroup
+
+
+    \begin{lstlisting}
+float prefilteredDG = textureLod(
+  brdfCloth,
+  vec2( dotNV, material.specularRoughness * material.specularRoughness ),
+  0.0
+).b;
+
+vec3 E = material.sheenColor * prefilteredDG;
+reflectedLight.indirectSpecular += E * radiance;
+    \end{lstlisting}
+    \singlespacing
+
+    \begin{lstlisting}
+void RE_IndirectSpecular_Cloth(
+  const in vec3 radiance,
+  const in vec3 irradiance,
+  const in vec3 clearcoatRadiance,
+  const in GeometricContext geometry,
+  const in PhysicalMaterial material,
+  inout ReflectedLight reflectedLight
+) {
+
+  float dotNV = dot( geometry.normal, geometry.viewDir );
+
+  float prefilteredDG = textureLod(
+    brdfCloth,
+    vec2(
+      dotNV,
+      material.specularRoughness * material.specularRoughness
+    ),
+    0.0
+  ).b;
+
+  vec3 E = material.sheenColor * prefilteredDG;
+  reflectedLight.indirectSpecular += E * radiance;
+
+  // ...
+
+}
+    \end{lstlisting}
+    \singlespacing
+
+    \begin{lstlisting}
+void RE_IndirectSpecular_Cloth(
+  const in vec3 radiance,
+  const in vec3 irradiance,
+  const in vec3 clearcoatRadiance,
+  const in GeometricContext geometry,
+  const in PhysicalMaterial material,
+  inout ReflectedLight reflectedLight
+) {
+
+  float dotNV = dot( geometry.normal, geometry.viewDir );
+
+  float prefilteredDG = textureLod(
+    brdfCloth,
+    vec2(
+      dotNV,
+      material.specularRoughness * material.specularRoughness
+    ),
+    0.0
+  ).b;
+  vec3 E = material.sheenColor * prefilteredDG;
+  reflectedLight.indirectSpecular += E * radiance;
+
+  float diffuseWrapFactor = 1.0;
+  #if defined(SUBSURFACE)
+    diffuseWrapFactor *= saturate((dotNV + 0.5) / 2.25);
+  #endif
+
+  // Combine envmap and SH diffuse irradiance
+  vec3 Fd_SH = reflectedLight.indirectDiffuse * ( 1.0 - E ) * diffuseWrapFactor;
+  vec3 Fd_Lod = irradiance * BRDF_Diffuse_Lambert( material.diffuseColor )  * ( 1.0 - E ) * diffuseWrapFactor;
+  vec3 Fd = Fd_SH + Fd_Lod;
+
+  #if defined(SUBSURFACE)
+
+    Fd *= saturate(subsurface + dotNV);
+
+  #endif
+
+  reflectedLight.indirectDiffuse = Fd;
+
+}
+    \end{lstlisting}
+    \singlespacing
 
 \vspace{1cm}
 \section{Resultados}

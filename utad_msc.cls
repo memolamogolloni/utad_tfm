@@ -71,6 +71,9 @@
 \definecolor{lightgray}{rgb}{0.95, 0.95, 0.95}
 \definecolor{darkgray}{rgb}{0.4, 0.4, 0.4}
 \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\definecolor{bluegreen}{rgb}{0.0, 0.87, 0.87}
+\definecolor{bondiblue}{rgb}{0.0, 0.58, 0.71}
+\definecolor{smokyblack}{rgb}{0.16, 0.15, 0.13}
 
 % JS syntax highlighting
 \lstdefinelanguage{JavaScript}{
@@ -99,12 +102,12 @@
   keywordstyle=\color{blue}\bfseries,
   ndkeywords={class, export, boolean, throw, implements, import, this},
   ndkeywordstyle=\color{darkgray}\bfseries,
-  identifierstyle=\color{black},
+  identifierstyle=\color{smokyblack},
   sensitive=false,
   comment=[l]{//},
   morecomment=[s]{/*}{*/},
   commentstyle=\color{purple}\ttfamily,
-  stringstyle=\color{red}\ttfamily,
+  stringstyle=\color{bondiblue}\ttfamily,
   morestring=[b]',
   morestring=[b]"
 }
@@ -148,12 +151,12 @@
   keywordstyle=\color{blue}\bfseries,
   ndkeywords={class, export, boolean, throw, implements, import, this},
   ndkeywordstyle=\color{darkgray}\bfseries,
-  identifierstyle=\color{black},
+  identifierstyle=\color{smokyblack},
   sensitive=false,
   comment=[l]{//},
   morecomment=[s]{/*}{*/},
   commentstyle=\color{purple}\ttfamily,
-  stringstyle=\color{red}\ttfamily,
+  stringstyle=\color{bondiblue}\ttfamily,
   morestring=[b]',
   morestring=[b]"
 }

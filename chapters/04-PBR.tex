@@ -4,10 +4,6 @@ modelo f\'isico. La intenci\'on de los sistemas de renderizado PBR en entornos i
 y poco costosas de la dispersi\'on de la luz al golpear sobre una superficie. Las principales ventajas de este tipo de algoritmos
 son la consistencia bajo diferentes condiciones de luz y su manejo intuitivo por parte de los artistas.\\
 
-Las caracter\'isticas esenciales de un motor PBR, adem\'as de estar basado en la teor\'ia de microfacetas, son cumplir con el principio
-de conservaci\'on de la energ\'ia y el principio de Helmholtz. Estos dos principios no siempre se cumplen en los sistemas de
-de renderizado realista en entornos interactivos, que pueden presentar optimizaciones que sacrifiquen aspectos f\'isicos del modelo
-en favor de tiempos de respuestas menores, siempre y cuando no resulten en artefactos apreciables.\\
 % Los motores PBR cumplen con la ley de la conservaci\'on de la energ\'ia y utilizan BRDFs basados en la teor\'ia de
 % microfacetas y el principio de reciprocidad de Helmholtz
 
@@ -30,8 +26,8 @@ de la escena, como la c\'amara o las luces, pueden estar basados en modelos f\'i
     %     surface element (or leaves a surface element) from a particular direction.
     % }
     Los modelos de BRDF analizados en este trabajo son basados en f\'isica y utilizan las unidades radiom\'etricas para
-    medir la luz incidente o reflectada por una superficie. En estos modelos, la luz se mide como energ\'ia por unidad de
-    \'area.
+    medir las interacciones f\'isicas de la luz con el entorno. A continuaci\'on un listado de las unidades
+    b\'asicas de radiometr\'ia:
     % para describir la luz incidente sobre las superficies.
 
     \subsection*{\'Angulo s\'olido}
@@ -40,8 +36,9 @@ de la escena, como la c\'amara o las luces, pueden estar basados en modelos f\'i
     ($sr$), que representa el \'area de un \'angulo s\'olido sobre la esfera de radio unitario $\Omega$ que contiene $4\pi$ radianes.
 
     \begin{figure}[H]
+        \vspace{0.5cm}
         \centering
-          \frame{\includegraphics[scale=0.4]{steradian}}
+          \frame{\includegraphics[scale=0.42]{steradian}}
         \caption{La superficie de la base del cono extra\'ido de la esfera representa 1$sr$.}
         \vspace{0.5cm}
     \end{figure}
@@ -49,12 +46,12 @@ de la escena, como la c\'amara o las luces, pueden estar basados en modelos f\'i
     \subsection*{\'Angulo s\'olido diferencial}
     Es la unidad que se utiliza como \'area de medida en el BRDF para representar la cantidad de luz que incide en una superficie.
     Un \'angulo s\'olido diferencial ($dw$) es el \'area contenida entre incrementos muy peque\~nos en coordernadas esf\'ericas sobre
-    los \'angulos $\theta$ y $\phi$ de la esfera $\Omega$.
+    los \'angulos $\theta$ y $\phi$ de la semiesfera $\Omega$.
 
     \begin{figure}[H]
         \vspace{0.5cm}
         \centering
-          \frame{\includegraphics[scale=0.2]{differentialsolidangle}}
+          \frame{\includegraphics[scale=0.24]{differentialsolidangle}}
         \caption{Esquema explicativo de un \'angulo s\'olido diferencial.}
         \vspace{0.5cm}
     \end{figure}
@@ -83,6 +80,14 @@ de la escena, como la c\'amara o las luces, pueden estar basados en modelos f\'i
             E = \dfrac{d\Phi}{dA}
         \end{equation}
 
+        \begin{figure}[H]
+            \vspace{0.5cm}
+            \centering
+              \frame{\includegraphics[scale=0.44]{irradiance}}
+            \caption{La superficie de la base del cono extra\'ido de la esfera representa 1$sr$.}
+        \end{figure}
+
+
     \subsection*{Intensidad radiante}
         Representa el flujo radiante emitido por una fuente de luz en una direcci\'on determinada y se mide expresa
         como vatios por estereorradi\'an ($W/sr$).
@@ -92,7 +97,7 @@ de la escena, como la c\'amara o las luces, pueden estar basados en modelos f\'i
         \end{equation}
 
     \subsection*{Radiancia}
-        La radiancia ($L$) se puede considerar como la combinaci\'on de los conceptos de irradiancia e intensidad radiante y
+        La radiancia ($L$) se puede considerar como la combinaci\'on de irradiancia e intensidad radiante y
         define la direcci\'on y la intensidad radiante recibida por una superficie. La ecuaci\'on de render, igual que la c\'amaras,
         sensores o nuestros ojos miden la radiancia que llega desde las superficies del entorno al punto de vista. Su unidad son los
         vatios por metro cuadrado por estereorradi\'an (${W}/{m^2sr}$)
@@ -100,8 +105,16 @@ de la escena, como la c\'amara o las luces, pueden estar basados en modelos f\'i
             L = \dfrac{d^2\Phi}{dA_{proj}d\omega}
         \end{equation}
 
+        \begin{figure}[H]
+            \vspace{0.5cm}
+            \centering
+              \frame{\includegraphics[scale=0.4]{radiance}}
+            \caption{La superficie de la base del cono extra\'ido de la esfera representa 1$sr$.}
+            \vspace{0.5cm}
+        \end{figure}
+
 \section{Ecuaci\'on de render}
-Presentada por primera vez en el trabajo de Kajiya \autocite{kajiya}, el prop\'osito de la ecuacion de render es conocer el valor de
+Presentada por primera vez en el trabajo de Jim Kajiya \autocite{kajiya}, el prop\'osito de la ecuacion de render es conocer el valor de
 radiancia que llega a la camara en una direcci\'on por cada pixel de la camara. Para ello se utiliza la ecuacion de reflectancia,
 que depende de la luz que llega al punto, el coseno del angulo con el que incide la luz y el BRDF, que modela el comportamiento
 de la luz al rebotar sobre la superficie.\\
@@ -115,19 +128,36 @@ de la luz al rebotar sobre la superficie.\\
 \singlespacing
 
 Siendo $L_o(p, w_o)$ la luz reflectada por la superficie, $L_e(x, w_o)$ la luz emitida por la superficie, que est\'a fuera
-de la integral porque es independiente de la luz reflejada o refractada por la superficie. $\int_{\Omega}[...]dw$ que representa
+de la integral porque es independiente de la luz reflejada por la superficie. $\int_{\Omega}[...]dw$ que representa
 que la operaci\'on se repite para cada \'angulo s\'olido dentro de la semiesfera $f_r(p, w_i, w_o)$, el BRDF, $L_i(p, w_i)$, la luz
-que llega al punto de la superficie que estamos evaluando y $n\cdot{w_i}$ el factor de atenuaci\'on de la luz con respecto a la normal.
+que llega al punto de la superficie que estamos evaluando y $n\cdot{w_i}$ el factor de atenuaci\'on de la luz con respecto a la normal.\\
 
-An important property of the rendering equation is that it is linear with respect to
-the emitted lighting. If we make the lights twice as strong, the result of the shading will
-be two times brighter. The response of the material for each light is also independent
-from other sources. That is, one light’s presence does not affect the interaction of
-another light with the material.\\
+\begin{figure}[H]
+    \vspace{0.5cm}
+    \centering
+    \includegraphics[scale=0.35]{renderequation}
+    \caption{Im\'agen publicada originalmente en el trabajo de Kajiya \autocite{kajiya}}
+    \vspace{0.5cm}
+\end{figure}
 
-In real-time rendering, it is common to use just a local lighting model. Only the
-surface data at visible points are needed to compute the lighting—and that is exactly
-what GPUs can most efficiently provide.\\
+El coste de computaci\'on de la radiancia debida al conjunto del entorno (iluminaci\'on indirecta o global) es muy alto, por lo que
+tradicioanlmente los sistemas de renderizado interactivos calculaban \'unicamente la radiancia debida a los emisores de luz de la escena
+(iluminaci\'on directa o local). Sin embargo recientemente se han presentado t\'ecnicas que permiten la aproximaci\'on
+de este efecto que se analizan en la \'ultima secci\'on de este cap\'itulo.
+
+% \todo[inline]{
+%     An important property of the rendering equation is that it is linear with respect to
+%     the emitted lighting. If we make the lights twice as strong, the result of the shading will
+%     be two times brighter. The response of the material for each light is also independent
+%     from other sources. That is, one light’s presence does not affect the interaction of
+%     another light with the material.\\
+% }
+
+% \todo[inline]{
+%     In real-time rendering, it is common to use just a local lighting model. Only the
+%     surface data at visible points are needed to compute the lighting—and that is exactly
+%     what GPUs can most efficiently provide.\\
+% }
 
 \section{BRDF}
 
@@ -135,23 +165,57 @@ El BRDF, o función de ditribuci\'on bidireccional de reflectividad, es la parte
 comportamiento de la luz al golpear sobre la superficie y se utiliza para modelar propiedades f\'isicas de los diferentes
 materiales.\\
 
-Es una funcion estad\'istica que calcula cuanta de la luz que incide sobre un material es reflejada en direcci\'on
-a la c\'amara, para ello toma como argumentos la direccion de la luz, $w_i$, y la dirección de salida,
+Es una funcion estad\'istica que calcula el ratio de luz que incidente sobre un material que es reflejada en direcci\'on
+a la c\'amara, para ello toma como argumentos la direccion de la luz, $w_i$, y la dirección de la vista,
 $w_o$, la normal de la superficie, $n$, y un par\'ametro $\alpha$ que representa la rugosidad del material.
 
 \begin{figure}[H]
     \vspace{0.5cm}
     \centering
-      \frame{\includegraphics[scale=0.7]{microfacet-diagram}}
+      \frame{\includegraphics[scale=0.5]{microfacet-diagram}}
     \caption{Diagrama de la luz incidente y luz reflectada}
     \vspace{0.5cm}
 \end{figure}
 
-Para que un BRDF se considere como PBR, ha de utilizar el modelo de microfacetas, ademas de cumplir con la ley de conservacion
-de la energia, $\forall w_i \int_{\Omega} f(p, w_i, w_o) n\cdot{w_i} dw_o \leq 1$ y el principio de reciprocidad de Helmholtz,
-el BRDF debe de ser simétrico, esto es que invertir la direccion de entrada y salida del BRDF no deberia afectar al resultado
-$f(x, w_i, w_o) = f(x, w_o, w_i)$ sin embargo, los motores en tiempo real, frecuentemente incumplen el principio de reciprocidad,
-no siendo fisicamente plausibles, pero sin generar artefactos.\\
+% \todo[inline]{
+%     Las caracter\'isticas esenciales de un motor PBR, adem\'as de estar basado en la teor\'ia de microfacetas, son cumplir con el principio
+%     de conservaci\'on de la energ\'ia y el principio de Helmholtz. Estos dos principios no siempre se cumplen en los sistemas de
+%     de renderizado realista en entornos interactivos, que pueden presentar optimizaciones que sacrifiquen aspectos f\'isicos del modelo
+%     en favor de tiempos de respuestas menores, siempre y cuando no resulten en artefactos apreciables.\\
+% }
+
+Los BRDFs basados en aspectos f\'isicos, adem\'as de estar basados en la teor\'ia de microfacetas, se caracterizan por otras dos
+propiedades: el principio de reciprocidad de Helmholtz y la ley de conservaci\'on de la energ\'ia.
+
+% \todo[inline]{
+%     Para que un BRDF se considere como PBR, ha de utilizar el modelo de microfacetas, ademas de cumplir con la ley de conservacion
+%     de la energia,  y el principio de reciprocidad de Helmholtz,
+%     el BRDF debe de ser simétrico, esto es que invertir la direccion de entrada y salida del BRDF no deberia afectar al resultado
+%     $f(x, w_i, w_o) = f(x, w_o, w_i)$ sin embargo, los motores en tiempo real, frecuentemente incumplen el principio de reciprocidad,
+%     no siendo fisicamente plausibles, pero sin generar artefactos.\\
+% }
+\begin{itemize}
+    \item
+        El principio de reciprocidad de Helmholtz establece que el BRDF debe de ser simétrico, lo que supone que invertir las direcciones
+        de entrada y salida del BRDF no debe afectar al resultado.
+        
+        \begin{equation}
+            f(x, w_i, w_o) = f(x, w_o, w_i)
+        \end{equation}
+        \singlespacing
+
+        \item El principio de conservaci\'on de la energ\'ia determina que la energ\'ia dispersada por la superficie no puede
+    ser mayor que la energ\'ia incidente.
+
+    \begin{equation}
+        \forall w_i \int_{\Omega} f(p, w_i, w_o) n\cdot{w_i} dw_o \leq 1
+    \end{equation}
+\end{itemize}
+\singlespacing
+
+Estos dos principios no siempre se cumplen en los sistemas de de renderizado realista en entornos interactivos, que pueden presentar
+aproximaciones que sacrifiquen aspectos f\'isicos del modelo, siempre y cuando no resulten en artefactos visuales apreciables, en
+favor de tiempos de respuestas menores.
 
     \subsection{Teor\'ia de microfacetas}
 
@@ -161,18 +225,19 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         microsc\'opico. La teor\'ia de microfacetas utiliza una representaci\'on estad\'istica para modelar estas peque\~nas irregularidades.\\
 
         La teor\'ia de microfacetas, considera la superficie de reflexi\'on como una superficie compuesta por una matriz de
-        superficies mas peque\~nas que la longitud de onda de la luz pero muy peque\~nas desde el punto de vista de la c\'amara,
-        completamente reflectantes, llamadas microfacetas, y cuyas diferentes orientaciones determinan la rugosidad de la superficie.
-        Si las microfacetas est\'an completamente alineadas, las reflexiones ser\'an mas definidas, asimilandose a un espejo, mientras
-        que las microfacetas apuntando en diferentes direcciones, dar\'an como resultado una reflexion especular mas difusa.
+        superficies mas peque\~nas que la longitud de onda de la luz, completamente reflectantes, llamadas microfacetas, y cuyas
+        diferentes orientaciones determinan la rugosidad de la superficie.\\
 
         \begin{figure}[H]
-            \vspace{0.5cm}
             \centering
             \frame{\includegraphics[scale=0.55]{macrosuperficie}}
             \caption{Superficie a escala microsc\'opica}
             \vspace{0.5cm}
         \end{figure}
+
+        Si las normales de las microfacetas est\'an completamente alineadas con el vector medio entre la vista y la luz (vector $h$),
+        las reflexiones ser\'an mas definidas, asimilandose a un espejo, mientras la variaci\'on de la normal de las microfacetas con
+        respecto al vector $h$ dar\'a como resultado una reflexion especular mas difusa.
 
     \egroup
 
@@ -197,9 +262,8 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     aproximan un determinado fen\'omeno, ejemplos de modelos emp\'iricos son los modelos de Phong \autocite{phong} o el
     de Blinn-Phong \autocite{blinnphong}. Los modelos te\'oricos, como los basados en microfacetas, se basan en observaciones sobre el comportamiento de la luz y su
     interacci\'on sobre las superficies para crear un sistema de ecuaciones que describan este comportamiento sobre un modelo
-    matem\'atico. Por \'ultimo, los modelo experimentales, se basan en datos de estudios experimentales con la luz a partir de los
-    que crean funciones que se ajustan a los datos obtenidos en dichos estudios, el BRDF de Schlick es un ejemplo de modelo
-    experimental.
+    matem\'atico. Por \'ultimo, los modelo experimentales, el de Schlick \autocite{schlick} se basan en resultados obtenidos en estudios de campo con luz a partir de los
+    cuales se crean funciones que se ajusten a los datos obtenidos.
     % Los diferentes tipos de BRDFs permiten para modelar diferentes propiedades de los materiales, isotropia o anisotropia,
     % transmitancia, reflexiones internas, etc. Podemos clasificar los diferentes tipos de BRDFs entre modelos analiticos y BDRFs
     % de datos adquiridos. Los modelos analiticos son funciones matemáticas que modelan diferentes efectos de la luz en funcion de
@@ -223,104 +287,166 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     % }
 
     \begin{figure}[H]
+        \vspace{0.5cm}
         \centering
         \frame{\includegraphics[scale=0.45]{schema_brdfs}}
         \caption{Esquema de diferentes modelos de BRDF seg\'un su origen}
         \vspace{0.5cm}
     \end{figure}
 
-    \section{BRDF Cook-Torrance}
-    Es un modelo anal\'itico permite representar con gran realismo materiales electricos y dielectricos con diferentes
-    grados de rugosidad y, en general, funciona bien para modelar cambios en el color que dependen del punto de vista.\\
-    Este modelo permite estudiar por separado las dos componentes de la luz, especular y difuso:
-    
+    \section{Modelo de Cook-Torrance}
+    El modelo de BRDF de Cook-Torrance \autocite{cooktorrance} presenta la forma que conocemos a d\'ia de hoy: los t\'erminos
+    de distribuci\'on de las normales, geometr\'ia y Fresnel y el factor de correcci\'on en el denominador. Aunque con cambios en
+    sus t\'erminos, ideas pcomo la conservaci\'on de la energ\'ia, que solo las microfacetas cuyas normales apuntan en
+    direcci\'on $h$ contribuyen a la reflexi\'on especular o la diferencia entre materiales met\'alicos y diel\'ectricos siguen
+    presentes en la mayor\'ia de modelos basados en aspectos f\'isicos que se utilizan en la actualidad.
+
+    \singlespacing
+    $$
+    f_r = k_{d}f_{lambert} + k_sf_{cook-torrance}
+    $$
     \begin{eqfloat}[!htb]
         \begin{equation}
-            f_r = k_{d}f_{lambert} + k_sf_{cook-torrance}
+            \textrm{siendo}\ k_d + k_s = 1
         \end{equation}
-        \caption{BRDF como suma de la componente difusa y especular}
+        \caption{Ley de conservaci\'on de la energ\'ia en el modelo de Cook-Torrance \autocite{cooktorrance}}
     \end{eqfloat}
     
-    siendo $k_d$ y $k_s$, parametros de peso que cumplen $k_d + k_s = 1$
-    \singlespacing
+    Este trabajo populariz\'o los modelos basados en aspectos f\'isicos al permitir representar con gran realismo materiales
+    el\'ectricos y diel\'ectricos con diferentes niveles de rugosidad. Su principal desventaja es su parametrizaci\'on, que
+    no resulta intuitiva y dificulta el trabajo de los artistas de 3D.
 
     \begin{figure}[H]
-        \vspace{0.5cm}
         \centering
-        \frame{\includegraphics[scale=0.5]{cooktorrance}}
+        \frame{\includegraphics[scale=0.45]{cooktorrance}}
         \caption{Diferentes tipos de materiales representados por el modelo de Cook-Torrance \autocite{cooktorrance}}
-        \vspace{0.5cm}
     \end{figure}
-    
-    T\'ipicamente la componente difusa, utiliza el modelo de Lambert, que asume una distribuci\'on completamente uniforme a lo
-    largo de la superficie:\\
-    
-    \begin{equation}
-    f_{Lambert} = \frac{diffuse}{\pi}
-    \end{equation}
-    \singlespacing
-    
-    La componente especular es una funci\'on compuesta de otras tres funciones y un factor de normalizaci\'on en el
-    denominador.\\
-    
-    \begin{equation}
-        f(l, v) = \frac{F(w_i, h) G(w_i, h, w_o) D(h)} {4(n\cdot{w_i}) (n \cdot{w_o})}
-    \end{equation}
-    \singlespacing
 
-    \begin{figure}[H]
-        \centering
-        \frame{\includegraphics[scale=0.32]{diffusespecular}}
-        \caption{Tipos de reflexi\'on}
-        \vspace{0.5cm}
-    \end{figure}
+    % Este modelo presenta por primera vez el concepto de conservaci\'on de la energ\'ia, que se aplica sobre las
+    % componentes especular y difusa:
+    
+    % \begin{figure}[H]
+    %     \centering
+    %     \frame{\includegraphics[scale=0.32]{diffusespecular}}
+    %     \caption{Tipos de reflexi\'on}
+    %     \vspace{0.5cm}
+    % \end{figure}
+
+        \subsection{Componente difusa}
+        T\'ipicamente la componente difusa, utiliza el modelo de Lambert, que asume una distribuci\'on completamente uniforme a lo
+        largo de la superficie:\\
+        
+        \begin{equation}
+        f_{Lambert} = \frac{diffuse}{\pi}
+        \end{equation}
+        \singlespacing
     
         \subsection{Componente especular}
-            El BRDF de Cook-Torrance est\'a compuesto por otras tres funciones y un factor de normalizaci\'on en el denominador.
-            Las funciones D, F y G, se corresponden con la funci\'on de distribuci\'on de las normales, la ecuaci\'on de Fresnel,
-            y la funci\'on de geometr\'ia.\\
-    
-            $D(l, v, h)$  es la funci\'on de distribuci\'on de las normales y se encarga de representar la rugosidad de una superficie
-            y es el t\'ermino que afecta en mayor grado a la forma y taman\~no del brillo especular. T\'ipicamente el par\'ametro
-            \textit{roughness} se utiliza para representar la cantidad de microfacetas alineadas con la normal h, cuanta mayor sea la
-            la cantidad de de microfacetas alineadas, m\'as lisa parecer\'a la superficie.
-    
-            \singlespacing
+            La componente especular es una funci\'on compuesta de otras tres t\'ermino y un factor de normalizaci\'on en el
+            denominador.\\
+
             \begin{equation}
-            D(h) = \frac{\alpha^2}{\pi((n\cdot{h})^2(\alpha^2 - 1) + 1)^2}
+                f(l, v) = \frac{F(w_i, h) G(w_i, h, w_o) D(h)} {4(n\cdot{w_i}) (n \cdot{w_o})}
             \end{equation}
             \singlespacing
             
-    
+            
+            El denominador es una caracter\'istica t\'ipica de los modelos de microfacetas y es un factor de correci\'on
+            debido al cambio de espacio entre el espacio local de las microfacetas y el espacio local de la macrosuperficie. Para modelos
+            que no incluyen este factor, se puede aplicar un factor de sombreado directamente multiplicando el t\'ermino de geometr\'ia
+            por el factor $\frac{1}{4(n\cdot{w_i}) (n\cdot{w_o})}$.\\
+
+            \singlespacing
+            \subsection*{D, t\'ermino de distribuci\'on de las normales}
+            Es la funci\'on de distribuci\'on de las normales y es un modelo estad\'istico que se encarga de representar
+            la rugosidad de una superficie y es el t\'ermino que afecta en mayor grado a la forma y taman\~no del brillo especular. T\'ipicamente el par\'ametro de
+            rugosidad se utiliza para representar la cantidad de microfacetas alineadas con la normal $h$, cuanta mayor sea la
+            la cantidad de de microfacetas alineadas, m\'as lisa parecer\'a la superficie.\\
+
             \begin{figure}[H]
                 \vspace{0.5cm}
                 \centering
                 \frame{\includegraphics[scale=0.65]{ndf}}
-                \caption{Representaci\'on gr\'afica de la funci\'on de geometr\'ia}
+                \caption{Modelos de distribuci\'on de microfacetas frente a la muestra de referencia}
+                \vspace{0.5cm}
             \end{figure}
+
+            La funci\'on de distribuci\'on de microfacetas utiizada por este modelo es la presentada por Beckmann \autocite{beckmann}:\\
+
+            \begin{equation}
+                D(h) =
+                \frac{1}{\pi\alpha^2(n\cdot{h})^4}
+                e^{
+                    \frac
+                    {(n\cdot{h})^2 - 1}
+                    {m^2(n\cdot{h})^2}
+                }
+            \end{equation}
+            \singlespacing
+
+            \subsection*{F, t\'ermino de Fresnel}
+            Representa la radiancia reflejada por un material seg\'un el \'angulo de incidencia
+            de la luz. Para la mayor\'ia de los materiales no met\'alicos, las reflexiones son m\'as intensas bajo cuando el \'angulo
+            de incidencia es muy agudo.\\
+
+            En la f\'ormula original de Fresnel, la energ\'ia depende del \'indice de refracci\'on $\eta$ y el \'indice de refracci\'on
+            $\kappa$, coeficientes no siempre conocidos para un material. La aproximaci\'on a la funci\'on de Fresnel, otra de las
+            principales contribuciones de este modelo, elimina $\kappa$ de la parametrizaci\'on.
+            % \todo[inline]{
+            %     One of the major contributions of this work [CT82] was
+            %     the development of an optimized formulation of Fresnel,
+            %     making this model more applicable to Computer Graphics.
+            %     In the original formulation, the energy reflected depends on
+            %     the index of refraction $\eta$, and the absorption coefficient $\kappa$
+            % }
+
+            $$
+            F(\theta) = 
+            \frac{1}{2}
+            \frac{(b - c)^2}{(b + c)^2}\
+            \bigg\{
+                1 +
+                \frac{[ \ c(b + c) - 1 \ ]^2}{[ \ c(b - c) + 1 \ ]^2}
+            \bigg\}
+            $$
+
+            \begin{equation}
+                \textrm{siendo} \; b^2 = \eta^2 + c^2 - 1 \; y \; c = cos(\theta)
+            \end{equation}
     
-            $G(w_o)$ es la funci\'on de geometr\'ia. Esta funci\'on tiene en cuenta las oclusiones debidas a la propia superficie.
-            Mientras que el t\'ermino de distribucion de las normales, $D(h)$, define la concentraci\'on de microfacetas con una normal h,
-            no define si esas microfacetas son visible o no. El t\'ermino de geometr\'ia tiene en cuenta las dos cosas, la sombra
-            y el enmascaramiento. La sombra representa que una microfaceta no es visible desde la direcci\'on de la luz, mientras que el
-            enmascaramiento significa que una microfaceta no es visible desde la direcci\'on de vista y, por tanto, no contribuyen
-            a la reflexi\'on.
+            \begin{figure}[H]
+                \vspace{0.5cm}
+                \centering
+                \frame{\includegraphics[scale=0.65]{fresnel}}
+                \caption{Representaci\'on gr\'afica de la funci\'on de Fresnel}
+                \vspace{0.5cm}
+            \end{figure}
+            \singlespacing
+
     
-            $$
-            G(w_i, w_o) = G(w_i)G(w_o)
-            $$
-            \singlespacing
-            $$
-            G(w_o) = \frac{n\cdot{w_o}}{(n\cdot) (1 - k) + k}
-            $$
-            \singlespacing
-            $$
-            G(w_i) = \frac{n\cdot{w_i}}{(n\cdot) (1 - k) + k}
-            $$
-            \singlespacing
+            \subsection*{G, t\'ermino de geometr\'ia}
+            Para estimar la cantidad de microfacetas que contribuyen a la reflexi\'on especular, adem\'as de tener en cuenta
+            la densidad de microfacetas cuyas normales est\'an orientadas en direcci\'on a $h$, se ha de calcular teniendo en
+            cuenta la cantidad de rebotes ocluidos por las propias microfacetas. Este trabajo utiliza para ello el t\'ermino
+            presentado en el modelo de Torrance-Sparrow \autocite{torrancesparrow}.\\
+
+            % Mientras que la funci\'on de distribuci\'on de , la funci\'on de geometr\'ia 
+            % Esta funci\'on tiene en cuenta las oclusiones debidas a la propia superficie.
+            % Mientras que el t\'ermino de distribucion de las normales, $D(h)$, define la concentraci\'on de microfacetas con la normal
+            % a la microfaceta ($h$), no define si esas microfacetas son visible o no.
+            % \todo[inline]{
+            %     El t\'ermino de geometr\'ia tiene en cuenta las dos cosas, la sombra
+            %     y el enmascaramiento. La sombra representa que una microfaceta no es visible desde la direcci\'on de la luz, mientras que el
+            %     enmascaramiento significa que una microfaceta no es visible desde la direcci\'on de vista y, por tanto, no contribuyen
+            %     a la reflexi\'on.
+            % }
     
             \begin{equation}
-            k = \frac{(roughness + 1)^2}{8}
+            G(w_i, w_o) = min\bigg\{
+            1,
+            \frac{2(n\cdot{h})(n\cdot{w_i})}{(w_i\cdot{h})}
+            \frac{2(n\cdot{h})(n\cdot{w_o})}{(w_o\cdot{h})}
+            \bigg\}
             \end{equation}
     
             \begin{figure}[H]
@@ -330,33 +456,6 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
                 \caption{Representaci\'on gr\'afica de la sombra y el enmascaramiento en la funci\'on de geometr\'ia}
             \end{figure}
     
-            $F(l, v, h)$ es la funci\'on de Fresnel. Representa la radiancia reflejada por un material seg\'un el \'angulo de incidencia
-            de la luz. Para la mayor\'ia de los materiales no met\'alicos, las reflexiones son m\'as intensas bajo cuando el \'angulo
-            de incidencia es muy agudo. En la mayor\'ia de los algoritmos de sombreado, el fresnel se utiliza a nivel de la macrosuperficie,
-            sin embargo, al aplicar el fresnel sobre la normal de la microfacetas, se consigue un mayor grado de realismo para los valores
-            altos de \textit{roughness}.
-    
-            $$
-            F_{Schlick}(F_o, w_i, h) = F_o + (1 - F_o) (1 - (l\cdot{h}))^5
-            $$
-    
-            \begin{figure}[H]
-                \vspace{0.5cm}
-                \centering
-                \frame{\includegraphics[scale=0.65]{fresnel}}
-                \caption{Representaci\'on gr\'afica de la funci\'on de geometr\'ia}
-            \end{figure}
-            \singlespacing
-    
-            El denominador es una caracter\'istica t\'ipica de los modelos de microfacetas y es un factor de correci\'on debido al cambio
-            de espacio entre el espacio local de las microfacetas y el espacio local de la macrosuperficie. Para modelos que no
-            incluyen este factor, se puede aplicar un factor de sombreado directamente multiplicando el t\'ermino de geometr\'ia por
-    
-            \begin{equation}
-            \frac{1}{4(n\cdot{l}) (n\cdot{v})}
-            \end{equation}
-            \singlespacing
-    
             % La funci\on de distribuci\'on de las normales, aproxima la cantidad de microfacetas aproxima la alineadas con el
             % vector h, el medio entre el rayo de luz y el punto del vista. El par\'ametro que modela la rugosidad de una superficie
             % afecta en gran medida al resultado. Este es el factor m\'as caracter\'istico del modelo de microfacetas.
@@ -365,11 +464,11 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
             % Finalmente, la ecuaci\'on de fresnel describe el ratio de reflexi\'on de una superficie bajo diferentes \'angulos de
             % incidencia.\\
     
-    \section{Disney Principled BRDF}
-    Los modelos de BRDF para materiales tratan de ofrecer gran versatilidad para tratar de representar la mayor cantidad de
-    materiales posibles, por lo que los modelos basados en f\'isica resultan en una defici\'on del material compleja,
-    con gran cantidad de par\'ametros que resultan poco intuitivos para los artistas. En 2012, Disney presenta su modelo
-    conocido como \textit{Principled} \autocite{disney12}, que, a pesar de ser basado en f\'isica, sigue una serie de directivas
+    \section{Modelo de Disney 2012}
+    Los modelos de BRDF basados en aspectos f\'isicos ofrecen gran versatilidad al conseguir representar gran cantidad de materiales de una
+    forma muy realista. Por contra, resultan en una defici\'on del material compleja, con gran cantidad de par\'ametros que resultan poco intuitivos para los artistas.\\
+    
+    En 2012, Disney presenta su modelo conocido como \textit{Principled} \autocite{disney12}, que, a pesar de ser basado en f\'isica, sigue una serie de directivas
     como tener la menor cantidad de par\'ametros posibles, ofrecer nombres y rangos de par\'ametros amigables para los artistas u ofrecer
     combinaciones robustas y plausibles para todas sus posibles combinaciones. Desde entonces, los materiales basados en f\'isica
     han ganado popularidad y se han introducido progresivamente en la industria de las pel\'iculas y videojuegos, convirtiendo
@@ -392,6 +491,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         \centering
         \frame{\includegraphics[scale=0.3]{disney12model}}
         \caption{Modelo para met\'alicos y diel\'ectricos de Disney}
+        \vspace{0.5cm}
     \end{figure}
 
     En base a estas observaciones, el modelo \textit{Principled} de Disney, ajusta los t\'erminos del BRDF de Cook-Torrance \autocite{cooktorrance}
@@ -422,6 +522,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         \centering
           \frame{\includegraphics[scale=0.47]{disney}}
         \caption{Modelo de Disney}
+        \vspace{0.5cm}
     \end{figure}
     % \begin{itemize}
     % 	\item \textit{baseColor}: el color de la superficie, comunmente utiliza un mapa.
@@ -443,44 +544,99 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     
         En base a las observaciones sobre los datos de MERL, el modelo difuso parece muy oscuro hacia los bordes, y aplicando
         la funci\'on de Fresnel, para intentar conseguir un modelo f\'isicamente plausible, parece oscurecer m\'as los bordes,
-        acentuando el problema. Disney desarroll\'o un modelo emp\'irico, que utiliza la aproximaci\'on de Fresnel Schlick:
+        acentuando el problema.\\
+        Disney \autocite{}{disney} utiliza una modificaci\'on del t\'ermino Fresnel-Schlick
+        conseguir una dispersi\'on hacia delante y hacia detr\'as que depende del valor de rugosidad del material y se
+        adapta mejor a los datos obtenidos de MERL \autocite{merl}.
     
-        \begin{equation}
-            (1 - F(\theta_l) (1 - F(\theta_d)))
-        \end{equation}
-        \singlespacing
+        % \begin{equation}
+        %     (1 - F(\theta_l) (1 - F(\theta_d)))
+        % \end{equation}
+        % \singlespacing
     
-    
-        Modific\'andolo para conseguir que la retrodispersi\'on dependa del valor de \textit{roughness} y as\'i
-        adaptarse mejor a los datos obtenidos de MERL.
-    
-        \begin{equation}
+        $$
         f_d = \frac{baseColor}{\pi}
         \left(  1 + (F_{D90} - 1)(1 - cos\theta_{wi})^5  \right)
         \left(  1 + (F_{D90} - 1)(1 - cos\theta_{wo})^5  \right)
-        \end{equation}
-        
-        $$
-        F_{D90} = 0.5 + 2roughness\cdot{cos^2\theta_d}
         $$
     
+        \begin{equation}
+        \textrm{siendo} \; F_{D90} = 0.5 + 2roughness\cdot{cos^2\theta_d}
+        \end{equation}
+    
+        \singlespacing
         \subsection{Componente especular}
-            % \todo[inline]{Por escribir}
-            \subsubsection{F, t\'ermino de Fresnel}
-                Para el especular, la aproximaci\'on de Fresnel Schlick es lo suficientemente precisa y mucho menos costosa que
+        El modelo de Disney \autocite{disney12} utiliza t\'erminos conocidos del BRDF de Cook-Torrance \autocite{cooktorrance}
+        (DFG) e incorpora dos nuevos l\'obulos: el de \textit{sheen} y el de \textit{clearcoat}. El l\'obulo de \textit{sheen}
+        permite mayor control sobre la reflexi\'on especular en los \'angulos cr\'iticos, mientras que el l\'obulo de
+        \textit{clearcoat} permite simular una capa superficial para imitar efectos el efecto de un barniz o recubrimientos
+        transparentes.
+
+            \subsection*{D, t\'ermino de distribuci\'on de las normales}
+                La distribuci\'on GGX es equivalente a la de Trowbridge-Reitz, no tiene una cola lo suficientemente larga para la
+                mayor\'ia de materiales.
+
+                \begin{equation}
+                    D_{TR} = \frac
+                    {c}
+                    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^2}
+                \end{equation}
+                \singlespacing
+
+                El modelo de Disney utiliza un exponente en el denominador que permite mayor control sobre el radio de la reflexi\'on
+                especular, llamando a \'este t\'ermino Generalized Trowbridge-Reitz, o GTR:
+
+                \begin{equation}
+                    D_{GTR} = \frac
+                    {c}
+                    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^\gamma}
+                \end{equation}
+                \singlespacing
+
+                Los dos l\'obulos, primario y secundario utilizan la distribuci\'on GTR. El l\'obulo primario,
+                que representa la reflexi\'on del material base, utiliza $\gamma = 2$ y puede ser diel\'etrico o met\'alico,
+                isotr\'opico o anisotr\'opico. Por otra parte, el l\'obulo secundario representa la capa de \textit{clearcoat}
+                sobre el material base, utiliza $\gamma = 1$ y suele ser isotr\'opico y no met\'alico.\\
+
+            \subsection*{F, t\'ermino de Fresnel}
+                Para el especular, la aproximaci\'on de Fresnel-Schlick \autocite{schlick} es lo suficientemente precisa y mucho menos costosa que
                 que la ecuaci\'on completa de Fresnel.
     
                 \begin{equation}
-                (1 - F(\theta_l) (1 - F(\theta_d)))^5
+                    F_{Schlick}(w_o, h) = F_0 + (1 - F_0) (1 - (n\cdot{w_o})))^5
+                    $$
+                    $$
+                    \textrm{siendo}\ F_0 = \frac
+                    {(n - 1)^2}
+                    {(n + 1)^2}
+                    \ y \ n = IOR
                 \end{equation}
-    
+                \singlespacing
+                % \todo[inline]{
+                %     En la mayor\'ia de los algoritmos de sombreado, el fresnel se utiliza a nivel de la macrosuperficie,
+                %     sin embargo, al aplicar el fresnel sobre la normal de la microfacetas, se consigue un mayor grado de realismo para los valores
+                %     altos de \textit{roughness}.
+                % }
                 $F_0$ representa la reflectancia de una incidencia del mismo \'angulo que la normal. $\theta_d$ es el \'angulo
-                entre el vector $h$, y el de vista $w_o$. Es acrom\'actico para los diel\'ectricos y crom\'atico para los metales.
+                entre el vector $h$, y el de vista $w_o$. Es acrom\'actico para los diel\'ectricos y crom\'atico para los metales.\\
     
-            \subsubsection{G, t\'ermino de geometr\'ia}
-                En el t\'ermino G, Disney utiliza dos modelos diferentes, uno para el l\'obulo primario y otro para el de clearcoat.
-                Para el l\'obulo primario, utiliza el modelo de Smith GGX, remapeando el valor de \textit{roughness} para evitar
-                ganar demasiada energ\'ia hacia los bordes de materiales brillantes.
+            \subsection*{G, t\'ermino de geometr\'ia}
+                % \todo[inline]{Basado en la t\'ecnica de Smith \autocite{smith}}
+                % \todo[inline]{
+                %     El t\'ermino de geometr\'ia tiene en cuenta las dos cosas, la sombra
+                %     y el enmascaramiento. La sombra representa que una microfaceta no es visible desde la direcci\'on de la luz, mientras que el
+                %     enmascaramiento significa que una microfaceta no es visible desde la direcci\'on de vista y, por tanto, no contribuyen
+                %     a la reflexi\'on.
+                % }
+                El t\'ermino de geometr\'ia utilizado en el modelo Disney \autocite{disney12} es el Smith-GGX \autocite{ggx}, remapeando el valor de \textit{roughness} para evitar
+                ganar demasiada energ\'ia hacia los bordes de materiales brillantes. El l\'obulo primario utiliza un valor $\alpha$
+                de rugosidad, mientras que para el l\'obulo de \textit{clearcoat} se utiliza un valor fijo de $\alpha = 0.25$.\\
+
+                Los t\'erminos de geometr\'ia basados en la t\'ecnica de Smith \autocite{smith} separan la funci\'on de geometr\'ia en dos partes.
+                La oclusi\'on puede deberse a la sombra, cuando una microfaceta no es visible desde la direcci\'on de la luz o al enmascaramiento,
+                cuando no es visible desde la direcci\'on de la vista.
+                % utiliza dos modelos diferentes, uno para el l\'obulo primario y otro para el de clearcoat.
+                % Para el l\'obulo primario, utiliza e
     
                 $$
                 G(l, v, h) = G_{GGX}(l)G_{GGX}(v)
@@ -491,97 +647,123 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
                 {2 (n \cdot{v})}
                 {(n \cdot{v}) + \sqrt{ \alpha^2 + (1 - \alpha)^2 (n \cdot{v})^2 }}
                 $$
-    
+                \singlespacing
                 \begin{equation}
                 \alpha = (0.5 + roughness / 2)^2
                 \end{equation}
                 \singlespacing
     
-                Para el l\'obulo secundario se utiliza un valor fijo de $\alpha = 0.25$.
+                Para el l\'obulo secundario se utiliza un valor fijo de $\alpha = 0.25$.\\
     
-            \subsubsection{D, t\'ermino de distribuci\'on de las normales}
-                La distribuci\'on GGX es equivalente a la de Trowbridge-Reitz, no tiene una cola lo suficientemente larga para la
-                mayor\'ia de materiales.
-    
+            \subsection*{L\'obulo de \textit{sheen}}
+                El l\'obulo de \textit{sheen} utiliza dos par\'ametros para ajustar la intensidad y el color del brillo especular
+                en los \'angulos cr\'iticos. Este control es muy \'util para modelar efectos de retroreflexi\'on caracter\'isticos
+                de algunos tipos de tejidos.
+                % El par\'ametro de \textit{sheen} ofrece un mayor control sobre la reflectancia especular, permitiendo crear materiales con
+                % especulares en dos tonos. Mientras que ThreeJs utiliza un BRDF diferente cuando el par\'ametro de \textit{sheen}, en el
+                % BRDF de Disney 2012 el \textit{sheen} se modela como otro l\'obulo adicional adem\'as del de \textit{clearcoat}.\\
+            
+                \begin{eqfloat}[!htb]
                 \begin{equation}
-                    D_{TR} = \frac
-                    {c}
-                    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^2}
+                    f(\textit{sheen}, \theta_d) = \textit{sheen} * ((1 - \textit{sheenTint}) + \textit{sheenTint} * \textit{tint}) * (1 - \cos\theta_d)^5
                 \end{equation}
+                \caption{L\'obulo adicional de \textit{sheen} en Disney 2012}
+                \end{eqfloat}
                 \singlespacing
-    
-                El modelo de Disney utiliza un exponente en el denominador que permite mayor control sobre el radio de la reflexi\'on
-                especular, llamando a \'este t\'ermino Generalized Trowbridge-Reitz, o GTR:
-    
-                \begin{equation}
+
+            \subsection*{L\'obulo de \textit{clearcoat}}
+                El l\'obulo de \textit{clearcoat} es otro l\'obulo adicional que se controla con los par\'ametros \textit{clearcoat}
+                y \textit{clearcoatGloss}. Este l\'obulo utiliza el mismo BRDF que el l\'obulo primario pero con modificaciones
+                en sus t\'erminos para evitar a\~nadir complejidad a la definici\'on del material.\\
+
+                La funci\'on de distribuci\'on de las normales tambi\'en utiliza $\gamma = 1$ en el modelo GTR.\\
+
+                \begin{eqfloat}[!htb]
+                    \begin{equation}
                     D_{GTR} = \frac
                     {c}
-                    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^\gamma}
-                \end{equation}
+                    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)}
+                    \end{equation}
+                    \caption{Funci\'on de distribuci\'on de las normales para el l\'obulo de \textit{clearcoat} en Disney 2012}
+                \end{eqfloat}
                 \singlespacing
-    
-                Los dos l\'obulos, primario y secundario utilizan la distribuci\'on GTR. El l\'obulo primario,
-                que representa la reflexi\'on del material base, utiliza $\gamma = 2$ y puede ser diel\'etrico o met\'alico,
-                isotr\'opico o anisotr\'opico. Por otra parte, el l\'obulo secundario representa la capa de \textit{clearcoat}
-                sobre el material base, utiliza $\gamma = 1$ y suele ser isotr\'opico y no met\'alico.
-    
-    
-    
-    \section{Iluminaci\'on indirecta en tiempo real}
 
-    \todo[inline]{
-        Los motores de renderizado en tiempo real deben utilizar algoritmos lo menos costosos posibles para garantizar un buen
-        tiempo de respuesta. Es por ello que sus BRDFs, pueden ser m\'as sencillos que los implementados en sistemas de \textit{path-tracing},
-        ofreciendo una soluci\'on de compromiso entre el rendimiento y los fen\'omenos f\'isicos representados por el modelo.\\
+                La funci\'on de Fresnel utiliza el \'indice de refracci\'on fijo de 0.04, o lo que es lo mismo, $F_0 = 0.04$, el valor
+                del poliuretano.\\
+
+                $$
+                F_{Schlick}(w_o, h) = F_0 + (1 - F_0) (1 - (n\cdot{w_o})))^5
+                $$
+                \begin{eqfloat}[!htb]
+                    \begin{equation}
+                        \textrm{siendo}\ F0 = 0.04
+                    \end{equation}
+                    \caption{Funci\'on de distribuci\'on de las normales para el l\'obulo de \textit{clearcoat} en Disney 2012}
+                \end{eqfloat}
+                \singlespacing
+
+
+
+                % El efecto de \textit{clearcoat}, se utiliza para simular efectos de barniz o recubrimientos, y se aplican tanto en Disney
+                % 2012 como un l\'obulo secundario. Mientras que en ThreeJs se utiliza el mismo BRDF con la misma parametrizaci\'on que para
+                % el l\'obulo primario, en Disney 2012, var\'ia la parametrizaci\'on de los t\'erminos D y G.\\
+    
+    \section{Iluminaci\'on indirecta en entornos interactivos}
+
+    % \todo[inline]{
+    %     Los motores de renderizado en tiempo real deben utilizar algoritmos lo menos costosos posibles para garantizar un buen
+    %     tiempo de respuesta. Es por ello que sus BRDFs, pueden ser m\'as sencillos que los implementados en sistemas de \textit{path-tracing},
+    %     ofreciendo una soluci\'on de compromiso entre el rendimiento y los fen\'omenos f\'isicos representados por el modelo.\\
         
-        Por otra parte, resolver la parte integral de la ecuaci\'on de render:
+    %     Por otra parte, resolver la parte integral de la ecuaci\'on de render:
     
-        \begin{center}$L_o(p, w_o) = \int_{\Omega} f_r(p, w_i, w_o)L_i(p, w_i)n\cdot{w_i}dw_i$\end{center}
-        \singlespacing
-        requiere lanzar rayos no en una direcci\'n si no desde todas las posibles direcciones sobre la semiesferea $\Omega$, por
-        lo que no es posible en tiempo real, sin embargo, m\'as adelante analizaremos t\'ecnicas que p\'ermiten simular \'este
-        efecto utilizando c\'alculos precomputados o aproximando la soluci\'on de forma anal\'itica.\\
-    }
+    %     \begin{center}$L_o(p, w_o) = \int_{\Omega} f_r(p, w_i, w_o)L_i(p, w_i)n\cdot{w_i}dw_i$\end{center}
+    %     \singlespacing
+    %     requiere lanzar rayos no en una direcci\'n si no desde todas las posibles direcciones sobre la semiesferea $\Omega$, por
+    %     lo que no es posible en tiempo real, sin embargo, m\'as adelante analizaremos t\'ecnicas que p\'ermiten simular \'este
+    %     efecto utilizando c\'alculos precomputados o aproximando la soluci\'on de forma anal\'itica.\\
+    % }
 
-    \todo[inline]{
-        These effects contribute
-        greatly to increasing the realism in a rendered image, and provide cues that
-        help the viewer to understand spatial relationships. At the same time, they are also
-        complex to simulate and might require precomputations or rendering multiple passes
-        that compute some intermediate information.
-    }
+    % \todo[inline]{
+    %     These effects contribute
+    %     greatly to increasing the realism in a rendered image, and provide cues that
+    %     help the viewer to understand spatial relationships. At the same time, they are also
+    %     complex to simulate and might require precomputations or rendering multiple passes
+    %     that compute some intermediate information.
+    % }
 
-
-    Para los efectos de iluminacion global, se necesita conocer la irradiancia proviniente en todas
-    direcciones $w_i$ sobre la esfera $\Omega$.\\
-    
-    \begin{figure}[H]
-        \vspace{0.5cm}
-        \centering
-          \frame{\includegraphics[scale=0.5]{hemisphere}}
-        \caption{hemisphere}
-      \end{figure}
-      \singlespacing
-    
     La ecuaci\'on de render describe la radiancia de salida sobre un punto.
     \begin{equation}
     L_o(p, w_o) = \int_{\Omega} f_r(p, w_i, w_o)L_i(p, w_i)n\cdot{w_i}dw_i
     \end{equation}
     \singlespacing
     
-    Siendo $\Omega$ la hemiesfera centrada en el punto sobre la que calculamos la irradiancia,
-    $f_r$ representa el BRDF, $Li$, la irradiancia de la escena, mientras que $n\cdot{w_i}$ toma en
-    cuenta el \'angulo entre la de incidencia de la luz sobre la superficie.
+    Siendo $\Omega$ la semiesfera centrada en el punto sobre el que se calcula la irradiancia, $f_r$ representa el BRDF, $Li$,
+    la irradiancia de la escena, y $n\cdot{w_i}$, el coseno entre la normal de la superficie y el de la luz incidente.
     
+    \begin{figure}[H]
+        \vspace{0.5cm}
+        \centering
+          \frame{\includegraphics[scale=0.5]{hemisphere}}
+        \caption{El c\'aculo de iluminacion indirecta necesita hallar la irradiancia proviniente en todas direcciones $w_i$ sobre la semiesfera $\Omega$.}
+      \end{figure}
+      \singlespacing
+
+    Calcular la parte integral de la ecuaci\'on requiere lanzar rayos no en una direcci\'on si no desde todas las direcciones posibles
+    sobre la semiesfera $\Omega$, por lo que no es posible en tiempo real. En esta secci\'on se repasan t\'ecnicas que precomputan
+    los c\'alculos o utilizan funciones anal\'iticas para lograr aproximar este efecto en entornos interactivos.\\
+
+    El primer paso es separar el BRDF en sus componentes especular y difusa, que permitir\'a la combinaci\'on de diferentes
+    t\'ecnicas para calcular la soluci\'on de la ecuaci\'on de render.\\
+
     \begin{equation}
-    L_o(p, w_o) = \int_{\Omega} (k_d + \frac{c}{\pi} + 
+    L_o(p, w_o) = \int_{\Omega} (k_d \frac{c}{\pi} + 
     k_s \frac{DFG}{4(w_o\cdot{n})(w_i\cdot{n})})L_i(p, w_i)n\cdot{w_i}dw_i
     \end{equation}
     \singlespacing
     
-    Los terminos $k_s$ y $k_d$ de la ecuacion de reflectancia son independientes, por lo que, de la
-    misma forma que en la iluminacion directa, los componentes se pueden separar en difuso y
-    especular.
+    Siendo $k_s$ y $k_d$ t\''erminos independientes, el c\'alculo de la integral se puede separar en partes, la
+    integral de la componente difusa m\'as la integral de la componente especular. 
     
     \begin{equation}
     L_o(p, w_o) = \int_{\Omega}
@@ -592,7 +774,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
     \singlespacing
     
         \subsection{Componente difusa}
-        La soluci\'on de la integral de la irradiancia de salida sobre $\Omega$ requiere samplear el entorno
+        La soluci\'on de la integral de la irradiancia sobre la semiesfera $\Omega$ requiere samplear el entorno
         en todas las direcciones posibles. Es por ello que en tiempo real, la soluci\'on consiste en
         precomputar este c\'alculo.\\
     
@@ -607,15 +789,14 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         \end{equation}
         \singlespacing
     
-            \subsubsection{T\'ecnicas IBL}
-            Las t\'enicas IBL (\textit{Image Based Lighting}), permiten precalcular la irradiacia del entorno tratando el entorno
-            como un gran emisoror de luz, utilizando una imagenes de referencia para aproximar la luz emitida por el entorno sobre
-            el punto que estamos calculando.\\
+        Las t\'enicas IBL (\textit{Image Based Lighting}), permiten precalcular la irradiacia del entorno tratando el entorno
+        como un gran emisoror de luz, utilizando una imagenes de referencia para aproximar la luz emitida por el entorno sobre
+        el punto que estamos calculando.\\
 
-            \textbf{Mapas de irradiancia}\\
+            \subsection*{Mapas de irradiancia}
             Los mapas de irradiancia utilizan \textit{cubemaps} para muestrear en coordenadas esf\'ericas en pasos discretos la radincia
             procedente del entorno. La irradiancia se estima como la media de la radiancia en todas las direcciones $w_i$ sobre la
-            hemiesfera $\Omega$ orientada en direcci\'on a la normal de la superficie, $N$. Una vez preconvolucionado el mapa de
+            semiesfera $\Omega$ orientada en direcci\'on a la normal de la superficie, $N$. Una vez preconvolucionado el mapa de
             entorno, el resultado, conocido como mapa de irradiancia se almacena en una textura a la que se accede en tiempo
             de ejecuci\'on para consultar los resultados precalculados de irradiancia debida al entorno.
 
@@ -642,7 +823,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
             \end{figure}
             \singlespacing
 
-            \textbf{Esf\'ericos harm\'onicos}\\
+            \subsection*{Esf\'ericos harm\'onicos}
             La t\'ecnica de esf\'ericos harm\'onicos \autocite{sh} supone una optimizaci\'on sobre la t\'ecnica de mapas de irradiancia,
             que, pese a ser muy eficientes para operaciones de lectura, la convoluci\'on necesaria para generarlos tiene un coste alto.
             Los esf\'ericos harm\'onicos permiten una aproximaci\'on a la irradiancia debida al entorno comprimiendo la informaci\'on
@@ -654,7 +835,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
             % }
 
         \subsection{Componente especular}
-        El m\'etodo split-sum approximation presentado por Epic \autocite{karis}, permite separar la integral en dos partes, la integral de
+        El m\'etodo split-sum approximation presentado por Epic \autocite{unreal}, permite separar la integral en dos partes, la integral de
         la radiancia de la escena y la del BRDF. De forma similar a la componente difusa, precomputar los resultados y consultarlos y para
         calcular el resultado de la integral durante en tiempo real.\\
         
@@ -668,6 +849,7 @@ no siendo fisicamente plausibles, pero sin generar artefactos.\\
         De forma similar al mapa de irradiancia, el mapa de entorno prefiltrado se precomputa con una convoluci\'on sobre el mapa
         de entorno. La convoluci\'on utiliza la distribuci\'on de normales de Cook-Torrance \autocite{cooktorrance} en funci\'on
         de la direcci\'on de la vista, la normal y la rugosidad del material.\\
+
         Dado que se desconoce la direcci\'on de la vista al precomputar la radiancia, la aproximaci\'on de asume $w_i = w_o$, lo que implica perder las
         reflexiones especulares en el \'angulo cr\'itico, pero generalmente se considera una aproximaci\'on lo suficientemente buena para entornos
         interactivos. Los resultados para diferentes niveles de rugosidad se almacenan en diferentes \textit{mipmaps} de la textura.\\
