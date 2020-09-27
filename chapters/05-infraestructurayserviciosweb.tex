@@ -269,12 +269,7 @@ referencias a materiales. El grafo de escena se gestiona desde la clase \textit{
 informaci\'on sobre el fondo o mapa de entorno, adem\'as de proporcionar sus propios m\'etodos de copia y serializaci\'on
 a JSON.
 
-\begin{figure}[H]
-  \centering
-    \frame{\includegraphics[scale=0.37]{threejs_webglprogram}}
-  \caption{Estructuras de datos de ThreeJs que se encargan de la gesti\'on de programas de WebGL}
-  \vspace{0.5cm}
-\end{figure}
+
 
 Para generar los \textit{WebGLProgram} del API de WebGL, ThreeJs organiza el c\'odigo GLSL en \textit{chunks}, o trozos de c\'odigo
 que se reutilizan y se componen en tiempo de ejecuci\'on para generar el c\'odigo del programa de WebGL.\\
@@ -332,8 +327,7 @@ para la plataforma web. A continuaci\'on se detallan los principales cambios ent
   \subsubsection{Componente especular}
   El BRDF del l\'obulo primario es siempre isotr\'opico, a diferencia del de Disney 2012 \autocite{disney12}, en el que
   el l\'obulo primario puede ser isotr\'opico o anistr\'opico, al contrario que el l\'obulo de \textit{clearcoat},
-  que siempre es isotr\'opico. Adem\'as el especular utiliza un BRDF GGX \autocite{ggx}, a diferencia del GTR \autocite{disney12} del modelo de Disney.
-  A continuaci\'on el c\'odigo del BRDF especular en ThreeJs:
+  que siempre es isotr\'opico. ThreeJs utiliza el modelo GTR, que resulta equivalente al GGX \autocite{ggx} para $\gamma = 2$.
 
   \singlespacing
   \begin{lstlisting}[caption=Clase MeshClothMaterial]
@@ -361,9 +355,15 @@ vec3 BRDF_Specular_GGX(
   \singlespacing
 
   \subsection*{T\'ermino D}
-  Utiliza una aproximaci\'on de la distribuci\'on GGX, frente a la GTR utilizada en el modelo de Disney, por lo que
-  presenta una cola m\'as corta.\\
+  La distribuci\'on GTR con $\gamma = 2$ resulta en una curva igual a la GGX utilizada por Disney.
 
+  \begin{figure}[H]
+    \centering
+      \frame{\includegraphics[scale=0.37]{gtrggx}}
+    \caption{Gr\'afica de las curvas obtenidas para diferentes valores de $\gamma$}
+    \vspace{0.5cm}
+  \end{figure}
+  \newpage
   Funci\'on de distribuci\'on de las normales en ThreeJs:\\
 
   \begin{equation}
@@ -395,13 +395,9 @@ float D_GGX( const in float alpha, const in float dotNH ) {
   Igual que en el modelo de Disney 2012, se considera la funci\'on de Fresnel-Schlick lo suficientemente precisa para
   estimar el Fresnel, sin embargo, en \'este caso se utiliza la aproximaci\'on presentada por Epic en el Siggraph de 2013 \autocite{unreal}.\\
 
-  \begin{eqfloat}
-    \begin{equation}
-      F= F_0 + (1 - F_0)2^{(-5.55473cos\theta_d - 5.55473cos\theta_d)}
-    \end{equation}
-  \caption{Aproximaci\'on de la funci\'on de Fresnel en ThreeJs}
-  \end{eqfloat}
-
+  \begin{equation}
+    F= F_0 + (1 - F_0)2^{(-5.55473cos\theta_d - 5.55473cos\theta_d)}
+  \end{equation}
 
   \begin{lstlisting}[caption=Implementaci\'on en ThreeJs de la aproximaci\'on a la funci\'on de Fresnel]
 vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
@@ -419,32 +415,14 @@ vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
   para las dos.\\
 
   $$
-  G(w_i, w_o) = \frac{0.5}{G_1(w_i) + G_1(w_o)}
+  V(w_i, w_o) = \frac{0.5}{V_1(w_i) + V_1(w_o)}
   $$
   \singlespacing
-  $$
-  G_1(w_i) = (n \cdot{w_o}) \sqrt{((-n\cdot{w_i}) \alpha^2 + n\cdot{w_i}) n\cdot{w_i} + \alpha^2}
-  $$
-  % float Lambda_GGXV = NdotL * sqrt (( - NdotV * alphaG2 + NdotV ) * NdotV + alphaG2 );
-  \begin{eqfloat}[!htb]
-    \begin{equation}
-      \textrm{siendo}\ k = \frac{(roughness + 1)^2}{8}
-    \end{equation}
-  \caption{Funci\'on de geometr\'ia en ThreeJs}
-  \end{eqfloat}
-  \singlespacing
+  \begin{equation}
+    V_1(w_i) = (n \cdot{w_o}) \sqrt{((-n\cdot{w_i}) \alpha^2 + n\cdot{w_i}) n\cdot{w_i} + \alpha^2}
+  \end{equation}
 
-  $$
-  G(w_i, w_o) = G_1(w_i)G_1(w_o)
-  $$
 
-  \begin{eqfloat}[!htb]
-    \begin{equation}
-      G_1(w_o) = \frac{n\cdot{w_o}}{(n\cdot) (1 - k) + k}
-    \end{equation}
-  \caption{Funci\'on de geometr\'ia en Disney 2012}
-  \end{eqfloat}
-  \singlespacing
 
 \begin{lstlisting}[caption=Clase MeshClothMaterial]
 float G_GGX_SmithCorrelated(
@@ -484,22 +462,6 @@ float G_GGX_SmithCorrelated(
   \end{eqfloat}
   \singlespacing
 
-  $$
-  D_{GTR} = \frac
-  {c}
-  {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^\gamma}
-  $$
-  \begin{eqfloat}[!htb]
-    \begin{equation}
-    \textrm{siendo}\ \gamma=1.0,\;
-    D_{GTR} = \frac
-    {c}
-    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)}
-    \end{equation}
-  \caption{Funci\'on de distribuci\'on de las normales para el l\'obulo de \textit{clearcoat} en Disney 2012}
-  \end{eqfloat}
-  \singlespacing
-
   \begin{lstlisting}[caption={Implementaci\'on del l\'obulo de \textit{clearcoat} en ThreeJs}]
 void RE_Direct_Physical(
   const in IncidentLight directLight,
@@ -534,25 +496,23 @@ void RE_Direct_Physical(
   ThreeJs utiliza un BRDF diferente cuando el par\'ametro de \textit{sheen}, mientras que en el modelo de Disney el \textit{sheen}
   se modela como otro l\'obulo adicional adem\'as del de \textit{clearcoat}.\\
 
+  Modelo de BRDF utilizando \textit{sheen} en ThreeJs: \\
+
   $$
   f(\textit{sheen}, \theta_d) =\frac{D_{Charlie}}{4(n\cdot{l} + n\cdot{v} - (n\cdot{l})(n\cdot{v}) )}
   $$
-  \begin{eqfloat}[!htb]
-    \begin{equation}
-      \textrm{siendo}\ D_{Charlie}(\alpha) = \frac
-      {(2 + \frac{1}{\alpha})sin(\theta)^\frac{1}{\alpha}}
-      {2\pi}
-    \end{equation}
-  \caption{Modelo de BRDF utilizando \textit{sheen} en ThreeJs}
-  \end{eqfloat}
+  \begin{equation}
+    \textrm{siendo}\ D_{Charlie}(\alpha) = \frac
+    {(2 + \frac{1}{\alpha})sin(\theta)^\frac{1}{\alpha}}
+    {2\pi}
+  \end{equation}
   \singlespacing
 
-  \begin{eqfloat}[!htb]
-    \begin{equation}
-      f(\textit{sheen}, \theta_d) = \textit{sheen} * ((1 - \textit{sheenTint}) + \textit{sheenTint} * \textit{tint}) * (1 - \cos\theta_d)^5
-    \end{equation}
-  \caption{L\'obulo adicional de \textit{sheen} en Disney 2012}
-  \end{eqfloat}
+  L\'obulo adicional de \textit{sheen} en Disney 2012:\\
+
+  \begin{equation}
+    f(\textit{sheen}, \theta_d) = \textit{sheen} * ((1 - \textit{sheenTint}) + \textit{sheenTint} * \textit{tint}) * (1 - \cos\theta_d)^5
+  \end{equation}
   \singlespacing
 
   \begin{lstlisting}[caption={BRDF del modelo de \textit{sheen} de ThreeJs}]
