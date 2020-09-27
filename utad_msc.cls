@@ -180,7 +180,7 @@
     colorlinks=true,
     citecolor=black,
     linkcolor=black,
-    urlcolor=blue,
+    urlcolor=black,
     linktocpage=true,
 }
 \urlstyle{same}

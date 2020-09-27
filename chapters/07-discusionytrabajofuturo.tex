@@ -1,15 +1,36 @@
 \chapter{Conclusiones y trabajo futuro}
 
-\todo[inline]{
-    Haber entendido diferentes modelos de BRDF.\\
+Durante el desarrollo de este TFM se ha integrado efectivamente un modelo de datos que soporte representaciones de diferentes modelos de BRDF dentro de la arquitectura de SEDDI.
+Adem\'as se ha creado un \textit{fork} que extiende la librer\'ia de ThreeJs para representar de forma m\'as realista los tejidos y que permite futuras adaptaciones sobre los
+sistemas de iluminaci\'on y materiales de ThreeJs.\\
 
-    Haber entendido el sistema de renderizado de ThreeJs\\
-}
+La integraci\'on del nuevo material sobre la plataforma de Author ha permitido trabajar sobre las r\'erplicas digitales de tejidos
+y validar que este modelo de BRDF y los fen\'omenos f\'isicos que modela, aumentan el realismo y coherencia
+con el motor de trazado de rayos sobre una amplia variedad de tejidos.\\
 
-\todo[inline]{
-    Diffuse wrap sin depender del punto de vista\\
-}
+No obstante, este trabajo supone el punto de partida en el incremento de realismo de tejidos sobre el motor de renderizado de ThreeJs
+y la discusi\'on de los resultados ha constatado las siguientes posibles l\'ineas de trabajo:
 
-\todo[inline]{
-    The remainder of the image-based lighting implementation follows the same steps as the implementation of regular lights, including the optional subsurface scattering term and its wrap diffuse component. Just as with the clear coat IBL implementation, we cannot integrate over the hemisphere and use the view direction as the dominant light direction to compute the wrap diffuse component.
-}
+\begin{enumerate}
+	\item Investigar modelos anisotr\'opicos que permitan representar la direccionalidad del brillo especular en ciertos
+    tipos de tejidos en funci\'on de la direcci\'on de peinado de sus fibras.
+    \item Invesitar alternativas a la aproximaci\'on del efecto de \textit{subsurface}. Mientras que para la luz directa,
+    la aproximaci\'on del efecto funciona correctamente, dependiendo de la direcci\'on de la luz, para la luz indirecta,
+    al no conocer la direcci\'on de la luz, se utiliza la direcci\'on de la vista. Esto provoca que la aproximaci\'on
+    funcione bien sobre im\'agenes est\'aticas, pero no funciona correctamente durante los movimientos de c\'amara.
+\end{enumerate}
+
+
+% \todo[inline]{
+%     Haber entendido diferentes modelos de BRDF.\\
+
+%     Haber entendido el sistema de renderizado de ThreeJs\\
+% }
+
+% \todo[inline]{
+%     Diffuse wrap sin depender del punto de vista\\
+% }
+
+% \todo[inline]{
+%     The remainder of the image-based lighting implementation follows the same steps as the implementation of regular lights, including the optional subsurface scattering term and its wrap diffuse component. Just as with the clear coat IBL implementation, we cannot integrate over the hemisphere and use the view direction as the dominant light direction to compute the wrap diffuse component.
+% }

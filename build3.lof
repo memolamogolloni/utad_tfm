@@ -1,0 +1,92 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {spanish}{}
+\defcounter {refsection}{0}\relax 
+\addvspace {10\p@ }
+\defcounter {refsection}{0}\relax 
+\addvspace {10\p@ }
+\defcounter {refsection}{0}\relax 
+\addvspace {10\p@ }
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Im\'agenes del motor de renderizado hiperrealista en el videojuego The Order: 1886 \autocite {theorder}\relax }}{2}{figure.caption.7}%
+\defcounter {refsection}{0}\relax 
+\addvspace {10\p@ }
+\defcounter {refsection}{0}\relax 
+\addvspace {10\p@ }
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.1}{\ignorespaces La superficie de la base del cono extra\'ido de la esfera representa 1$sr$.\relax }}{7}{figure.caption.12}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Esquema explicativo de un \'angulo s\'olido diferencial.\relax }}{8}{figure.caption.14}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.3}{\ignorespaces La superficie de la base del cono extra\'ido de la esfera representa 1$sr$.\relax }}{8}{figure.caption.17}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.4}{\ignorespaces La superficie de la base del cono extra\'ido de la esfera representa 1$sr$.\relax }}{9}{figure.caption.20}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Im\'agen publicada originalmente en el trabajo de Kajiya \autocite {kajiya}\relax }}{10}{figure.caption.21}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Diagrama de la luz incidente y luz reflectada\relax }}{11}{figure.caption.22}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Superficie a escala microsc\'opica\relax }}{12}{figure.caption.23}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Esquema de diferentes modelos de BRDF seg\'un su origen\relax }}{13}{figure.caption.24}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Diferentes tipos de materiales representados por el modelo de Cook-Torrance \autocite {cooktorrance}\relax }}{14}{figure.caption.25}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Modelos de distribuci\'on de microfacetas frente a la muestra de referencia\relax }}{15}{figure.caption.27}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Representaci\'on gr\'afica de la funci\'on de Fresnel\relax }}{16}{figure.caption.29}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Representaci\'on gr\'afica de la sombra y el enmascaramiento en la funci\'on de geometr\'ia\relax }}{16}{figure.caption.31}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.13}{\ignorespaces Muestras de materiales MERL, junto a un esquema explicativo de las im\'agenes muestreadas\relax }}{17}{figure.caption.32}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.14}{\ignorespaces Modelo para met\'alicos y diel\'ectricos de Disney\relax }}{17}{figure.caption.33}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.15}{\ignorespaces Modelo de Disney\relax }}{18}{figure.caption.34}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.16}{\ignorespaces El c\'aculo de iluminacion indirecta necesita hallar la irradiancia proviniente en todas direcciones $w_i$ sobre la semiesfera $\Omega $.\relax }}{21}{figure.caption.40}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.17}{\ignorespaces Mapa de irradiancia como \textit {cubemap}\relax }}{23}{figure.caption.42}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.18}{\ignorespaces Niveles de mipmap del mapa de entorno prefiltrado en funci\'on de la rugosidad del material\relax }}{24}{figure.caption.44}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {3.19}{\ignorespaces \textit {BRDF integration map}\relax }}{24}{figure.caption.45}%
+\defcounter {refsection}{0}\relax 
+\addvspace {10\p@ }
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Editor de patrones 2D y editor 3D de Author\relax }}{26}{figure.caption.46}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Esquema simplificado de comunicaciones y servicios en Seddi.\relax }}{27}{figure.caption.47}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Modelo de datos de los recursos que soportan materiales.\relax }}{28}{figure.caption.48}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Documentaci\'on de los recursos SurafaceMaterial y TextureStack en Swagger.\relax }}{29}{figure.caption.49}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Documentaci\'on de los recursos SurfaceMaterial y TextureStack en Swagger.\relax }}{30}{figure.caption.50}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Estructuras de datos de ThreeJs que se encargan de la gesti\'on de programas de WebGL\relax }}{31}{figure.caption.51}%
+\defcounter {refsection}{0}\relax 
+\addvspace {10\p@ }
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Integraci\'on de la nueva clase \textit {MeshClothMaterial}\relax }}{38}{figure.caption.57}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Comparativa \textit {MeshPhysicalMaterial}, \textit {MeshClothMaterial}\relax }}{38}{figure.caption.58}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Canales RG (BRDF GGX \autocite {ggx}), B (BRDF para telas \autocite {filament}) y la suma de ellos, RGB, del \textit {BRDF integration map}\relax }}{45}{figure.caption.59}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Comparativa \textit {MeshPhysicalMaterial} (fila superior) contra \textit {MeshClothMaterial} (fila inferior) incrementando progresivamente la intensidad de luz global\relax }}{47}{figure.caption.60}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Interpolaci\'on de un color de \textit {sheen} aumentando su luminosidad frente a un color base constante.\relax }}{48}{figure.caption.61}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Interpolaci\'on de un color de \textit {sheen} aumentando su saturacion frente a un color base constante.\relax }}{48}{figure.caption.62}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Interpolaci\'on de \textit {subsurfaceIntensity} utilizando un color base y color de \textit {subsurface} blancos.\relax }}{48}{figure.caption.63}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.8}{\ignorespaces Interpolaci\'on de un color de \textit {subsurface} frennte a un color base constante.\relax }}{49}{figure.caption.64}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Interpolaci\'on del color de sheen en el eje $x$ frente a interpolaci\'on del color base en el eje $y$.\relax }}{49}{figure.caption.65}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.10}{\ignorespaces Tejido de canvas renderizado con \textit {MeshPhysicalMaterial}, \textit {MeshClothMaterial} y el servicio de renderizado de trazado de rayos de Seddi\relax }}{50}{figure.caption.66}%
+\defcounter {refsection}{0}\relax 
+\contentsline {figure}{\numberline {5.11}{\ignorespaces Tejido de sarga renderizado con \textit {MeshPhysicalMaterial}, \textit {MeshClothMaterial} y el servicio de renderizado de trazado de rayos de Seddi\relax }}{50}{figure.caption.67}%
+\defcounter {refsection}{0}\relax 
+\addvspace {10\p@ }

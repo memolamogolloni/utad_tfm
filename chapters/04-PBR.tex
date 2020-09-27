@@ -894,6 +894,12 @@ vec2 envBRDF = texture2D(BRDFIntegrationMap, vec2(NdotV, roughness)).xy;
 vec3 indirectSpecular = prefilteredColor * (F * envBRDF.x + envBRDF.y) 
         \end{lstlisting}
         \singlespacing
+
+        Como alternativa al \textit{BRDF integration map} existen funci\'on anal\'iticas como la que utiliza ThreeJs
+        presentada por Epic Games \autocite{dfgapproximation} y basada en el trabajo de
+        Dimitar Lazarov \autocite{blackops}. Estas aproximaciones, aunque no cumplen con la ley de conservaci\'on
+        de la energ\'ia, son computacionalmente baratas y suficientemente precisas como para ser utilizadas en soportes
+        donde el rendimiento es prioritario.
         
         % un \textit{look-up texture} (LUT), que almacena
         % los c\'alculos precomputados del BRDF para los diferentes valores de \textit{rougness} y del producto escalar $w_i\cdot{n}$.

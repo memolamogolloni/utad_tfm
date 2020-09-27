@@ -602,8 +602,27 @@ void RE_IndirectSpecular_Cloth( const in vec3 radiance, const in vec3 irradiance
 \section{Resultados}
 
 A continuaci\'on se muestran y comentan las im\'agenes como resultado de la implementaci\'on del \textit{MeshPhysicalMaterial}. Los resultados se centran
-en el an\'alisis de las citadas propiedades \textit{sheen} y \textit{subsurface} del material \textit{MeshClothMaterial}.
+en el an\'alisis de las citadas propiedades \textit{sheen} y \textit{subsurface}.
 % Por una parte se muestran interpolaciones de dichas propiedades frente a un color base constante y por otra,
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.3]{results/ok_cloth_vs_physical.jpg}}
+  \caption{Comparativa \textit{MeshPhysicalMaterial} (fila superior) contra \textit{MeshClothMaterial} (fila inferior) incrementando
+  progresivamente la intensidad de luz global}
+\end{figure}
+
+En la figura 5.4 se muestra una escena en la que la intesidad del la luz de entorno incrementa de izquierda a derecha
+frente a una luz direccional muy tenue. El \textit{sheen} de \textit{MeshPhysicalMaterial} solo est\'a soportado en la
+iluminaci\'on directa, mientras que para la iluminaci\'on indirecta utiliza la aproximaci\'on anal\'itica del l\'obulo primario.
+En la comparativa se muestra como el material de ThreeJs pierde el efecto de \textit{sheen} a medida que aumenta la intesidad
+del mapa de entorno. Adem\'as, al utilizar un bajo de rugosidad se hace patente la inconsistencia entre los dos modelos de BRDF
+utilizados para la reflexi\'on especular en el \textit{MeshPhysicalMaterial} generando un efecto parecido al de \textit{clearcoat}.
+
+
+% Utilizando iluminaci\'on indirecta se aprecia que adem\'as de perderse el efecto de \textit{sheen}, las inconsistencia
+% entre el BRDF de luz indirecta y el de luz directa cre
 
 \begin{figure}[H]
   \vspace{0.5cm}
@@ -613,7 +632,7 @@ en el an\'alisis de las citadas propiedades \textit{sheen} y \textit{subsurface}
 \end{figure}
 
 El nuevo material no ofrece un control directo sobre la intensidad del \textit{sheen}, sin embargo, un efecto similar se puede
-alcanzar utilizando un el mismo que el color base aumentando la luminosidad como se muestra en la figura 5.4.
+alcanzar utilizando un el mismo que el color base aumentando la luminosidad como se muestra en la figura 5.5.
 
 \begin{figure}[H]
   \vspace{0.5cm}
@@ -623,7 +642,7 @@ alcanzar utilizando un el mismo que el color base aumentando la luminosidad como
 \end{figure}
 \singlespacing
 
-Como se muestra en la figura 5.5, utilizar un color de \textit{sheen} diferente al color base permite conseguir reflexiones especulares
+Como se muestra en la figura 5.6, utilizar un color de \textit{sheen} diferente al color base permite conseguir reflexiones especulares
 en dos tonos como resultado de la combinaci\'on del color base y el \textit{sheen}.
 
 \begin{figure}[H]
@@ -634,7 +653,7 @@ en dos tonos como resultado de la combinaci\'on del color base y el \textit{shee
 \end{figure}
 \singlespacing
 
-En la figura 5.6, se utiliza el blanco como color base y \textit{subsurface}. La interpolaci\'on del par\'ametro de \textit{subsurfaceIntensity}
+En la figura 5.8, se utiliza el blanco como color base y \textit{subsurface}. La interpolaci\'on del par\'ametro de \textit{subsurfaceIntensity}
 muestra una transici\'on de sombras m\'as intensas (\textit{subsurfaceIntensity = 0}) a sombras m\'as suaves, que toman el color base del
 \textit{subsurface} (\textit{subsurfaceIntensity = 1})\\
 
@@ -682,7 +701,7 @@ se puede apreciar como el tejido se ti\~ne progresivamente del color de \textit{
     \caption{Interpolaci\'on del color de sheen en el eje $x$ frente a interpolaci\'on del color base en el eje $y$.}
 \end{figure}
 
-La matriz bidimentsional de la figura 5.8 utiliza un color de sheen que se interpola entre el color base del tejido,
+La matriz bidimentsional de la figura 5.9 utiliza un color de sheen que se interpola entre el color base del tejido,
 gris oscuro, hasta un rojo intenso en el eje $x$, mientras que en el eje $y$, el color base se interpola hacia el mismo
 tono rojo que el \textit{sheen}.\\
 
@@ -708,6 +727,6 @@ por el servicio de renderizado en la nube de Seddi.
     \caption{Tejido de sarga renderizado con \textit{MeshPhysicalMaterial}, \textit{MeshClothMaterial} y el servicio de renderizado de trazado de rayos de Seddi}
 \end{figure}
 
-De igual forma, en la figura 5.10, se aprecia como el \textit{MeshPhysicalMaterial} falla al capturar un tejido de sarga, cuyas reflexiones
+De igual forma, en la figura 5.11, se aprecia como el \textit{MeshPhysicalMaterial} falla al capturar un tejido de sarga, cuyas reflexiones
 son muy definidas el \'angulo cr\'itico. Por su parte, el \textit{MeshPhysicalMaterial} utiliza un color marr\'on con
 muy baja luminosidad que aten\'ua el efecto consiguiendo un resultado m\'as parecido al obtenido por el motor de trazado de rayos.

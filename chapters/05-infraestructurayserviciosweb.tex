@@ -1,19 +1,19 @@
 \chapter{Desarrollo de infraestructura y servicios web}
 Author es la plataforma de Seddi que permite a dise\~nadores, patronistas y dem\'as agentes involucrados en el proceso
-de dise\~no y prototipado de una prenda trabajar con r\'eplicas digitales de tejidos sobre un entorno colaborativo web.
-
-\begin{figure}[H]
-  \vspace{0.5cm}
-  \centering
-    \frame{\includegraphics[scale=0.28]{viewports}}
-  \caption{Editor de patrones 2D y editor 3D de Author}
-  \vspace{0.5cm}
-\end{figure}
+de dise\~no y prototipado de una prenda trabajar con r\'eplicas digitales de tejidos sobre un entorno colaborativo web.\\
 
 Un API REST proveee la informaci\'on de los tejidos capturados por Seddi para su representaci\'on en el contexto de Author,
 que permite al usuario crear y editar patrones, detalles constructivos u ornamentos de una prenda. Este flujo permite
 el dise\~no de una prenda completamente sobre el cliente web, mientras que para las acciones m\'as costosas, como la simulaci\'on
 o renderizado basado en trazado de rayos se utilizan los servicios en la nube de Seddi.\\
+
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.36]{viewports}}
+  \caption{Editor de patrones 2D y editor 3D de Author}
+\end{figure}
 
 En la primera secci\'on de este cap\'itulo se detallan los cambios requeridos para dar soporte al nuevo modelo en la infraestructura
 de Seddi. Por otra parte, la segunda secci\'on ofrece una visi\'on general del sistema de renderizado de ThreeJs, el motor de
@@ -113,7 +113,7 @@ renderizado que se utiliza en Author y sobre el que se integrar\'a el nuevo mate
     \vspace{0.5cm}
     \centering
       \frame{\includegraphics[scale=0.55]{seddi_diagram}}
-    \caption{Esquema comunicaciones de servicios en Seddi.}
+    \caption{Esquema simplificado de comunicaciones y servicios en Seddi.}
     \vspace{0.5cm}
   \end{figure}
 
@@ -136,13 +136,13 @@ renderizado que se utiliza en Author y sobre el que se integrar\'a el nuevo mate
 \egroup
 
 \subsection{Implementaci\'on del modelo de datos}
-Como sistema de almacenamiento de datos, Seddi utiliza MongoDB un sistema NoSQL basado en documentos. Los sistemas no relacionales
+Como sistema de almacenamiento de datos Seddi utiliza MongoDB \autocite{mongodb}, un sistema NoSQL basado en documentos. Los sistemas no relacionales
 nacieron a mediados de los 90 frente a los sistemas SQL y sus principales ventajas son sus bajos tiempos de respuesta, flexibilidad
 en el modelo de datos y escalabilidad horizontal.\\
 
 Para asegurar la consistencia entre los diferentes motores de la compa\~n\'ia, la representaci\'on de los materiales en base de
 datos y las interfaces que proporcionan acceso a ellos son comunes. Adem\'as, los motores de renderizado utilizan un \textit{Entity Component System}
-(ECS), por lo que los materiales se serializan como parte de un componente.\\
+(ECS) \autocite{ecs}, las referencias a materiales se serializan como parte de un componente.\\
 
 Los componentes que permiten renderizar elementos con materiales en la escena son \textit{GarmentPieceComponent} y \textit{MeshRenderableComponent}.
 \textit{GarmentPieceComponent} se especializa en representar tejidos en la escena y \textit{MeshRenderableComponent}
@@ -157,7 +157,7 @@ se utiliza para definir el resto de elementos con materiales como escenarios, av
 \end{figure}
 
 Los materiales de un \textit{GarmentPieceComponent} se almacenan en el campo \textit{textures} de un recurso \textit{Fabric}. El campo
-\textit{textures} es un array que referencia recursos \textit{TextureStack} que contienen la definiciones de un material para
+\textit{textures} es un array que referencia recursos \textit{TextureStack} que contienen las definiciones de los materiales para
 la parte frontal y trasera obtenidas durante el proceso de captura \'optica. Por otra parte, los materiales de un \textit{GarmentPieceComponent}
 se almacenan en recursos \textit{SurfaceMaterial}. Estos recursos almacenan diferentes tipos de metadatos y pueden utilizar
 diferentes modelos de BRDFs pero comparten la parametrizaci\'on de los materiales.
@@ -180,10 +180,10 @@ diferentes modelos de BRDFs pero comparten la parametrizaci\'on de los materiale
 
 
 \subsection{Actualizaci\'on de las interfaces de servicios REST}
-El API REST que proporciona acceso a los recursos est\'a montada sobre Node, un entorno de ejecuci\'on de Javascript montado
+El API REST que proporciona acceso a los recursos est\'a montada sobre Node \autocite{node}, un entorno de ejecuci\'on de Javascript montado
 sobre el motor V8 de Google que proporciona operaciones no bloqueantes de lectura y escritura (I/O) a disco o red.
 De entre la variedad de \textit{frameworks} disponibles en el ecosistema de Node, el API REST de Seddi utiliza Express debido
-a su amplia comunidad, rendimiento y facilidad y velocidad de desarrollo.\\
+a su amplia comunidad, rendimiento, facilidad y velocidad de desarrollo.\\
 
 \begin{figure}[H]
   \vspace{0.5cm}
@@ -198,8 +198,8 @@ un recurso por \textit{id}, adem\'as de permitir actualizar la textura de un map
 y sus texturas. Adicionalmente, un \textit{TextureStack} puede ser promocionado, lo que indica que el recurso indicado
 es el que se utiliza dentro del campo \textit{textures} del \textit{Fabric} asociado, que se indica en el campo \textit{fabricId} del
 \textit{TextureStack}.\\
-
-Las citadas funcionalidades se documentan en Swagger, una herramienta de documentaci\'on automatizada que proporciona una gu\'ia a
+\newpage
+Las citadas funcionalidades se documentan en Swagger \autocite{swagger}, una herramienta de documentaci\'on automatizada que proporciona una gu\'ia a
 a los consumidores del API.
 
 % es la definici\'on
@@ -257,16 +257,15 @@ cualquier tipo de material: opacidad, ecuaci\'on de blending, la cara visible, e
 para configurar los valores de las propiedades del material, as\'i como m\'etodos para la copia, clonado o serializaci\'on
 del material.\\
 
-\textit{MeshStandarMaterial} hereda de \textit{Material} y es el shader base de un material PBR. Almacena propiedades comunes
-como el color el mapa de normales, mapa de desplazamiento, adem\'as de sobreescribir el objeto de \textit{defines} y el tipo
-de material y la funci\'on de \textit{copy} de la clase \textit{Material} para copiar correctamente
+\textit{MeshStandarMaterial} hereda de \textit{Material} y es la implementaci\'on base de un material PBR. Almacena propiedades comunes
+como el color el mapa de normales, mapa de desplazamiento, adem\'as de sobreescribir la parametrizaci\'on de shaders y la funci\'on de \textit{copy} de la clase \textit{Material} para copiar correctamente
 estas nuevas propiedades.\\
 
 El \textit{MeshPhysicalMaterial} hereda de \textit{MeshStandarMaterial} an\~adiendo el l\'obulo de \textit{clearcoat} y
-el BRDF alternativo para el \textit{sheen}, utiliza sus propios \textit{defines} y sobreescribe la funci\'on de copia.\\
+el BRDF alternativo para el \textit{sheen}, utiliza sus propia parametrizaci\'on de shaders y sobreescribe la funci\'on de copia.\\
 
-Los elementos que se renderizan en la escena, heredan de la clase base \textit{Object3D}, que guarda una referencia
-al material. El grafo de escena se gestiona desde la clase \textit{Scene}, que hereda de \textit{Object3D} y guarda
+Los elementos que se renderizan en la escena, heredan de la clase base \textit{Object3D}, que guarda una referencia o varias
+referencias a materiales. El grafo de escena se gestiona desde la clase \textit{Scene}, que hereda de \textit{Object3D} y guarda
 informaci\'on sobre el fondo o mapa de entorno, adem\'as de proporcionar sus propios m\'etodos de copia y serializaci\'on
 a JSON.
 
@@ -283,16 +282,16 @@ que se reutilizan y se componen en tiempo de ejecuci\'on para generar el c\'odig
 De la misma forma, los \textit{uniforms} que se reutilizan entre programas se organizan en el objeto \textit{UniformsLib}. El objeto ShaderLib almacena
 los materiales est\'andar de la librer\'ia, \textit{MeshStandardMaterial}, \textit{MeshPhysicalMaterial}, etc, utilizando los trozos
 de c\'odigo GLSL de \textit{ShaderChunk}, los uniforms definidos en \textit{UniformsLib}, adem\'as de los \textit{uniforms} \'unicos
-para cada tipo de material.
+para cada tipo de material.\\
 
 La clase \textit{WebGLProgram} se encarga de juntar los trozos de c\'odigo GLSL y generar la cadena de texto que se utilizar\'a en
-el programa WebGL. Las instancias de la clase \textit{WebGLProgram} se cachean en una lista de referencias en el closure \textit{WebGLPrograms}, que proporciona
+el programa WebGL. Las instancias de la clase \textit{WebGLProgram} se cachean en una lista de referencias en \textit{WebGLPrograms}, que proporciona
 acceso a la lista, as\'i como funciones para actualizarla u obtener los par\'ametros o los \textit{uniforms} de un programa. \\
 
 Finalmente, la clase \textit{WebGLRenderer} es donde se gestiona la l\'ogica del motor de render y se orquesta la relaci\'on entre todos
 estos componentes. \textit{WebGLRenderer} recibe una referencia al grafo de escena, la clase \textit{Scene}, que se encarga de inicializar
 y actualizar todos los materiales de la escena, referenciados en la clase base de cualquier elemento que se renderiza en la escena, \textit{Object3D}.
-Tiene una referencia al closure \textit{WebGLMaterials}, que ofrece un m\'etodo para actualizar los \textit{uniforms} de cualquier tipo
+Tiene una referencia a \textit{WebGLMaterials}, que ofrece un m\'etodo para actualizar los \textit{uniforms} de cualquier tipo
 de los materiales nativos de ThreeJs.
 
 % Todos los programas GLSL se gestionan desde WebGLPrograms, un closure que contiene un lista de \textit{ids} de los materiales
@@ -310,7 +309,7 @@ El modelo est\'a basado en el de Disney 2012 \autocite{disney12}, pero con algun
 para la plataforma web. A continuaci\'on se detallan los principales cambios entre los dos modelos:
 
   \subsubsection{Componente difusa}
-  Al contrario que en Disney, el modelo de ThreeJs utiliza directamente el modelo de Lambert, considerando un retrodispersi\'on
+  Al contrario que en Disney, el modelo de ThreeJs utiliza directamente el modelo de Lambert, considerando una retrodispersi\'on
   uniformemente distribuida en todas direcciones.\\
 
   Componente difusa en ThreeJs:
@@ -365,22 +364,20 @@ vec3 BRDF_Specular_GGX(
   Utiliza una aproximaci\'on de la distribuci\'on GGX, frente a la GTR utilizada en el modelo de Disney, por lo que
   presenta una cola m\'as corta.\\
 
-  \begin{eqfloat}
-    \begin{equation}
-      D_{GGX}(m) = \frac{\alpha^2}{\pi((n\cdotp{m})^2(\alpha^2 - 1 ) + 1)^2}
-    \end{equation}
-  \caption{Funci\'on de distribuci\'on de las normales en ThreeJs}
-  \end{eqfloat}
+  Funci\'on de distribuci\'on de las normales en ThreeJs:\\
+
+  \begin{equation}
+    D_{GGX}(m) = \frac{\alpha^2}{\pi((n\cdotp{m})^2(\alpha^2 - 1 ) + 1)^2}
+  \end{equation}
   \singlespacing
 
-  \begin{eqfloat}
-    \begin{equation}
-      D_{GTR} = \frac
-      {c}
-      {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^2}
-    \end{equation}
-  \caption{Funci\'on de distribuci\'on de las normales en Disney 2012}
-  \end{eqfloat}
+  Funci\'on de distribuci\'on de las normales en Disney 2012:\\
+
+  \begin{equation}
+    D_{GTR} = \frac
+    {c}
+    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^2}
+  \end{equation}
   \singlespacing
 
   \begin{lstlisting}[caption=Implementaci\'on en ThreeJs del t\'ermino de geometr\'ia]
@@ -396,7 +393,7 @@ float D_GGX( const in float alpha, const in float dotNH ) {
 
   \subsection*{T\'ermino F}
   Igual que en el modelo de Disney 2012, se considera la funci\'on de Fresnel-Schlick lo suficientemente precisa para
-  estimar el Fresnel, sin embargo, en \'este caso se utiliza la aproximaci\'on presentada por Epic en el Siggraph de 2013.\\
+  estimar el Fresnel, sin embargo, en \'este caso se utiliza la aproximaci\'on presentada por Epic en el Siggraph de 2013 \autocite{unreal}.\\
 
   \begin{eqfloat}
     \begin{equation}
@@ -405,12 +402,6 @@ float D_GGX( const in float alpha, const in float dotNH ) {
   \caption{Aproximaci\'on de la funci\'on de Fresnel en ThreeJs}
   \end{eqfloat}
 
-  \begin{eqfloat}[!htb]
-    \begin{equation}
-      F= (1 - F(\theta_l) (1 - F(\theta_d)))^5
-    \end{equation}
-  \caption{Aproximaci\'on de la funci\'on de Fresnel en Disney 2012}
-  \end{eqfloat}
 
   \begin{lstlisting}[caption=Implementaci\'on en ThreeJs de la aproximaci\'on a la funci\'on de Fresnel]
 vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
