@@ -109,7 +109,7 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
             El modelo lambertiano supone una aproximaci\'on lo suficientemente precisa para representar una amplia variedad de
             materiales y es utilizado todav\'ia en la actualidad por gran cantidad de motores de renderizado realista, entre ellos,
             ThreeJs. Sin embargo, el t\'ermino no tiene en cuenta la conservaci\'on de la energ\'ia y
-            cuando se utiliza en conjunto con un BRDF basado de microfacetas, genera oscurecimiento en las zonas de mayor rugosidad,
+            cuando se utiliza en conjunto con un BRDF basado en microfacetas, genera oscurecimiento en las zonas de mayor rugosidad,
             que se acent\'ua a medida que aumenta el \'angulo de incidencia de la luz.\\
             
             El modelo de Oren-Nayar \autocite{orennayar}, basado en la teor\'ia de microfacetas, presenta por primera vez un t\'ermino
@@ -135,8 +135,10 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
             % distribuci\'on de las microfacetas dependiendo de los t\'erminos utilizados para la componente especular.
 
         \subsection{Componente especular}
-            El BRDF especular basado en microfacetas consta de tres t\'erminos, una funci\'on de distribuci\'on de las normales, una funci\'on
-            de geometr\'ia, la ecuaci\'on de Fresnel, a continuaci\'on un breve repaso de las diferentes implementaciones de estos
+            % El BRDF especular basado en microfacetas consta de tres t\'erminos,
+            La aproximaci\'on de Cook-Torrance a la integral del modelo de microfacetas se fundamenta en tres t\'erminos,
+            una funci\'on de distribuci\'on de las normales, una funci\'on
+            de geometr\'ia y la ecuaci\'on de Fresnel, a continuaci\'on un breve repaso de las diferentes implementaciones de estos
             t\'erminos.
         
         % El BRDF de Cook-Torrance est\'a compuesto por otras tres funciones y un factor de normalizaci\'on en el denominador.
@@ -154,8 +156,8 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
                 Mientras que el modelo de Torrance-Sparrow \autocite{torrancesparrow} presenta una distribuci\'on gaussiana, el modelo
                 de Cook-Torrance \autocite{cooktorrance} utiliza el t\'ermino presentado en 1963 por Beckmann \autocite{beckmann}.\\
 
-                El modelo de Disney 2012 \autocite{disney12} es el utilizado por ThreeJs para modelar la componente especular de sus
-                materiales PBR, mientras que el presentado por Heitz \autocite{ggx} es uno de los m\'as extendidos en la actualidad.\\
+                El modelo de \textit{Generalized-Trowbridge-Reitz} (GTR) \autocite{disney12} es el utilizado por ThreeJs para modelar la componente especular de sus
+                materiales PBR, mientras que el presentado por Bruce walter \autocite{ggx} es uno de los m\'as extendidos en la actualidad.\\
 
                 Por otra parte, el modelo de Est\'evez y Kulla \autocite{sheenbrdf}, basado en el trabajo de Ashikhmin y Premoze \autocite{ashikhmin00},
                 presenta un nuevo par\'ametro que ofrece mayor control sobre la componente especular, muy \'util para ciertos tipos de
@@ -195,7 +197,7 @@ componentes difusa y especular o la separaci\'on en el modelo de materiales seg\
                 y otra la de la luz, representando los fen\'omenos de sombreado y enmascaramiento respectivamente. De entre \'estos t\'erminos
                 de geometr\'ia, cabe destacar el presentado en el trabajo de Schlick-Beckmann \autocite{schlick} o el utilizado en Unreal \autocite{unreal},
                 que remapea el valor de rugosidad para conseguir unos valores m\'as intuitivos para los artistas. El modelo presentado por
-                Neubelt \autocite{theordertalk} es el utilizado para el BRDF de telas integrado sobre ThreeJs.
+                Neubelt \autocite{theorder} es el utilizado para el BRDF de telas integrado sobre ThreeJs.
                 
         \section{Luz indirecta en sistemas de renderizado interactivos}
         La ecuaci\'on para el c\'alculo de iluminaci\'on indirecta, analizada en detalle en el Cap\'itulo 4, fue presentada por primera vez

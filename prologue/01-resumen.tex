@@ -1,7 +1,7 @@
-\chapter{Res\'umen}
+\chapter{Resumen}
 
-Con la llegada del API gr\'afica WebGL y posterioremente WebGL 2.0 han aparecido cantidad de librer\'ias, como ThreeJs, Babylon,
-AFrame, Filament, etc.,  que proporcionan a los desarrolladores un API que cubre la mayor parte de casos de uso
+Con la llegada del API gr\'afica WebGL y posterioremente WebGL 2.0 han aparecido librer\'ias de alto nivel, como ThreeJs, Babylon,
+AFrame, Filament, etc.,  que proporcionan a los desarrolladores un interfaz que cubre la mayor parte de casos de uso
 del d\'ia a d\'ia y ofrece una experiencia de desarrollo intuitiva a costa de ocultar detalles de implementaci\'on de bajo nivel.\\
 % Las necesidades espec\'ificas de este proyecto, la visualizaci\'on realista de tejidos sobre un entorno web, hace necesario un
 % estudio de las diferentes tipos de t\'ecnicas de r realista para representar este tipo de material, especialmente complejo,
@@ -10,7 +10,7 @@ del d\'ia a d\'ia y ofrece una experiencia de desarrollo intuitiva a costa de oc
 No obstante, el cometido de este proyecto es renderizar tejidos sobre un entorno web interactivo de la forma m\'as realista posible
 y los modelos est\'andar basados en f\'isica no consiguen, por lo general, una representaci\'on lo suficientemente
 precisa para esta labor. Las im\'agenes generadas por este motor de renderizado sirven como previsualizaci\'on de im\'agenes
-en alta fidelidad generadas por un motor de renderizado de rayos, por lo que, adem\'as de realismo, debe buscarse la mayor
+en alta fidelidad generadas por un motor de trazado de rayos, por lo que, adem\'as de realismo, debe buscarse la mayor
 coherencia posible entre estos dos motores.\\
 
 % interactivo se compara\'n con im\'agenes de alta
@@ -21,11 +21,11 @@ Basado en el estudio te\'orico de los fundamentos t\'ecnicos del renderizado bas
 de diferentes modelos de Bidirectional Reflectance Distribution Function (BRDF) para la representaci\'on de materiales,
 este trabajo presenta un material especializado en tejidos integrado dentro de una arquitectura de servicios en la nube.
 Para dar soporte a este nuevo material en los servicios en la nube, se han extendido el modelo de datos de los materiales
-y actualizado la interfaz que propociona acceso a ellos. El modelo de BRDF para telas se ha implementado sobre ThreeJs,
+y desarrollado la interfaz que propociona acceso a ellos. El modelo de BRDF para telas se ha implementado sobre ThreeJs,
 extendiendo la librer\'ia con un nuevo material que ofrece la misma interfaz que los materiales nativos de la librer\'ia.\\
 
 Los resultados presentados ofrecen comparativas entre el material de telas y el material PBR est\'andar de ThreeJs
-y entre las im\'agenes generadas por el este nuevo modelo e im\'agenes de referencia renderizadas por el motor de
+y entre las im\'agenes generadas por este nuevo modelo e im\'agenes de referencia renderizadas por el motor de
 trazado de rayos. En la comparativa con el material de ThreeJs se aprecia un mayor grado de realismo en el nuevo modelo, adem\'as
 frente a las im\'agenes con el motor de trazados de rayos se aprecia poca discrepancia.
 

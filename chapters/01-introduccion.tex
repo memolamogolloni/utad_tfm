@@ -10,9 +10,9 @@ que no ofrecen las soluciones dedicadas a tal fin existentes en el mercado.\\
 % y las soluciones existentes en el mercado no cumplan con las expectativas de la industria de la moda.\\
 
 Este TFM se desarrolla bajo el amparo de Seddi, empresa que desarrolla tecnolog\'ia para la captura y simulaci\'on de tejidos
-con un alto nivel de detalle para la creaci\'on de r\'eplicas digitales de tejidos que permitan a la industria de la moda
+con un alto nivel de detalle para la creaci\'on de r\'eplicas digitales que permitan a la industria de la moda
 digitalizar su proceso de trabajo y beneficiarse de lo que esto implica: mayor velocidad de iteraci\'on, ubicuidad, disminuci\'on de
-los costes de producci\'on, menor impacto medioambiental, etc.\\
+los costes de producci\'on, menor impacto medioambiental, entre otros beneficios.\\
 
 El trabajo se integra dentro del contexto Author, una soluci\'on que utiliza los servicios en la nube de Seddi para ofrecer
 un entorno de dise\~no y prototipado de prendas que utiliza las r\'eplicas digitales del tejido. En concreto, el prop\'osito
@@ -88,21 +88,23 @@ consecuci\'on de esta tarea se trazan los siguientes objetivos generales:
 
 \begin{enumerate}[label=(\roman*)]
 	\item Dar soporte al nuevo material bajo la infraestructura de servicios en la nube de Seddi.
-	\item Extender la librer\'ia ThreeJs para integrar un material para tejidos basado en aspectos f\'isicos.
+  \item Extender la librer\'ia ThreeJs para integrar un material espec\'ifico para la reproducci\'on de tejidos basado
+  en aspectos f\'isicos o \textit{Physcally Based Rendering} (PBR).
 \end{enumerate}
 
 Que se componen de una serie de objetivos espec\'ificos:
 
 \begin{enumerate}[label=\arabic*)]
 	\item Adquirir conocimiento te\'orico sobre los motores de renderizado basados en aspectos f\'isicos.
-    \item Adquirir conocimiento te\'orico sobre diferentes modelos de \textit{Bidirectional}\\
-    \textit{Reflectance Distribution Functions} (BRDFs)
+    \item Adquirir conocimiento te\'orico sobre diferentes modelos de reflectancia o\\
+    \textit{Bidirectional Reflectance Distribution Functions} (BRDFs)
     y sistemas de iluminaci\'on global en entornos interactivos de visualizaci\'on hiperrealista.
-    \item Actualizaci\'on del modelo para dar soporte al nuevo material dentro de la arquitectura de servicios en
+    \item Definici\'on del modelo para dar soporte al nuevo material dentro de la arquitectura de servicios en
     la nube de Seddi.
-	\item Actualizaci\'on de la interfaz de servicios en la nube para ofrecer soporte a este material.
+	\item Desarrollo de la interfaz de servicios en la nube para ofrecer soporte a este material.
 	\item Entender a bajo nivel los detalles de implementaci\'on del sistema de renderizado de ThreeJs.
-	\item Extender ThreeJs para integrar en su librer\'ia de materiales nativos el nuevo modelo material para tejidos.
+  \item Extender ThreeJs para integrar en su librer\'ia de materiales nativos el nuevo modelo de material orientado
+  a la reproducci\'on de tejidos.
 	\item Integrar el c\'odigo GLSL dentro del sistema de renderizado de ThreeJs para dar soporte al modelo de BRDF
 	utilizado por el nuevo material.
 \end{enumerate}
@@ -122,13 +124,12 @@ En este cap\'itulo se explican brevemente los objetivos y motivaciones del proye
 de este trabajo.\\
 
 \textbf{Cap\'itulo 2. Estado del arte}
-El segundo cap\'itulo ofrece una visi\'on del estado del arte en cuanto a soluciones en la nube similares a los servicios
-de Seddi. Adem\'as se listan los trabajos sobre materiales e iluminaci\'on en tiempo real que guardan relaci\'on con la
+El segundo cap\'itulo ofrece una visi\'on del estado del arte en cuanto a los trabajos sobre materiales e iluminaci\'on en tiempo real que guardan relaci\'on con la
 soluci\'on presentada en este proyecto.\\
 
 \textbf{Cap\'itulo 3. PBR}
 En este cap\'itulo se explican las t\'ecnicas est\'andar en la actualidad para la representaci\'on de materiales realistas y
-sirve como base te\'orica para la propuesta presentada en el cap\'itulo 5.\\
+sirve como base te\'orica para los desarrollos presentados en los cap\'itulos 4 y 5.\\
 
 \textbf{Cap\'itulo 4. Infraestructura y servicios web}
 El cap\'itulo 4 explica la integraci\'on de la propuesta sobre los servicios en la nube de Seddi y la integraci\'on de un nuevo material
@@ -136,8 +137,8 @@ sobre la librer\'ia de WebgGL ThreeJs.\\
 
 \textbf{Cap\'itulo 5. Modelos de iluminaci\'on para tejidos}
 En este cap\'itulo se explica en detalle el modelo de BRDF a integrar para el material de tejidos y su implementaci\'on en ThreeJs.
-Adem\'as se presentan resultados en los que se demuestran los nuevos efectos modelados por el material as\'i como comparativas
-del material est\'andar de la librer\'ia frente al nuevo.\\
+Adem\'as se presentan resultados en los que se demuestran los nuevos efectos modelados por el material, as\'i como comparativas
+del material est\'andar PBR de la librer\'ia frente al nuevo.\\
 
 \textbf{Cap\'itulo 6. Discusi\'on y trabajo futuro}
 Comentarios sobre el planteamiento, desarrollo, resultados obtenidos y posibles aplicaciones. Tambi\'en se establecen

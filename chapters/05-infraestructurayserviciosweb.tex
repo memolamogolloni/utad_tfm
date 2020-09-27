@@ -285,13 +285,6 @@ los materiales est\'andar de la librer\'ia, \textit{MeshStandardMaterial}, \text
 de c\'odigo GLSL de \textit{ShaderChunk}, los uniforms definidos en \textit{UniformsLib}, adem\'as de los \textit{uniforms} \'unicos
 para cada tipo de material.
 
-\begin{figure}[H]
-  \vspace{0.5cm}
-  \centering
-    \frame{\includegraphics[scale=0.23]{threejs_renderer_architecture.png}}
-  \caption{Diagrama de clases del motor de renderizado de ThreeJs.}
-\end{figure}
-
 La clase \textit{WebGLProgram} se encarga de juntar los trozos de c\'odigo GLSL y generar la cadena de texto que se utilizar\'a en
 el programa WebGL. Las instancias de la clase \textit{WebGLProgram} se cachean en una lista de referencias en el closure \textit{WebGLPrograms}, que proporciona
 acceso a la lista, as\'i como funciones para actualizarla u obtener los par\'ametros o los \textit{uniforms} de un programa. \\

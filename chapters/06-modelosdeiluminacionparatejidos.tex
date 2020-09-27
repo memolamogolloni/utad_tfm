@@ -9,19 +9,24 @@ de representar este material de forma realista. Los materiales PBR \textit{MeshS
 ThreeJs, basados en microfacetas, funcionan muy bien para gran parte de materiales, como pl\'asticos o metales, sin embargo no consiguen
 una representaci\'on realista de tejidos, que suelen presentar un l\'obulo especular m\'as atenuado.\\
 
+% La estructura de fibras puede provocar los efectos de absorci\'on y reflexi\'on interna (\textit{subsurface scattering}) y, dependiendo
+% de la direcci\'on de la luz, los efectos de dispesi\'on hacia delante o hacia detr\'as (\textit{forward} y \textit{backward scattering}).
+% Cuando la luz viene en direcci\'on opuesta al punto de vista y golpea las fibras que salen del tejido provoca el efecto de
+% \textit{foward scattering}, mientras que cuando la luz viene en la misma direcci\'on que el punto de vista, el fen\'omeno
+% de \textit{backward scattering}. El terciopelo es un caso de tejido en el que se acent\'ua este efecto y el primer trabajo en describirlo, el modelo de BRDF de Ashikmin
+% \autocite{ashikhmin}, es tambi\'en conocido como \textit{velvet BRDF} o \textit{velvet distribution}.\\
 La estructura de fibras puede provocar los efectos de absorci\'on y reflexi\'on interna (\textit{subsurface scattering}) y, dependiendo
-de la direcci\'on de la luz, los efectos de dispesi\'on hacia delante o hacia detr\'as (\textit{forward} y \textit{backward scattering}).\\
+de la direcci\'on de la luz, o los efectos de dispesi\'on hacia delante ((\textit{forward scattering}) que se produce cuando la luz viene
+en direcci\'on opuesta al punto de vista y golpea las fibras que salen del tejido, o la dispersi\'on hacia detr\'as (\textit{backward scattering}),
+cuando la luz viene en direcci\'on opuesta al punto de vista. El terciopelo es un caso de tejido en el que se acent\'ua este efecto y el primer
+trabajo en describirlo, el modelo de BRDF de Ashikmin \autocite{ashikhmin}, es tambi\'en conocido como \textit{velvet BRDF} o
+\textit{velvet distribution}.\\
 
-Cuando la luz viene en direcci\'on opuesta al punto de vista y golpea las fibras que salen del tejido provoca el efecto de
-\textit{foward scattering}, mientras que cuando la luz viene en la misma direcci\'on que el punto de vista, el fen\'omeno
-de \textit{backward scattering}. El terciopelo es un caso de tejido en el que se acent\'ua este efecto y el primer trabajo en describirlo, el modelo de BRDF de Ashikmin
-\autocite{ashikhmin}, es tambi\'en conocido como \textit{velvet BRDF} o \textit{velvet distribution}.\\
 
 Este trabajo implementa sobre ThreeJs el modelo de \textit{Cloth} de Filament \autocite{filament}. La librer\'ia de Google
 presenta un BRDF especial para tejidos que, inspirado en los trabajos de Ashikmin \autocite{ashikhmin} y m\'as
 tarde Estevez y Kulla \autocite{sheenbrdf} para el t\'ermino de distribuci\'on de las normales, y el de Neubelt \autocite{theorder}
-para el factor de geometr\'ia, permite una representaci\'on realistas en entornos interactivos de los citados efectos.
-
+para el factor de geometr\'ia, permite una representaci\'on realista en entornos interactivos de los efectos mencionados.
 
 % al carecer de par\'ametros que permitan representar los fen\'onmenos de dispersi\'on hacia delante y hacia detr\'as (\textit{forward/backward scattering})
 % o la absorci\'on y reflexi\'on interna (\textit{suburface scattering}), efectos caracter\'isticos de una amplia variedad de
@@ -46,19 +51,46 @@ para el factor de geometr\'ia, permite una representaci\'on realistas en entorno
 
 
 \section{Integraci\'on de una nueva clase de material en ThreeJs}
-ThreeJs proporciona una API para extender de forma sencilla su librer\'ia de materiales, sin embargo, para proporcionar al nuevo
-material de la misma interfaz que los materiales nativos de ThreeJs, as\'i como seguir extendiendo la librer\'ia y ser flexible
-a futuros cambios, se ha optado por crear un \textit{fork} de la librer\'ia e introducir los cambios necesarios para crear
-este nuevo material. Siguiendo la nomenclatura de ThreeJs: \textit{MeshBasicMaterial}, \textit{MeshStandardMaterial}, etc., el
-nuevo material se llama \textit{MeshClothMaterial}.\\
+ThreeJs ofrece la posibilidad de crear materiales a trav\'es de su API, sin embargo, para este trabajo se ha decidido
+crear un \textit{fork} de la librer\'ia para soportar posibles nuevos materiales y funcionalidades que se requieran
+espec\'ificamente de Author.\\
+
+En este cap\'itulo se explica la implementaci\'on de una nueva clase de material que se integra en la librer\'ia de materiales
+de ThreeJs. Siguiendo la nomenclatura de la librer\'ia (\textit{MeshBasicMaterial}, \textit{MeshStandardMaterial}, etc.), el
+nuevo material se llamar\'a \textit{MeshClothMaterial}.
+
+
+% ThreeJs proporciona una API para extender de forma sencilla su librer\'ia de materiales, sin embargo, para proporcionar al nuevo
+% material de la misma interfaz que los materiales nativos de ThreeJs, as\'i como seguir extendiendo la librer\'ia y ser flexible
+% a futuros cambios, se ha optado por crear un \textit{fork} de la librer\'ia e introducir los cambios necesarios para crear
+% este nuevo material.\\
+
+% Siguiendo la nomenclatura de ThreeJs: \textit{MeshBasicMaterial}, \textit{MeshStandardMaterial}, etc., el nuevo material se
+% llama \textit{MeshClothMaterial}.\\
+
+\begin{figure}[H]
+  \centering
+    \frame{\includegraphics[scale=0.35]{threejs_meshcloth_integration_material}}
+  \caption{Integraci\'on de la nueva clase \textit{MeshClothMaterial}}
+\end{figure}
+\singlespacing
 
 El nuevo material tiene un BRDF diferente al \textit{MeshPhysicalMaterial},
-y diferentes par\'ametros, sin embargo si que soporta los mismos efectos de \textit{normal mapping}, \textit{displacement}, etc.
+y diferentes par\'ametros, sin embargo soporta los mismos efectos de \textit{normal mapping}, \textit{displacement}, etc.
 y comparte gran cantidad de los par\'ametros con el material base, a\~nadiendo \textit{subsurface}, \textit{sheen}.
-\textit{MeshClothMaterial} utiliza sus propios \textit{type}, para identificar el tipo
-de shader, en la clase \textit{WebGLMaterials} y \textit{defines}, que se utilizar\'an para a\~nadir directivas al c\'odigo GLSL
-generado en la clase \textit{WebGLProgram}. Para que el nuevo material est\'e quede expuesto como un material nativo de ThreeJs,
-se an\~ade a objeto \textit{Materials}.\\
+\textit{MeshClothMaterial} utiliza sus propios \textit{type}, para identificar el tipo de shader, en la clase \textit{WebGLMaterials}
+y \textit{defines}, que se utilizar\'an para a\~nadir directivas de preprocesador al c\'odigo GLSL generado en la clase
+\textit{WebGLProgram}. Para que el nuevo material est\'e quede expuesto como un material nativo de ThreeJs,
+se an\~ade a objeto \textit{Materials}.
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \includegraphics[scale=0.34]{comparison_physical_cloth}
+  \caption{Comparativa \textit{MeshPhysicalMaterial}, \textit{MeshClothMaterial}}
+  \vspace{0.5cm}
+\end{figure}
+
 
 En la clase \textit{WebGLMaterials} se incluye un nuevo m\'etodo para actualizar los uniforms de \'este nuevo material.\\
 
@@ -100,16 +132,8 @@ function refreshUniformsCloth( uniforms, material, environment ) {
 \end{lstlisting}
 \singlespacing
 
-\begin{figure}[H]
-  \vspace{0.5cm}
-  \centering
-    \frame{\includegraphics[scale=0.27]{threejs_meshcloth_integration}}
-  \caption{Integraci\'on del nuevo material MeshClothMaterial}
-\end{figure}
-\singlespacing
-
 En la clase \textit{WebGLProgram} se modifica el constructor para para a\~nadir las directivas de precompilaci\'on
-para los par\'ametros \textit{subsurface} y \textit{sheen}, en casa de utilizarse estos par\'ametros.\\
+para los par\'ametros \textit{subsurface} y \textit{sheen}, en caso de utilizarse estos par\'ametros.\\
 
 \begin{lstlisting}[caption=Cambios sobre la clase WebGLProgram de ThreeJs]
 // WebGLProgram.js
@@ -206,32 +230,38 @@ function getParameters( material, lights, shadows, scene, object ) {
   El color difuso y el color de \textit{subsurface}, modelan en realidad el mismo fen\'omeno f\'isico, la cantidad de reflexi\'on
   interna que resulta en aportaci\'on sobre la reflexi\'on en direcci\'on al vector de vista. Cuando la distancia de reflexi\'on
   es despreciable en comparaci\'on con el tama\~no del pixel, se aproxima como una reflexi\'on difusa, sin embargo, cuando
-  la distancia es considerable, el fen\'omeno se modela de forma diferente. En tiempo real, es com\'un utilizar la citada aproximaci\'on
-  \textit{wrapped diffuse lighting} \autocite{orennayar}.
+  la distancia es considerable, el fen\'omeno se modela de forma diferente.\\
+  
+  En tiempo real, es com\'un utilizar la citada aproximaci\'on 
   El modelo para tejidos de Filament utiliza el difuso de Lambert en caso de no utilizar el par\'ametro \textit{subsurface},
-  mientras que si lo utiliza utiliza el factor de correci\'on que permite simular los rebotes internos de la luz.\\
+  mientras que si lo utiliza utiliza el factor de correcci\'on de la t\'ecnica \textit{wrapped diffuse lighting} \autocite{gpugems}
+  que permite aproximar el efecto debido a la absorci\'on y flexi\'on interna de la luz incidente en la superficie.\\
 
-  $$
-  f_d(v, h) = \frac{c_{diff}}{\pi}
-  \Bigg\langle
-  n\cdot{l} + \frac{w}{(1+ w)^2}\langle c_{subsurface} + n \cdot{l} \rangle
-  \Bigg\rangle
-  $$
-  \begin{equation}
-  \textrm{siendo}\; w = 0.5
-  \end{equation}
+  \begin{eqfloat}[!htb]
+    \begin{equation}
+      f_d(v, h) = \frac{c_{diff}}{\pi}
+      \Bigg\langle
+      \frac{(n\cdot{l})w}{(1+ w)^2}( c_{subsurface} + n \cdot{l} )
+      \Bigg\rangle
+    \end{equation}
+  \caption{Componente difusa del modelo de \textit{Cloth} en Filament}
+  \end{eqfloat}
+
   \singlespacing
+  \begin{lstlisting}[caption=Implementaci\'on del BRDF para la componente difusa de \textit{MeshClothMaterial}]
+vec3 BRDF_Diffuse_Cloth(
+  const in IncidentLight incidentLight,
+  const in vec3 viewDir,
+  const in vec3 normal,
+  const in vec3 diffuseColor
+) {
 
-  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
-vec3 BRDF_Diffuse_Cloth(const in IncidentLight incidentLight, const in vec3 viewDir, const in vec3 normal, const in vec3 diffuseColor) {
-
-  float dotNL = saturate( dot( normal, incidentLight.direction ) );
+  float dotNL = dot( normal, incidentLight.direction );
   float radiance = RECIPROCAL_PI; // Lambert BRDF
   
   #if defined(SUBSURFACE)
     // Fd_Wrap
     radiance *= saturate((dotNL + 0.5) / 2.25);
-
   #endif
 
   vec3 Fd = radiance * diffuseColor;
@@ -239,18 +269,27 @@ vec3 BRDF_Diffuse_Cloth(const in IncidentLight incidentLight, const in vec3 view
   return Fd;
 
 }
-  \end{lstlisting}
 
-  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
-void RE_Direct_Cloth( const in IncidentLight directLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
+void RE_Direct_Cloth(
+  const in IncidentLight directLight,
+  const in GeometricContext geometry,
+  const in PhysicalMaterial material,
+  inout ReflectedLight reflectedLight
+) {
+
   // ...
-  reflectedLight.directDiffuse += irradiance * BRDF_Diffuse_Cloth(directLight, geometry.viewDir, geometry.normal, material.diffuseColor);
+  reflectedLight.directDiffuse += irradiance * BRDF_Diffuse_Cloth(
+    directLight,
+    geometry.viewDir,
+    geometry.normal,
+    material.diffuseColor
+  );
 
   #if defined(SUBSURFACE)
     reflectedLight.directDiffuse *= saturate(subsurface + dotNL); 
   #endif
-
   // ...
+
 }
   \end{lstlisting}
 
@@ -263,42 +302,48 @@ void RE_Direct_Cloth( const in IncidentLight directLight, const in GeometricCont
   Cloth de Filament utiliza una  version modificada del BRDF presentado por Ashikmin y Premoze.
   \autocite{ashikhmin}\\
 
-  \begin{equation}
-  D_{Velvet}(v, h, \alpha) = c_{norm} (
-    1 + 4exp \left(\frac{-cot^2\theta_h}{\alpha^2}\right)
-  )
-  \end{equation}
-  \singlespacing
+  \begin{eqfloat}[!htb]
+    \begin{equation}
+      D_{Velvet}(v, h, \alpha) = c_{norm} (
+        1 + 4exp \left(\frac{-cot^2\theta_h}{\alpha^2}\right)
+      )
+    \end{equation}
+  \caption{\textit{Velvet distribution} \autocite{ashikhmin}}
+  \end{eqfloat}
 
-  \hspace{-1.5em}en su lugar se utiliza la la presentada por Est\'evez y Kulla \autocite{sheen}\\
-
-  \begin{equation}
-    D_{Charlie}(\alpha) = \frac
+  \begin{eqfloat}[!htb]
+    \begin{equation}
+      D_{Charlie}(\alpha) = \frac
       {(2 + \frac{1}{\alpha})sin(\theta)^\frac{1}{\alpha}}
       {2\pi}
-  \end{equation}
+    \end{equation}
+  \caption{Componente difusa del modelo de \textit{Cloth} en Filament}
+  \end{eqfloat}
   \singlespacing
 
-  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
+  \begin{lstlisting}[caption=Implementaci\'on del factor de distribuci\'on de Charlie en ThreeJs]
 float D_Charlie(float roughness, float NoH) {
   // Estevez and Kulla 2017, "Production Friendly Microfacet Sheen BRDF"
   float invAlpha = 1.0 / roughness;
   float cos2h = NoH * NoH;
-  float sin2h = max(1.0 - cos2h, 0.0078125); // 2^(-14/2), so sin2h^2 > 0 in fp16
+  float sin2h = max(1.0 - cos2h, 0.0078125); // 2^(-14/2), so sin2h^2 > 0
+                                             // in fp16
   return (2.0 + invAlpha) * pow(sin2h, invAlpha * 0.5) / (2.0 * PI);
 }
   \end{lstlisting}
   \singlespacing
 
-  \hspace{-1.5em}y se utiliza una version modificada del denominador para suavizar el degradado de la sombra.
+  Mientras que para el factor de geometr\'ia o visibilidad se utiliza la version modificada de Neubelt \autocite{theorder}
+  del denominador de microfacetas para suavizar el degradado de la sombra.
 
-  \begin{equation}
-  \frac{1}{4(n\cdot{l} + n\cdot{v} - (n\cdot{l})(n\cdot{v}) )}
-  \end{equation}
-  \singlespacing
+  \begin{eqfloat}[!htb]
+    \begin{equation}
+      \frac{1}{4(n\cdot{l} + n\cdot{v} - (n\cdot{l})(n\cdot{v}) )}
+    \end{equation}
+  \caption{Formulaci\'on del t\'ermino de geometr\'ia de Neubelt \autocite{theorder}}
+  \end{eqfloat}
 
-
-  \begin{lstlisting}[caption=Cambios sobre la clase WebGLPrograms de ThreeJs]
+  \begin{lstlisting}[caption=Implementaci\'on del t\'ermino de de visibilidad de Neubelt \autocite{theorder}]
 float V_Neubelt(float NoV, float NoL) {
   // Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline for The Order: 1886"
   return saturate(1.0 / (4.0 * (NoL + NoV - NoL * NoV)));
@@ -321,29 +366,54 @@ vec3 BRDF_Specular_Sheen( const in float roughness, const in vec3 L, const in Ge
   \end{lstlisting}
 
   \subsection{Iluminaci\'on indirecta}
-    ThreeJs utiliza dos enfoques, por una parte, mapas de irradiancia y por otra, light probes, que
-    utilizan spherical harmonics. Los mapas de irradiancia son una tecnica IBL (Image Based Lighting)
-    tratan todo el entorno como una fuente de luz y utilizan im\'agenes precomputadas que permiten
-    acelerar este calculo. Estas t\'ecnicas, aunque muy eficientes durante la ejecucion, son muy
-    costosas como para generarlas en tiempo real bajo demanda, la tecnica spherical harmonics, una
-    t\'ecnica que reduce el coste de generacion de los mapas de entorno a costa de comprimir la
-    informacion de irradiancia en un representacion frecuencias frente a espacio.
+    De las t\'ecnicas de iluminaci\'on indirecta vistas en el cap\'itulo 3, ThreeJs soporta tanto mapas de
+    irradiancia como esf\'ericos harm\'onicos para la componente difusa, mientras que para la componente
+    especular utiliza la aproximaci\'on anal\'itica presentada por Lazarov \autocite{blackops}.
 
     \subsubsection{Componente difusa}
-      La parte integral de la ecuaci\'on se resuelve utilizando el mapa de irradiancia,
-      que utiliza un factor de correci\'on en caso de estar modelando la refracci\'on interna,
+      Para el c\'alculo del difuso, ha de estimarse la irradiancia debida al entorno sobre un punto y multiplicarlo
+      por el BRDF difuso. ThreeJs soporta ambas t\'enicas vistas en el cap\'itulo 3 para el c\'alculo de irradiancia:
+      mapas de irradiancia y esf\'ericos harm\'onicos.
 
-      $$
-      L_o(p, w_o) = k_d \frac{c}{\pi} \int_{\Omega}{L_i(p, w_i) n\cdot{w_i}dw_i}{}
-      $$
+      \begin{eqfloat}[!htb]
+        \begin{equation}
+          L_o(p, w_o) = k_d \frac{c}{\pi} \int_{\Omega}{L_i(p, w_i) n\cdot{w_i}dw_i}
+        \end{equation}
+      \caption{C\'alculo de la luz indirecta difusa}
+      \end{eqfloat}
 
-      \begin{lstlisting}
-void RE_IndirectDiffuse_Cloth( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
+      La t\'ecnica de mapas de irradiancia, aunque muy eficiente durante la ejecuci\'on, son muy costosas como para
+      ser generadas bajo demanda en un entorno interactivo. Por su parte, los esf\'ericos harm\'onicos reducen el coste
+      de generacion de los mapas de entorno a costa de comprimir la informaci\'on de irradiancia en un representaci\'on
+      de frecuencias frente a espacio.\\
 
-    reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
+      Los \textit{chunks} de ThreeJs separan el c\'aculo de la luz indirecta en una funci\'on para cada componente, difuso
+      y especular. El c\'aculo de la componente difusa se realiza en la funci\'on \textit{RE\_IndirectDiffuse\_Cloth}.\\
 
-}
+      \begin{lstlisting}[caption=C\'alculo de la ecuaci\'on de render para la componente difusa de \textit{MeshClothMaterial}]
+  void RE_IndirectDiffuse_Cloth( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
+  
+      reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
+  
+  }
       \end{lstlisting}
+
+      Sin embargo, para tener en cuenta el principio de conservaci\'on de la energ\'ia, $k_d + k_s = 1$, tal y como se
+      presenta en el modelo de Cook-Torrance \autocite{cooktorrance}, parte del c\'alculo se hace en la funci\'on
+      \textit{RE\_IndirectSpecular\_Cloth}, que eval\'ua la componente especuar. \textit{RE\_IndirectSpecular\_Cloth}
+      utiliza un mapa prefiltrado de entorno, explicado en el cap\'itulo 3, para calcular la irradiancia, que se le resta al
+      total de energ\'ia (1), para obtener el peso de la irradiancia difusa. Finalmente, en caso de utilizar \textit{subsurface},
+      se aplica el factor de correcci\'on.\\
+
+
+
+      % ThreeJs utiliza dos enfoques, por una parte, mapas de irradiancia y por otra, light probes, que
+      % utilizan spherical harmonics. Los mapas de irradiancia son una tecnica IBL (Image Based Lighting)
+      % tratan todo el entorno como una fuente de luz y utilizan im\'agenes precomputadas que permiten
+      % acelerar este calculo.\\
+
+      % La parte integral de la ecuaci\'on se resuelve utilizando el mapa de irradiancia,
+      % que utiliza un factor de correci\'on en caso de estar modelando la refracci\'on interna,
 
       \begin{lstlisting}
 void RE_IndirectSpecular_Cloth(
@@ -358,14 +428,18 @@ void RE_IndirectSpecular_Cloth(
 
   float diffuseWrapFactor = 1.0;
   #if defined(SUBSURFACE)
-    diffuseWrapFactor *= saturate((dotNV + 0.5) / 2.25);
+    diffuseWrapFactor *= saturate(
+      (dotNV + subsurfaceIntensity)
+      / ((1.0 + subsurfaceIntensity) * (1.0 + subsurfaceIntensity))
+    );
   #endif
 
   // E = specular irradiance
-  vec3 Fd_SH = reflectedLight.indirectDiffuse * ( 1.0 - E )
+  vec3 FdSH = reflectedLight.indirectDiffuse * ( 1.0 - E )
     * diffuseWrapFactor;
-  vec3 Fd_Lod = irradiance * BRDF_Diffuse_Lambert( material.diffuseColor )
+  vec3 FdIM = irradiance * BRDF_Diffuse_Lambert( material.diffuseColor )
     * ( 1.0 - E ) * diffuseWrapFactor;
+
   vec3 Fd = Fd_SH + Fd_Lod;
 
   #if defined(SUBSURFACE)
@@ -373,6 +447,7 @@ void RE_IndirectSpecular_Cloth(
     Fd *= saturate(subsurface + dotNV);
 
   #endif
+  // ...
 
   reflectedLight.indirectDiffuse = Fd;
 
@@ -382,55 +457,68 @@ void RE_IndirectSpecular_Cloth(
       \singlespacing
 
     \subsubsection{Componente especular}
-    \bgroup
-      Para el especular, la tanto ThreeJs utilizan la t\'ecnica split-sum approximation
-      \autocite{unreal}. \'Esta t\'ecnica permite separar la en dos partes la soluci\'on de la
-      integral.
+      Tanto ThreeJs utilizan la t\'ecnica \textit{split-sum approximation} \autocite{dfgapproximation}
+      en la componente especular. Sin embargo, mientras que Filament utiliza un \textit{BRDF integration map},
+      ThreeJs utiliza la aproximaci\'on presentada por Epic \autocite{dfgapproximation}, ambas presentadas en
+      el cap\'itulo 3.\\
 
-      \begin{equation}
-        \resizebox{0.95\hsize}{!}{%
-        $L_o(p, w_o) =
-        \int_{\Omega} k_s \frac{DFG}{4(w_o\cdot{n})(w_i\cdot{n})})L_i(p, w_i)n\cdot{w_i}dw_i = \\
-        \int_{\Omega} k_s \frac{DFG}{4(w_o\cdot{n})(w_i\cdot{n})}) *
-        \int_{\Omega}L_i(p, w_i)n\cdot{w_i}dw_i$   
+      \begin{eqfloat}[ht]
+        \begin{equation}
+          \resizebox{0.95\hsize}{!}{%
+          $L_o(p, w_o) =
+          \int_{\Omega} k_s \frac{DFG}{4(w_o\cdot{n})(w_i\cdot{n})})L_i(p, w_i)n\cdot{w_i}dw_i = \\
+          \int_{\Omega} k_s \frac{DFG}{4(w_o\cdot{n})(w_i\cdot{n})}) *
+          \int_{\Omega}L_i(p, w_i)n\cdot{w_i}dw_i$   
+          }
+        \end{equation}
+      \caption{Separaci\'on de la integral de la componente especular en la integral del BRDF y la integral de la radiancia }
+      \end{eqfloat}
+      
+      La aproximaci\'on de ThreeJs del BRDF especular funciona especialmente bien para dispositivos con un rendimiento
+      limitado. Esta aproximaci\'on de la integral del BRDF es una soluci\'on anal\'itica para el BRDF GGX \autocite{ggx},
+      por lo que no es correcta para el nuevo BRDF del modelo de telas.\\
+
+      \begin{lstlisting}[caption=Apromixaci\'on anal\'itica a la integral del BRDF en ThreeJs]
+        vec2 integrateSpecularBRDF( const in float dotNV, const in float roughness ) {
+          const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
+          const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
+          vec4 r = roughness * c0 + c1;
+          float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
+          return vec2( -1.04, 1.04 ) * a004 + r.zw;
         }
-      \end{equation}
+      \end{lstlisting}
       \singlespacing
+      
 
-      Por una parte, el mapa prefiltrado de entorno es un mapa preconvolucionado que tiene en cuenta
-      los posibles valores de rugosidad del material de forma que a medida que el ruido es mayor, las
-      reflexiones son de un color menos definido. Esta tecnica utiliza simplifica el calculo de
-      la integral asumiendo la direccion de la vista igual a la direccion de sampleo.\\
-      Por otra parte, el c\'alculo del BRDF se almacena en una textura, conocida como mapa de integral
-      del BRDF, utilizando $n\cdot{w_i}$ en el eje $x$ y $roughness$ en el eje y.
+      El nuevo modelo de telas, de la misma forma que Filament, utiliza un \textit{BRDF integration map} para almacenar
+      en los canales rojo y azul la escala y offset del Fresnel para el modelo GGX \autocite{ggx}. El resultado del BRDF de tejidos,
+      que no utiliza Fresnel, se almacena en el canal azul, al que se accede de igual forma que al \textit{BRDF integration map} para el modelo GGX \autocite{ggx},
+      utilizando $n\cdot{l}$ para el eje $x$ y el valor de rugosidad del material para el eje $y$.
+
+      % Mientras que Filament utiliza un 
+
+      % Para el especular, la 
+      % \autocite{blackops}. \'Esta t\'ecnica permite separar la en dos partes la soluci\'on de la
+      % integral.
+
+      % Por una parte, el mapa prefiltrado de entorno es un mapa preconvolucionado que tiene en cuenta
+      % los posibles valores de rugosidad del material de forma que a medida que el ruido es mayor, las
+      % reflexiones son de un color menos definido. Esta tecnica utiliza simplifica el calculo de
+      % la integral asumiendo la direccion de la vista igual a la direccion de sampleo.\\
+
+      % Por otra parte, el c\'alculo del BRDF se almacena en una textura, conocida como mapa de integral
+      % del BRDF, utilizando $n\cdot{w_i}$ en el eje $x$ y $roughness$ en el eje y.
 
       \begin{figure}[H]
         \vspace{0.5cm}
         \centering
-          \frame{\includegraphics[scale=0.4]{splitsumcloth}}
-        \caption{DFG tela}
+          \frame{\includegraphics[scale=0.35]{splitsumcloth}}
+        \caption{Canales RG (BRDF GGX \autocite{ggx}), B (BRDF para telas \autocite{filament}) y la suma de ellos,
+        RGB, del \textit{BRDF integration map}}
+        \vspace{0.5cm}
       \end{figure}
 
-      ThreeJs utiliza la aproximaci\'on anal\'itica para el c\'alculo de de mapa de integral del BRDF,
-      la presentada por Epic Garmes \autocite{shadingmobile}, para aproximar el c\'alculo el BRDF GGX.\\
-
-      \begin{lstlisting}[caption=Apromixaci\'on anal\'itica a la integral del BRDF en ThreeJs]
-vec2 integrateSpecularBRDF( const in float dotNV, const in float roughness ) {
-  const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
-  const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
-  vec4 r = roughness * c0 + c1;
-  float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
-  return vec2( -1.04, 1.04 ) * a004 + r.zw;
-}
-      \end{lstlisting}
-      \singlespacing
-
-      Sin embargo, \'este c\'aculo no es v\'alido para nuestro BRDF, por que, deberemos utilizar una
-      \textit{BRDF integration map} en el que almacenar los resultados calculados para el BRDF presentado por Est\'evez y Kulla.
-    \egroup
-
-
-    \begin{lstlisting}
+    \begin{lstlisting}[caption=C\'alculo de la irradiancia del entorno para el modelo de telas utilizando el nuevo \textit{BRDF integration map}]
 float prefilteredDG = textureLod(
   brdfCloth,
   vec2( dotNV, material.specularRoughness * material.specularRoughness ),
@@ -442,7 +530,7 @@ reflectedLight.indirectSpecular += E * radiance;
     \end{lstlisting}
     \singlespacing
 
-    \begin{lstlisting}
+    \begin{lstlisting}[caption=C\'alculo de iluminaci\'on indirecta de \textit{MeshClothMaterial}]
 void RE_IndirectSpecular_Cloth(
   const in vec3 radiance,
   const in vec3 irradiance,
@@ -472,32 +560,26 @@ void RE_IndirectSpecular_Cloth(
     \end{lstlisting}
     \singlespacing
 
+Como res\'umen, la implementaci\'on completa de la luz indirecta para el \textit{MeshClothMaterial}:\\
+
     \begin{lstlisting}
-void RE_IndirectSpecular_Cloth(
-  const in vec3 radiance,
-  const in vec3 irradiance,
-  const in vec3 clearcoatRadiance,
-  const in GeometricContext geometry,
-  const in PhysicalMaterial material,
-  inout ReflectedLight reflectedLight
-) {
+void RE_IndirectDiffuse_Cloth( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
+
+    reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
+
+}
+
+void RE_IndirectSpecular_Cloth( const in vec3 radiance, const in vec3 irradiance, const in vec3 clearcoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight) {
 
   float dotNV = dot( geometry.normal, geometry.viewDir );
 
-  float prefilteredDG = textureLod(
-    brdfCloth,
-    vec2(
-      dotNV,
-      material.specularRoughness * material.specularRoughness
-    ),
-    0.0
-  ).b;
+  float prefilteredDG = textureLod(brdfCloth, vec2( dotNV, material.specularRoughness * material.specularRoughness ), 0.0).b;
   vec3 E = material.sheenColor * prefilteredDG;
   reflectedLight.indirectSpecular += E * radiance;
 
   float diffuseWrapFactor = 1.0;
   #if defined(SUBSURFACE)
-    diffuseWrapFactor *= saturate((dotNV + 0.5) / 2.25);
+    diffuseWrapFactor *= saturate((dotNV + subsurfaceIntensity) / ((1.0 + subsurfaceIntensity) * (1.0 + subsurfaceIntensity) ));
   #endif
 
   // Combine envmap and SH diffuse irradiance
@@ -517,90 +599,115 @@ void RE_IndirectSpecular_Cloth(
     \end{lstlisting}
     \singlespacing
 
-\vspace{1cm}
 \section{Resultados}
 
-A continuaci\'on se muestran y comentan las im\'agenes como resultado de la implementaci\'on. Los resultados se centran
+A continuaci\'on se muestran y comentan las im\'agenes como resultado de la implementaci\'on del \textit{MeshPhysicalMaterial}. Los resultados se centran
 en el an\'alisis de las citadas propiedades \textit{sheen} y \textit{subsurface} del material \textit{MeshClothMaterial}.
 % Por una parte se muestran interpolaciones de dichas propiedades frente a un color base constante y por otra,
 
 \begin{figure}[H]
   \vspace{0.5cm}
   \centering
-    \frame{\includegraphics[scale=0.2]{results/sheenintensity.jpg}}
+    \frame{\includegraphics[scale=0.3]{results/ok_sheenintensity.jpg}}
   \caption{Interpolaci\'on de un color de \textit{sheen} aumentando su luminosidad frente a un color base constante.}
 \end{figure}
 
 El nuevo material no ofrece un control directo sobre la intensidad del \textit{sheen}, sin embargo, un efecto similar se puede
-alcanzar utilizando un el mismo que el color base aumentando la luminosidad. De \'esta forma se consigue que el l\'obulo
-de \textit{sheen} produzca reflexiones m\'as brillantes (figura 6.3).
+alcanzar utilizando un el mismo que el color base aumentando la luminosidad como se muestra en la figura 5.4.
 
 \begin{figure}[H]
   \vspace{0.5cm}
   \centering
-    \frame{\includegraphics[scale=0.2]{results/sheentint.jpg}}
+    \frame{\includegraphics[scale=0.3]{results/ok_sheentint.jpg}}
   \caption{Interpolaci\'on de un color de \textit{sheen} aumentando su saturacion frente a un color base constante.}
 \end{figure}
 \singlespacing
 
-Como se muestra en la figura 6.4, utilizar un color de \textit{sheen} diferente al color base permite conseguir reflexiones especular en dos tonos como
-resultado de la combinaci\'on del l\'obulo primario y el l\'obulo de sheen.
+Como se muestra en la figura 5.5, utilizar un color de \textit{sheen} diferente al color base permite conseguir reflexiones especulares
+en dos tonos como resultado de la combinaci\'on del color base y el \textit{sheen}.
 
 \begin{figure}[H]
   \vspace{0.5cm}
   \centering
-    \frame{\includegraphics[scale=0.2]{results/subsurfaceintensity.jpg}}
-    \caption{Interpolaci\'on de un color de \textit{subsurface} aumentando su saturaci\'on frente a un color base constante.}
+    \frame{\includegraphics[scale=0.3]{results/ok_subsurfaceintensity.jpg}}
+    \caption{Interpolaci\'on de \textit{subsurfaceIntensity} utilizando un color base y color de \textit{subsurface} blancos.}
 \end{figure}
 \singlespacing
 
-En la figura 6.5, el color base permanece constante, mientras que el \textit{subsurface}, de un tono similar al color base,
-aumenta su saturaci\'on. Del mismo modo que en el \textit{sheen}, jugando con el valor de luminosidad del \textit{subsurface},
-se puede obtener control sobre la intensidad del efecto.
+En la figura 5.6, se utiliza el blanco como color base y \textit{subsurface}. La interpolaci\'on del par\'ametro de \textit{subsurfaceIntensity}
+muestra una transici\'on de sombras m\'as intensas (\textit{subsurfaceIntensity = 0}) a sombras m\'as suaves, que toman el color base del
+\textit{subsurface} (\textit{subsurfaceIntensity = 1})\\
+
+% el color base permanece constante, mientras que el \textit{subsurface}, de un tono similar al color base,
+% aumenta su saturaci\'on. Del mismo modo que en el \textit{sheen}, jugando con el valor de luminosidad del \textit{subsurface},
+% se puede obtener control sobre la intensidad del efecto.
 
 
 \begin{figure}[H]
   \vspace{0.5cm}
   \centering
-    \frame{\includegraphics[scale=0.2]{results/subsurfacetint.jpg}}
-    \caption{Interpolaci\'on de un color de \textit{subsurface} aumentando su luminosidad frente a un color base constante.}
+    \frame{\includegraphics[scale=0.3]{results/ok_subsurfacetint.jpg}}
+    \caption{Interpolaci\'on de un color de \textit{subsurface} frennte a un color base constante.}
  \end{figure}
 \singlespacing
 
-En la figura 6.6, se utilizan dos tonos de color complementarios para el color base y el \textit{subsurface}. El color
-base es constante, mientras que el \textit{sheen} aumenta por pasos su saturaci\'on.
-El factor de correcci\'on aplicado sobre el color difuso, que simula el efecto de reflexi\'on interna, ti\~ne progresivasivamente
-las sombras del color asignado al par\'ametro \textit{subsurface}.\\
+La figura 5.7 muestra interpolaciones entre un color base constante (blanco) y un color de \textit{subsurface},
+rojo en la fila superior y azul en la fila inferior. Subiendo el valor de \textit{subsurfaceIntensity}
+se puede apreciar como el tejido se ti\~ne progresivamente del color de \textit{subsurface}.
 
-Las siguientes comparativas son matrices bidimensionales que muestran la evoluci\'on de un par\'ametro por cada uno de los ejes
-$x$ e $y$ y permiten ver la relaci\'on entre estos dos par\'ametros y su efecto sobre la apariencia final del material.\\
+% se utilizan dos tonos de color complementarios para el color base y el \textit{subsurface}. El color
+% base es constante, mientras que el \textit{sheen} aumenta por pasos su saturaci\'on.
+% El factor de correcci\'on aplicado sobre el color difuso, que simula el efecto de reflexi\'on interna, ti\~ne progresivasivamente
+% las sombras del color asignado al par\'ametro \textit{subsurface}.
 
-En la comparativa de la figura 6.7, se muestra en el eje $x$ un aumento del efecto de \textit{sheen}, mientras que en el
-eje $y$ aumenta el valor de roughness del material. Se puede apreciar que con valores bajos de \textit{sheen}, el efecto
-se aprecia con intensidad en los \'angulos cr\'iticos y decae r\'apidamente, mientras que para valores altos de este par\'ametro,
-el efecto se extiende hacia los tonos medios, creando una transici\'on m\'as suave entre el color base y el de \textit{sheen}.\\
+% Las siguientes comparativas son matrices bidimensionales que muestran la evoluci\'on de un par\'ametro por cada uno de los ejes
+% $x$ e $y$ y permiten ver la relaci\'on entre estos dos par\'ametros y su efecto sobre la apariencia final del material.\\
 
-La figura 6.8 muestra los incrementos del color de \textit{sheen} en el eje $x$ e incrementos en el eje $y$ del color de subsurface.
-El \textit{sheen} de color verde simula el efecto de retrodispersi\'on que ti\~ne el brillo especular de \'este color, mientras
-que el \textit{subsurface}, de color rojo, da a los tonos medios un color rojizo. El valor de \textit{roughness} del material
-es alto, es por ello que a medida que aumentan los valores de \textit{subsuface}, \textit{sheen}, se aprecia una transici\'on
-suave entre estos dos par\'ametros, que proporcionan el aspecto amarillo/anaranjado, como resultado de la transici\'on entre
-el verde del brillo especular y el rojo de las sombras y tonos medios.
+% En la comparativa de la figura 6.7, se muestra en el eje $x$ un aumento del efecto de \textit{sheen}, mientras que en el
+% eje $y$ aumenta el valor de roughness del material. Se puede apreciar que con valores bajos de \textit{sheen}, el efecto
+% se aprecia con intensidad en los \'angulos cr\'iticos y decae r\'apidamente, mientras que para valores altos de este par\'ametro,
+% el efecto se extiende hacia los tonos medios, creando una transici\'on m\'as suave entre el color base y el de \textit{sheen}.\\
 
-\begin{figure}[H]
-  \vspace{0.5cm}
-  \centering
-    \frame{\includegraphics[scale=0.37]{results/grid_sheen_roughness.jpg}}
-    \caption{En el eje $x$ aumenta la intensidad del \textit{sheen}, en el eje $y$ el valor de \textit{roughness}.}
-  \vspace{0.5cm}
-\end{figure}
-\singlespacing
+% La figura 6.8 muestra los incrementos del color de \textit{sheen} en el eje $x$ e incrementos en el eje $y$ del color de subsurface.
+% El \textit{sheen} de color verde simula el efecto de retrodispersi\'on que ti\~ne el brillo especular de \'este color, mientras
+% que el \textit{subsurface}, de color rojo, da a los tonos medios un color rojizo. El valor de \textit{roughness} del material
+% es alto, es por ello que a medida que aumentan los valores de \textit{subsuface}, \textit{sheen}, se aprecia una transici\'on
+% suave entre estos dos par\'ametros, que proporcionan el aspecto amarillo/anaranjado, como resultado de la transici\'on entre
+% el verde del brillo especular y el rojo de las sombras y tonos medios.
 
 \begin{figure}[H]
   \vspace{0.5cm}
   \centering
-    \frame{\includegraphics[scale=0.37]{results/grid_sheen_subsurface.jpg}}
-  \caption{Integraci\'on del nuevo material MeshClothMaterial}
-  \vspace{0.5cm}
+    \frame{\includegraphics[scale=0.3]{results/ok_basecolorsheen.jpg}}
+    \caption{Interpolaci\'on del color de sheen en el eje $x$ frente a interpolaci\'on del color base en el eje $y$.}
 \end{figure}
+
+La matriz bidimentsional de la figura 5.8 utiliza un color de sheen que se interpola entre el color base del tejido,
+gris oscuro, hasta un rojo intenso en el eje $x$, mientras que en el eje $y$, el color base se interpola hacia el mismo
+tono rojo que el \textit{sheen}.\\
+
 \singlespacing
+A continuaci\'on se muestran comparativas entre el \textit{MeshPhysicalMaterial} de ThreeJs, el nuevo \textit{MeshClothMaterial}
+y las im\'agenes generadas por el motor de trazado de rayos.
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.3]{results/lenda}}
+    \caption{Tejido de canvas renderizado con \textit{MeshPhysicalMaterial}, \textit{MeshClothMaterial} y el servicio de renderizado de trazado de rayos de Seddi}
+\end{figure}
+
+Mientras que el brillo especular de \textit{MeshPhysicalMaterial} da al tejido un aspecto de pl\'astico, el mayor control sobre
+el especular de \textit{MeshClothMaterial} permite atenuar el efecto consiguiendo una mayor coherencia con los resultados obtenidos
+por el servicio de renderizado en la nube de Seddi.
+
+\begin{figure}[H]
+  \vspace{0.5cm}
+  \centering
+    \frame{\includegraphics[scale=0.2458]{results/tartantwillbrushed}}
+    \caption{Tejido de sarga renderizado con \textit{MeshPhysicalMaterial}, \textit{MeshClothMaterial} y el servicio de renderizado de trazado de rayos de Seddi}
+\end{figure}
+
+De igual forma, en la figura 5.10, se aprecia como el \textit{MeshPhysicalMaterial} falla al capturar un tejido de sarga, cuyas reflexiones
+son muy definidas el \'angulo cr\'itico. Por su parte, el \textit{MeshPhysicalMaterial} utiliza un color marr\'on con
+muy baja luminosidad que aten\'ua el efecto consiguiendo un resultado m\'as parecido al obtenido por el motor de trazado de rayos.

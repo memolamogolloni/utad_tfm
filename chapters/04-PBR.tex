@@ -2,7 +2,7 @@
 PBR o \textit{physically based rendering} es el t\'ermino que se utiliza para nombrar al grupo de t\'ecnicas basados en un
 modelo f\'isico. La intenci\'on de los sistemas de renderizado PBR en entornos interactivos es conseguir aproximaciones plausibles
 y poco costosas de la dispersi\'on de la luz al golpear sobre una superficie. Las principales ventajas de este tipo de algoritmos
-son la consistencia bajo diferentes condiciones de luz y su manejo intuitivo por parte de los artistas.\\
+son el realismo, la consistencia bajo diferentes condiciones de luz y su manejo intuitivo por parte de los artistas.\\
 
 % Los motores PBR cumplen con la ley de la conservaci\'on de la energ\'ia y utilizan BRDFs basados en la teor\'ia de
 % microfacetas y el principio de reciprocidad de Helmholtz
@@ -141,7 +141,7 @@ que llega al punto de la superficie que estamos evaluando y $n\cdot{w_i}$ el fac
 \end{figure}
 
 El coste de computaci\'on de la radiancia debida al conjunto del entorno (iluminaci\'on indirecta o global) es muy alto, por lo que
-tradicioanlmente los sistemas de renderizado interactivos calculaban \'unicamente la radiancia debida a los emisores de luz de la escena
+tradicionalmente los sistemas de renderizado interactivos calculaban \'unicamente la radiancia debida a los emisores de luz de la escena
 (iluminaci\'on directa o local). Sin embargo recientemente se han presentado t\'ecnicas que permiten la aproximaci\'on
 de este efecto que se analizan en la \'ultima secci\'on de este cap\'itulo.
 
@@ -167,7 +167,7 @@ materiales.\\
 
 Es una funcion estad\'istica que calcula el ratio de luz que incidente sobre un material que es reflejada en direcci\'on
 a la c\'amara, para ello toma como argumentos la direccion de la luz, $w_i$, y la dirección de la vista,
-$w_o$, la normal de la superficie, $n$, y un par\'ametro $\alpha$ que representa la rugosidad del material.
+$w_o$, la normal de la superficie.
 
 \begin{figure}[H]
     \vspace{0.5cm}
@@ -213,7 +213,7 @@ propiedades: el principio de reciprocidad de Helmholtz y la ley de conservaci\'o
 \end{itemize}
 \singlespacing
 
-Estos dos principios no siempre se cumplen en los sistemas de de renderizado realista en entornos interactivos, que pueden presentar
+Estos dos principios no siempre se cumplen en los sistemas de renderizado realista en entornos interactivos, que pueden presentar
 aproximaciones que sacrifiquen aspectos f\'isicos del modelo, siempre y cuando no resulten en artefactos visuales apreciables, en
 favor de tiempos de respuestas menores.
 
@@ -297,8 +297,8 @@ favor de tiempos de respuestas menores.
     \section{Modelo de Cook-Torrance}
     El modelo de BRDF de Cook-Torrance \autocite{cooktorrance} presenta la forma que conocemos a d\'ia de hoy: los t\'erminos
     de distribuci\'on de las normales, geometr\'ia y Fresnel y el factor de correcci\'on en el denominador. Aunque con cambios en
-    sus t\'erminos, ideas pcomo la conservaci\'on de la energ\'ia, que solo las microfacetas cuyas normales apuntan en
-    direcci\'on $h$ contribuyen a la reflexi\'on especular o la diferencia entre materiales met\'alicos y diel\'ectricos siguen
+    sus t\'erminos, ideas como la conservaci\'on de la energ\'ia, que solo las microfacetas cuyas normales apuntan en
+    direcci\'on $h$ contribuyen a la reflexi\'on especular o la diferencia entre materiales met\'alicos y diel\'ectricos, siguen
     presentes en la mayor\'ia de modelos basados en aspectos f\'isicos que se utilizan en la actualidad.
 
     \singlespacing
@@ -359,7 +359,7 @@ favor de tiempos de respuestas menores.
             \singlespacing
             \subsection*{D, t\'ermino de distribuci\'on de las normales}
             Es la funci\'on de distribuci\'on de las normales y es un modelo estad\'istico que se encarga de representar
-            la rugosidad de una superficie y es el t\'ermino que afecta en mayor grado a la forma y taman\~no del brillo especular. T\'ipicamente el par\'ametro de
+            la rugosidad de una superficie y es el t\'ermino que afecta en mayor grado a la forma y tama\~no del brillo especular. T\'ipicamente el par\'ametro de
             rugosidad se utiliza para representar la cantidad de microfacetas alineadas con la normal $h$, cuanta mayor sea la
             la cantidad de de microfacetas alineadas, m\'as lisa parecer\'a la superficie.\\
 
@@ -386,7 +386,7 @@ favor de tiempos de respuestas menores.
 
             \subsection*{F, t\'ermino de Fresnel}
             Representa la radiancia reflejada por un material seg\'un el \'angulo de incidencia
-            de la luz. Para la mayor\'ia de los materiales no met\'alicos, las reflexiones son m\'as intensas bajo cuando el \'angulo
+            de la luz. Para la mayor\'ia de los materiales no met\'alicos, las reflexiones son m\'as intensas cuando el \'angulo
             de incidencia es muy agudo.\\
 
             En la f\'ormula original de Fresnel, la energ\'ia depende del \'indice de refracci\'on $\eta$ y el \'indice de refracci\'on
@@ -496,7 +496,7 @@ favor de tiempos de respuestas menores.
 
     En base a estas observaciones, el modelo \textit{Principled} de Disney, ajusta los t\'erminos del BRDF de Cook-Torrance \autocite{cooktorrance}
     primando la expresividad art\'istica sobre lo f\'isicamente plausible. El modelo aporta dos nuevos l\'obulos que, a diferencia del l\'obulo
-    primario pueden variar mucho en forma y tama\~no, adem\'as los tanto los materiales isotro\'opicos como anisotr\'opicos
+    primario pueden variar mucho en forma y tama\~no, adem\'as tanto los materiales isotro\'opicos como anisotr\'opicos
     se representan con el mismo modelo, que utiliza una interpolaci\'on entre los dos BRDFs, por lo que resulta muy atractivo para los artistas,
     pudiendo representar una enorme variedad de materiales con muy pocos par\'ametros.\\
 
@@ -569,7 +569,7 @@ favor de tiempos de respuestas menores.
         El modelo de Disney \autocite{disney12} utiliza t\'erminos conocidos del BRDF de Cook-Torrance \autocite{cooktorrance}
         (DFG) e incorpora dos nuevos l\'obulos: el de \textit{sheen} y el de \textit{clearcoat}. El l\'obulo de \textit{sheen}
         permite mayor control sobre la reflexi\'on especular en los \'angulos cr\'iticos, mientras que el l\'obulo de
-        \textit{clearcoat} permite simular una capa superficial para imitar efectos el efecto de un barniz o recubrimientos
+        \textit{clearcoat} permite simular una capa superficial para imitar efectos como el barniz o recubrimientos
         transparentes.
 
             \subsection*{D, t\'ermino de distribuci\'on de las normales}
@@ -653,8 +653,6 @@ favor de tiempos de respuestas menores.
                 \end{equation}
                 \singlespacing
     
-                Para el l\'obulo secundario se utiliza un valor fijo de $\alpha = 0.25$.\\
-    
             \subsection*{L\'obulo de \textit{sheen}}
                 El l\'obulo de \textit{sheen} utiliza dos par\'ametros para ajustar la intensidad y el color del brillo especular
                 en los \'angulos cr\'iticos. Este control es muy \'util para modelar efectos de retroreflexi\'on caracter\'isticos
@@ -663,13 +661,9 @@ favor de tiempos de respuestas menores.
                 % especulares en dos tonos. Mientras que ThreeJs utiliza un BRDF diferente cuando el par\'ametro de \textit{sheen}, en el
                 % BRDF de Disney 2012 el \textit{sheen} se modela como otro l\'obulo adicional adem\'as del de \textit{clearcoat}.\\
             
-                \begin{eqfloat}[!htb]
                 \begin{equation}
                     f(\textit{sheen}, \theta_d) = \textit{sheen} * ((1 - \textit{sheenTint}) + \textit{sheenTint} * \textit{tint}) * (1 - \cos\theta_d)^5
                 \end{equation}
-                \caption{L\'obulo adicional de \textit{sheen} en Disney 2012}
-                \end{eqfloat}
-                \singlespacing
 
             \subsection*{L\'obulo de \textit{clearcoat}}
                 El l\'obulo de \textit{clearcoat} es otro l\'obulo adicional que se controla con los par\'ametros \textit{clearcoat}
@@ -678,14 +672,11 @@ favor de tiempos de respuestas menores.
 
                 La funci\'on de distribuci\'on de las normales tambi\'en utiliza $\gamma = 1$ en el modelo GTR.\\
 
-                \begin{eqfloat}[!htb]
-                    \begin{equation}
+                \begin{equation}
                     D_{GTR} = \frac
                     {c}
                     {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)}
-                    \end{equation}
-                    \caption{Funci\'on de distribuci\'on de las normales para el l\'obulo de \textit{clearcoat} en Disney 2012}
-                \end{eqfloat}
+                \end{equation}
                 \singlespacing
 
                 La funci\'on de Fresnel utiliza el \'indice de refracci\'on fijo de 0.04, o lo que es lo mismo, $F_0 = 0.04$, el valor
@@ -694,12 +685,19 @@ favor de tiempos de respuestas menores.
                 $$
                 F_{Schlick}(w_o, h) = F_0 + (1 - F_0) (1 - (n\cdot{w_o})))^5
                 $$
-                \begin{eqfloat}[!htb]
-                    \begin{equation}
-                        \textrm{siendo}\ F0 = 0.04
-                    \end{equation}
-                    \caption{Funci\'on de distribuci\'on de las normales para el l\'obulo de \textit{clearcoat} en Disney 2012}
-                \end{eqfloat}
+                \begin{equation}
+                    \textrm{siendo}\ F0 = 0.04
+                \end{equation}
+                \singlespacing
+
+                Finalmente, el t\'ermino de geometr\'a, utiliza la misma funci\'on que el l\'obulo primario (Smith-GGX \autocite{ggx}),
+                pero con un rugosidad fija de 0.25 para no a\~nadir complejidad a la definici\'on del materil.\\
+
+                \begin{equation}
+                    G_{GGX}(v) = \frac
+                    {2 (n \cdot{v})}
+                    {(n \cdot{v}) + \sqrt{ 0.0625 + 0.5625 (n \cdot{v})^2 }}
+                \end{equation}
                 \singlespacing
 
 
@@ -749,7 +747,7 @@ favor de tiempos de respuestas menores.
       \end{figure}
       \singlespacing
 
-    Calcular la parte integral de la ecuaci\'on requiere lanzar rayos no en una direcci\'on si no desde todas las direcciones posibles
+    Calcular la parte integral de la ecuaci\'on requiere lanzar rayos no en una direcci\'on sino desde todas las direcciones posibles
     sobre la semiesfera $\Omega$, por lo que no es posible en tiempo real. En esta secci\'on se repasan t\'ecnicas que precomputan
     los c\'alculos o utilizan funciones anal\'iticas para lograr aproximar este efecto en entornos interactivos.\\
 
@@ -762,7 +760,7 @@ favor de tiempos de respuestas menores.
     \end{equation}
     \singlespacing
     
-    Siendo $k_s$ y $k_d$ t\''erminos independientes, el c\'alculo de la integral se puede separar en partes, la
+    Siendo $k_s$ y $k_d$ t\'erminos independientes, el c\'alculo de la integral se puede separar en partes, la
     integral de la componente difusa m\'as la integral de la componente especular. 
     
     \begin{equation}
@@ -790,13 +788,13 @@ favor de tiempos de respuestas menores.
         \singlespacing
     
         Las t\'enicas IBL (\textit{Image Based Lighting}), permiten precalcular la irradiacia del entorno tratando el entorno
-        como un gran emisoror de luz, utilizando una imagenes de referencia para aproximar la luz emitida por el entorno sobre
+        como un gran emisor de luz, utilizando una im\'agen de referencia para aproximar la luz emitida por el entorno sobre
         el punto que estamos calculando.\\
 
             \subsection*{Mapas de irradiancia}
-            Los mapas de irradiancia utilizan \textit{cubemaps} para muestrear en coordenadas esf\'ericas en pasos discretos la radincia
-            procedente del entorno. La irradiancia se estima como la media de la radiancia en todas las direcciones $w_i$ sobre la
-            semiesfera $\Omega$ orientada en direcci\'on a la normal de la superficie, $N$. Una vez preconvolucionado el mapa de
+            Los mapas de irradiancia utilizan \textit{cubemaps} para muestrear en coordenadas esf\'ericas en pasos discretos la radiancia
+            procedente del entorno. La irradiancia para cada punto de la superficie es el prec\'aculo de la integral de la
+            semiesfera $\Omega$ orientada en direcci\'on a la normal $N$. Una vez preconvolucionado el mapa de
             entorno, el resultado, conocido como mapa de irradiancia se almacena en una textura a la que se accede en tiempo
             de ejecuci\'on para consultar los resultados precalculados de irradiancia debida al entorno.
 
@@ -824,8 +822,10 @@ favor de tiempos de respuestas menores.
             \singlespacing
 
             \subsection*{Esf\'ericos harm\'onicos}
-            La t\'ecnica de esf\'ericos harm\'onicos \autocite{sh} supone una optimizaci\'on sobre la t\'ecnica de mapas de irradiancia,
-            que, pese a ser muy eficientes para operaciones de lectura, la convoluci\'on necesaria para generarlos tiene un coste alto.
+            La t\'ecnica de esf\'ericos harm\'onicos \autocite{sh} supone una optimizaci\'on sobre los mapas de irradiancia,
+            que, pese a ser una buena aproximaci\'on, utilizan \textit{look-up textures}, que pueden ser operaciones relativamente
+            costosas en dispositivos con un rendimiento limitado.
+            % muy eficientes para operaciones de lectura, la convoluci\'on necesaria para generarlos tiene un coste alto.
             Los esf\'ericos harm\'onicos permiten una aproximaci\'on a la irradiancia debida al entorno comprimiendo la informaci\'on
             en una representaci\'on de espacio frente a frecuencias. De esta forma, la informaci\'on se almacena en la funci\'on de
             esf\'ericos harm\'onicos y para consultarla, se utiliza su transformada inversa, que devuelve los datos a su repesentaci\'on espacial.
@@ -841,7 +841,7 @@ favor de tiempos de respuestas menores.
         
         \singlespacing
         \begin{equation}
-            L_o(p, w_o) =
+            L_o(p, w_o) \approx
             \int_{\Omega}L_i(p, w_i)dw_i * \int_{\Omega}fr(p, w_i, w_o) n\cdot{w_i}dw_i
         \end{equation}
         \singlespacing
@@ -870,7 +870,7 @@ favor de tiempos de respuestas menores.
         todos los posibles valores del BRDF en funci\'on de la normal de la superficie, el punto de vista y el valor de rugosidad del material.
         El resultado se almacena en un \textit{look-up texture} (LUT) que se conoce como \textit{BRDF integration map} y contiene
         valores de la escala del Fresnel en el canal rojo de la textura y valores de la desviaci\'on del Fresnel en el canal verde.
-        Este LUT se consulta en tiempo de ejecuci\'on se consulta esta tabla, accediendo a sus valores utilizando rangos normalizados entre
+        Este LUT se consulta en tiempo de ejecuci\'on, accediendo a sus valores utilizando rangos normalizados entre
         0 y 1 en los dos ejes, utilizando el coseno entre la vista y la normal de la superficie para el eje $x$ y valores de rugosidad
         del material en el eje $y$.
 
@@ -883,10 +883,6 @@ favor de tiempos de respuestas menores.
         \singlespacing
 
         
-        En tiempo de ejecuci\'on se accede a esta tabla
-        utilizando los valores del coseno entre la direcci\'on de vista y la normal de la superfie en el eje $x$ y utilizando
-        el valor de rugosidad del material para el eje $y$ para obtener.\\
-
         Finalmente el c\'alculo de la integral de la componente especular se ve reducido a una consulta al mapa de entorno prefiltrado,
         otra la \textit{BRDF integration map} y la combinacion de sus resultados:
 
