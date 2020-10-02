@@ -238,7 +238,7 @@ function getParameters( material, lights, shadows, scene, object ) {
 
   \begin{eqfloat}[!htb]
     \begin{equation}
-      f_d(v, h) = \frac{c_{diff}}{\pi}
+      f_d(l, h) = \frac{c_{diff}}{\pi}
       \Bigg\langle
       \frac{(n\cdot{l})w}{(1+ w)^2}( c_{subsurface} + n \cdot{l} )
       \Bigg\rangle
@@ -654,7 +654,9 @@ ti\~ne gradualmente el color base a medida que aumenta su saturaci\'on.
 
 En la figura 5.8, se utiliza el blanco como color base y \textit{subsurface}. La interpolaci\'on del par\'ametro de \textit{subsurfaceIntensity}
 muestra una transici\'on de sombras m\'as intensas (\textit{subsurfaceIntensity = 0}) a sombras m\'as suaves, que toman el color base del
-\textit{subsurface} (\textit{subsurfaceIntensity = 1})\\
+\textit{subsurface} (\textit{subsurfaceIntensity = 1}). La conservaci\'on de la energ\'ia aplicada sobre este t\'ermino
+hace que a medida que las sombras se vuelven m\'as claras, las zonas de luz directa se vuelven mas \'oscuras, asegurando
+que la luz reflejada no es mayor que la incidente.\\
 
 % el color base permanece constante, mientras que el \textit{subsurface}, de un tono similar al color base,
 % aumenta su saturaci\'on. Del mismo modo que en el \textit{sheen}, jugando con el valor de luminosidad del \textit{subsurface},

@@ -545,7 +545,8 @@ favor de tiempos de respuestas menores.
         En base a las observaciones sobre los datos de MERL, el modelo difuso parece muy oscuro hacia los bordes, y aplicando
         la funci\'on de Fresnel, para intentar conseguir un modelo f\'isicamente plausible, parece oscurecer m\'as los bordes,
         acentuando el problema.\\
-        Disney \autocite{}{disney} utiliza una modificaci\'on del t\'ermino Fresnel-Schlick
+
+        Disney \autocite{disney12} utiliza una modificaci\'on del t\'ermino Fresnel-Schlick
         conseguir una dispersi\'on hacia delante y hacia detr\'as que depende del valor de rugosidad del material y se
         adapta mejor a los datos obtenidos de MERL \autocite{merl}.
     
@@ -566,23 +567,13 @@ favor de tiempos de respuestas menores.
     
         \singlespacing
         \subsection{Componente especular}
-        El modelo de Disney \autocite{disney12} utiliza t\'erminos conocidos del BRDF de Cook-Torrance \autocite{cooktorrance}
+        El modelo de Disney \autocite{disney12} utiliza los t\'erminos conocidos del BRDF de Cook-Torrance \autocite{cooktorrance}
         (DFG) e incorpora dos nuevos l\'obulos: el de \textit{sheen} y el de \textit{clearcoat}. El l\'obulo de \textit{sheen}
         permite mayor control sobre la reflexi\'on especular en los \'angulos cr\'iticos, mientras que el l\'obulo de
         \textit{clearcoat} permite simular una capa superficial para imitar efectos como el barniz o recubrimientos
         transparentes.
 
             \subsection*{D, t\'ermino de distribuci\'on de las normales}
-                La distribuci\'on GGX es equivalente a la de Trowbridge-Reitz, no tiene una cola lo suficientemente larga para la
-                mayor\'ia de materiales.
-
-                \begin{equation}
-                    D_{TR} = \frac
-                    {c}
-                    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^2}
-                \end{equation}
-                \singlespacing
-
                 El modelo de Disney utiliza un exponente en el denominador que permite mayor control sobre el radio de la reflexi\'on
                 especular, llamando a \'este t\'ermino Generalized Trowbridge-Reitz, o GTR:
 
@@ -590,6 +581,15 @@ favor de tiempos de respuestas menores.
                     D_{GTR} = \frac
                     {c}
                     {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^\gamma}
+                \end{equation}
+                \singlespacing
+
+                La distribuci\'on GTR es equivalente a la GGX para $\gamma = 2$
+
+                \begin{equation}
+                    D_{TR} = \frac
+                    {c}
+                    {(\alpha^2 cos^2 \theta_h + sin^2 \theta_h)^2}
                 \end{equation}
                 \singlespacing
 
